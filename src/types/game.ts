@@ -6,6 +6,16 @@ export type WinPattern =
   | 'corners'
   | 'full_board'
 
+export type PrizeSlot = 'full_board' | 'corners' | 'line' | 'square'
+
+export interface PrizeClaim {
+  playerId: string
+  playerName: string
+  boardIndex: number
+  pattern: WinPattern
+  amount: number
+}
+
 export interface LoteriaCard {
   id: number
   name: string
@@ -15,6 +25,7 @@ export interface LoteriaCard {
 
 export interface PlayerBoard {
   playerId: string
+  boardIndex: number
   cards: LoteriaCard[]
   markedCards: number[]
 }
@@ -22,8 +33,9 @@ export interface PlayerBoard {
 export interface Player {
   id: string
   name: string
-  board: PlayerBoard
-  status: 'waiting' | 'playing' | 'won'
+  boards: PlayerBoard[]
+  status: 'waiting' | 'playing'
+  balance: number
 }
 
 export interface GameRoom {
@@ -35,4 +47,7 @@ export interface GameRoom {
   currentCard: LoteriaCard | null
   status: 'lobby' | 'playing' | 'finished'
   maxPlayers: number
+  entryFee: number
+  pot: number
+  claimedPrizes: Partial<Record<PrizeSlot, PrizeClaim>>
 }

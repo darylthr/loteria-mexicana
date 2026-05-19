@@ -13,7 +13,8 @@ export default function Lobby() {
 
   const initSocket = useGameStore((s) => s.initSocket)
   const setRoom = useGameStore((s) => s.setRoom)
-  const setMyBoard = useGameStore((s) => s.setMyBoard)
+  const setMyBoards = useGameStore((s) => s.setMyBoards)
+  const setBalance = useGameStore((s) => s.setBalance)
   const addPlayer = useGameStore((s) => s.addPlayer)
   const setError = useGameStore((s) => s.setError)
 
@@ -26,7 +27,8 @@ export default function Lobby() {
 
     socket.on('room:joined', ({ room, player }) => {
       setRoom(room)
-      setMyBoard(player.board)
+      setMyBoards(player.boards)
+      setBalance(player.balance)
       if (room.status === 'playing') navigate(`/game/${roomId}`)
     })
 
@@ -38,7 +40,10 @@ export default function Lobby() {
       const store = useGameStore.getState()
       setRoom(room)
       const me = room.players.find((p) => p.id === store.playerId)
-      if (me) setMyBoard(me.board)
+      if (me) {
+        setMyBoards(me.boards)
+        setBalance(me.balance)
+      }
       navigate(`/game/${roomId}`)
     })
 
@@ -63,6 +68,13 @@ export default function Lobby() {
       <h2>Sala: {roomId}</h2>
       <p>Comparte este código con tus amigos para que se unan.</p>
 
+      {room && (
+        <p>
+          Costo por tablero: <strong>{room.entryFee} monedas</strong>
+          {' · '}Bote actual: <strong>{room.pot} monedas</strong>
+        </p>
+      )}
+
       <h3>Jugadores ({room?.players.length ?? 0} / {room?.maxPlayers ?? 6})</h3>
       <ul>
         {room?.players.map((p) => (
@@ -70,6 +82,7 @@ export default function Lobby() {
             {p.name}
             {p.id === room.hostId ? ' 👑' : ''}
             {p.id === playerId ? ' (tú)' : ''}
+            {' '}— {p.boards.length} tablero{p.boards.length > 1 ? 's' : ''}
           </li>
         ))}
       </ul>

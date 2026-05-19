@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /home/daryl/repos/loteria-api add src/sockets/gameSocket.ts)",
+      "Bash(git -C /home/daryl/repos/loteria-api commit -m 'feat: emit win pattern in game:winner socket event')",
+      "Bash(cat)",
+      "Bash(node /tmp/visualize_patterns.js)",
+      "Bash(npm list *)",
+      "Bash(npx tsc *)",
+      "Bash(node /tmp/check_pattern_order.js)",
+      "Read(//tmp/**)",
+      "Bash(git *)",
+      "Bash(npm create *)",
+      "Bash(npx create-vite@latest --help)",
+      "Bash(npx create-vite@latest *)",
+      "Bash(npm install *)",
+      "Bash(read -t 120)",
+      "Bash(grep -E \"\\\\.\\(css|svg\\)$\")",
+      "Bash(grep -E \"\\\\.\\(svg\\)$\")",
+      "Bash(chmod +x /home/daryl/Documentos/Projects/loteria/scripts/copy-cards.sh)",
+      "Bash(bash /home/daryl/Documentos/Projects/loteria/scripts/copy-cards.sh)",
+      "Bash(tee /tmp/copy-cards-output.log)"
+    ]
+  }
+}

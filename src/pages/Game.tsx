@@ -1,11 +1,12 @@
 import { useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useGameStore } from '../store/gameStore'
-import { detectWin } from '../utils/winDetection'
+import { detectClaimablePrize } from '../utils/winDetection'
 import PlayerBoard from '../components/PlayerBoard'
 import CurrentCard from '../components/CurrentCard'
 import DrawnCards from '../components/DrawnCards'
 import WinnerOverlay from '../components/WinnerOverlay'
+import PrizeStatus from '../components/PrizeStatus'
 
 export default function Game() {
   const { roomId } = useParams<{ roomId: string }>()
@@ -14,10 +15,12 @@ export default function Game() {
   const playerId = useGameStore((s) => s.playerId)
   const isHost = useGameStore((s) => s.isHost)
   const room = useGameStore((s) => s.room)
-  const myBoard = useGameStore((s) => s.myBoard)
+  const myBoards = useGameStore((s) => s.myBoards)
+  const balance = useGameStore((s) => s.balance)
   const currentCard = useGameStore((s) => s.currentCard)
   const drawnCards = useGameStore((s) => s.drawnCards)
-  const winner = useGameStore((s) => s.winner)
+  const claimedPrizes = useGameStore((s) => s.claimedPrizes)
+  const gameEnded = useGameStore((s) => s.gameEnded)
   const error = useGameStore((s) => s.error)
 
   const setError = useGameStore((s) => s.setError)
@@ -37,8 +40,7 @@ export default function Game() {
     }
   }, [playerId, roomId, navigate])
 
-  // Register socket event listeners once on mount.
-  // Use useGameStore.getState() inside callbacks to avoid stale closures.
+  // Register socket listeners once on mount
   useEffect(() => {
     const socket = useGameStore.getState().socket
     if (!socket) return
@@ -49,13 +51,17 @@ export default function Game() {
 
     socket.on('game:card_marked', ({ playerId: markedBy, board }) => {
       if (markedBy === useGameStore.getState().playerId) {
-        useGameStore.getState().setMyBoard(board)
+        useGameStore.getState().updateBoard(board)
       }
     })
 
-    socket.on('game:winner', ({ playerId: winnerId, playerName, pattern, room }) => {
-      useGameStore.getState().setWinner({ playerId: winnerId, playerName, pattern })
-      useGameStore.getState().setRoom(room)
+    socket.on('game:prize_claimed', ({ slot, room }) => {
+      const claim = room.claimedPrizes[slot]
+      if (claim) useGameStore.getState().setPrizeClaimed(slot, claim, room)
+    })
+
+    socket.on('game:ended', ({ room, reason }) => {
+      useGameStore.getState().setGameEnded(reason, room)
     })
 
     socket.on('game:restarted', ({ room }) => {
@@ -69,7 +75,8 @@ export default function Game() {
     return () => {
       socket.off('game:card_drawn')
       socket.off('game:card_marked')
-      socket.off('game:winner')
+      socket.off('game:prize_claimed')
+      socket.off('game:ended')
       socket.off('game:restarted')
       socket.off('error')
     }
@@ -80,7 +87,7 @@ export default function Game() {
     [drawnCards],
   )
 
-  const winPattern = myBoard ? detectWin(myBoard) : null
+  const claimablePrize = detectClaimablePrize(myBoards, claimedPrizes)
   const deckExhausted = room ? drawnCards.length >= room.deck.length : false
 
   const handleDraw = () => {
@@ -89,10 +96,10 @@ export default function Game() {
     socket.emit('game:draw', { roomId, playerId })
   }
 
-  const handleMark = (cardId: number) => {
+  const handleMark = (cardId: number, boardIndex: number) => {
     const socket = useGameStore.getState().socket
     if (!socket || !roomId || !playerId) return
-    socket.emit('game:mark', { roomId, playerId, cardId })
+    socket.emit('game:mark', { roomId, playerId, cardId, boardIndex })
   }
 
   const handleLoteria = () => {
@@ -101,16 +108,16 @@ export default function Game() {
     socket.emit('game:loteria', { roomId, playerId })
   }
 
-  const handleCloseWinner = () => {
-    disconnectSocket()
-    resetGame()
-    navigate('/')
-  }
-
   const handleNewGame = () => {
     const socket = useGameStore.getState().socket
     if (!socket || !roomId || !playerId) return
     socket.emit('game:restart', { roomId, playerId })
+  }
+
+  const handleCloseGame = () => {
+    disconnectSocket()
+    resetGame()
+    navigate('/')
   }
 
   const handleLeave = () => {
@@ -121,29 +128,36 @@ export default function Game() {
 
   return (
     <div>
-      {winner && (
+      {gameEnded && room && (
         <WinnerOverlay
-          playerName={winner.playerName}
-          pattern={winner.pattern}
-          isMe={winner.playerId === playerId}
+          room={room}
+          myPlayerId={playerId}
+          reason={gameEnded.reason}
           isHost={isHost}
-          onClose={handleCloseWinner}
           onNewGame={handleNewGame}
+          onClose={handleCloseGame}
         />
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
         <div>
           <h3 style={{ margin: 0 }}>Sala {roomId}</h3>
           {room && (
-            <span>Jugadores: {room.players.map((p) => p.name).join(', ')}</span>
+            <span style={{ fontSize: 14, opacity: 0.7 }}>
+              {room.players.map((p) => p.name).join(', ')}
+            </span>
           )}
         </div>
-        <button onClick={handleLeave}>Salir del juego</button>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <span style={{ fontSize: 14 }}>Monedas: <strong>{balance}</strong></span>
+          <button onClick={handleLeave}>Salir del juego</button>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
-        <div>
+      <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', marginTop: 16 }}>
+        {/* Left column: card draw + prizes */}
+        <div style={{ minWidth: 200 }}>
           <CurrentCard card={currentCard} />
 
           {isHost && (
@@ -158,27 +172,47 @@ export default function Game() {
 
           <button
             onClick={handleLoteria}
-            disabled={!winPattern}
+            disabled={!claimablePrize}
             style={{ marginTop: 8, display: 'block' }}
           >
             ¡Lotería!
           </button>
 
           {error && (
-            <p style={{ color: 'red' }}>
+            <p style={{ color: 'red', marginTop: 8 }}>
               {error}{' '}
               <button onClick={() => setError(null)}>×</button>
             </p>
           )}
+
+          <div style={{ marginTop: 20 }}>
+            {room && (
+              <PrizeStatus
+                pot={room.pot}
+                claimedPrizes={claimedPrizes}
+                myPlayerId={playerId}
+              />
+            )}
+          </div>
         </div>
 
-        {myBoard && (
-          <PlayerBoard
-            board={myBoard}
-            drawnCardIds={drawnCardIds}
-            onMark={handleMark}
-          />
-        )}
+        {/* Player boards — one per board (1 or 2) */}
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          {myBoards.map((board) => (
+            <div key={board.boardIndex}>
+              {myBoards.length > 1 && (
+                <p style={{ margin: '0 0 4px', fontWeight: 600, fontSize: 14 }}>
+                  Tablero {board.boardIndex + 1}
+                </p>
+              )}
+              <PlayerBoard
+                board={board}
+                drawnCardIds={drawnCardIds}
+                onMark={(cardId) => handleMark(cardId, board.boardIndex)}
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       <div style={{ marginTop: 24 }}>

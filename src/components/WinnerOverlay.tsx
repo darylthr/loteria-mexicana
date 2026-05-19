@@ -1,24 +1,28 @@
-import type { WinPattern } from '../types/game'
-
-const PATTERN_LABELS: Record<WinPattern, string> = {
-  row: 'Línea',
-  column: 'Columna',
-  diagonal: 'Diagonal',
-  square: 'Cuadro 2×2',
-  corners: 'Esquinas',
-  full_board: 'Tabla Completa',
-}
+import type { GameRoom } from '../types/game'
+import { PRIZE_INFO, PRIZE_SLOT_ORDER } from '../utils/winDetection'
 
 interface WinnerOverlayProps {
-  playerName: string
-  pattern: WinPattern
-  isMe: boolean
+  room: GameRoom
+  myPlayerId: string | null
+  reason: 'all_prizes_claimed' | 'deck_exhausted'
   isHost: boolean
-  onClose: () => void
   onNewGame: () => void
+  onClose: () => void
 }
 
-export default function WinnerOverlay({ playerName, pattern, isMe, isHost, onClose, onNewGame }: WinnerOverlayProps) {
+export default function WinnerOverlay({
+  room,
+  myPlayerId,
+  reason,
+  isHost,
+  onNewGame,
+  onClose,
+}: WinnerOverlayProps) {
+  const myEarnings = PRIZE_SLOT_ORDER.reduce((sum, slot) => {
+    const claim = room.claimedPrizes[slot]
+    return claim?.playerId === myPlayerId ? sum + claim.amount : sum
+  }, 0)
+
   return (
     <div
       style={{
@@ -29,19 +33,41 @@ export default function WinnerOverlay({ playerName, pattern, isMe, isHost, onClo
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 100,
+        padding: 16,
       }}
     >
-      <div style={{ textAlign: 'center', padding: 32, borderRadius: 12, background: '#fff' }}>
-        <h1 style={{ fontSize: 48, margin: '0 0 8px' }}>🎉 ¡Lotería!</h1>
-        {isMe ? (
-          <p style={{ fontSize: 24, fontWeight: 700 }}>¡Ganaste!</p>
-        ) : (
-          <p style={{ fontSize: 20 }}>
-            <strong>{playerName}</strong> ganó
+      <div style={{ textAlign: 'center', padding: 32, borderRadius: 12, background: '#fff', maxWidth: 480, width: '100%' }}>
+        <h2 style={{ margin: '0 0 4px' }}>
+          {reason === 'all_prizes_claimed' ? '🎊 ¡Juego terminado!' : '🃏 ¡Mazo agotado!'}
+        </h2>
+        <p style={{ opacity: 0.7, fontSize: 14, marginTop: 0 }}>
+          {reason === 'deck_exhausted' ? 'Los premios restantes se repartieron entre todos los jugadores.' : ''}
+        </p>
+
+        {myEarnings > 0 && (
+          <p style={{ fontSize: 20, fontWeight: 700, color: '#28a745' }}>
+            ¡Ganaste {myEarnings} monedas!
           </p>
         )}
-        <p style={{ fontSize: 16, opacity: 0.7 }}>Patrón: {PATTERN_LABELS[pattern]}</p>
-        <div style={{ marginTop: 20, display: 'flex', gap: 12, justifyContent: 'center' }}>
+
+        <div style={{ textAlign: 'left', margin: '16px 0' }}>
+          {PRIZE_SLOT_ORDER.map((slot) => {
+            const { label, pct } = PRIZE_INFO[slot]
+            const claim = room.claimedPrizes[slot]
+            if (!claim) return null
+            const isMe = claim.playerId === myPlayerId
+            return (
+              <div key={slot} style={{ marginBottom: 6, fontSize: 14 }}>
+                <strong>{label}</strong> ({pct}%){' '}
+                <span style={{ color: isMe ? '#28a745' : '#333' }}>
+                  → {isMe ? '¡Tú!' : claim.playerName} +{claim.amount} mon.
+                </span>
+              </div>
+            )
+          })}
+        </div>
+
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 8 }}>
           {isHost && (
             <button onClick={onNewGame} style={{ padding: '10px 24px' }}>
               Nueva partida
@@ -52,7 +78,7 @@ export default function WinnerOverlay({ playerName, pattern, isMe, isHost, onClo
           </button>
         </div>
         {!isHost && (
-          <p style={{ fontSize: 14, opacity: 0.6, marginTop: 12 }}>
+          <p style={{ fontSize: 13, opacity: 0.6, marginTop: 10 }}>
             El anfitrión puede iniciar una nueva partida
           </p>
         )}

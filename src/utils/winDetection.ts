@@ -1,4 +1,4 @@
-import type { PlayerBoard, WinPattern } from '../types/game'
+import type { PlayerBoard, WinPattern, PrizeSlot, PrizeClaim } from '../types/game'
 
 const WIN_PATTERNS: Array<{ pattern: WinPattern; positions: number[] }> = [
   { pattern: 'full_board', positions: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] },
@@ -16,11 +16,37 @@ const WIN_PATTERNS: Array<{ pattern: WinPattern; positions: number[] }> = [
   { pattern: 'square',     positions: [5, 6, 9, 10] },
 ]
 
-export function detectWin(board: PlayerBoard): WinPattern | null {
-  const marked = new Set(board.markedCards)
-  for (const { pattern, positions } of WIN_PATTERNS) {
-    if (positions.every(pos => board.cards[pos] !== undefined && marked.has(board.cards[pos].id))) {
-      return pattern
+const PRIZE_SLOT_MAP: Record<WinPattern, PrizeSlot> = {
+  full_board: 'full_board',
+  corners:    'corners',
+  row:        'line',
+  column:     'line',
+  diagonal:   'line',
+  square:     'square',
+}
+
+export const PRIZE_INFO: Record<PrizeSlot, { label: string; pct: number }> = {
+  full_board: { label: 'Tabla Completa', pct: 40 },
+  corners:    { label: 'Esquinas',       pct: 30 },
+  line:       { label: 'Línea',          pct: 20 },
+  square:     { label: 'Cuadro',         pct: 10 },
+}
+
+export const PRIZE_SLOT_ORDER: PrizeSlot[] = ['full_board', 'corners', 'line', 'square']
+
+/** Returns the first unclaimed prize slot this player's boards qualify for, or null. */
+export function detectClaimablePrize(
+  boards: PlayerBoard[],
+  claimedPrizes: Partial<Record<PrizeSlot, PrizeClaim>>,
+): PrizeSlot | null {
+  for (const board of boards) {
+    const marked = new Set(board.markedCards)
+    for (const { pattern, positions } of WIN_PATTERNS) {
+      if (!positions.every(pos => board.cards[pos] !== undefined && marked.has(board.cards[pos].id))) {
+        continue
+      }
+      const slot = PRIZE_SLOT_MAP[pattern]
+      if (!claimedPrizes[slot]) return slot
     }
   }
   return null
