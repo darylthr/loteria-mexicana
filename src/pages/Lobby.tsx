@@ -28,7 +28,7 @@ export default function Lobby() {
     if (!playerId || !roomId) return
 
     const socket = initSocket()
-    socket.emit('room:join', { roomId, playerId })
+    socket.emit('room:join', { roomId })
 
     socket.on('room:joined', ({ room, player }) => {
       setRoom(room)
@@ -74,30 +74,28 @@ export default function Lobby() {
     }
   }, [playerId, roomId])
 
-  // Emit room:set_boards immediately when board count changes
   const handleSelectBoards = (count: number) => {
     if (count === numBoards) return
     setNumBoards(count)
     const socket = useGameStore.getState().socket
-    if (!socket || !roomId || !playerId) return
-    socket.emit('room:set_boards', { roomId, playerId, numBoards: count })
+    if (!socket || !roomId) return
+    socket.emit('room:set_boards', { roomId, numBoards: count })
   }
 
   const handleSaveFee = () => {
     const socket = useGameStore.getState().socket
-    if (!socket || !roomId || !playerId) return
-    socket.emit('room:configure', { roomId, playerId, entryFee: feeInput })
+    if (!socket || !roomId) return
+    socket.emit('room:configure', { roomId, entryFee: feeInput })
     setFeeSaved(true)
   }
 
   const handleStart = () => {
     const socket = useGameStore.getState().socket
-    if (!socket || !roomId || !playerId) return
-    // Apply fee if there are unsaved changes before starting
+    if (!socket || !roomId) return
     if (isHost && !feeSaved) {
-      socket.emit('room:configure', { roomId, playerId, entryFee: feeInput })
+      socket.emit('room:configure', { roomId, entryFee: feeInput })
     }
-    socket.emit('game:start', { roomId, playerId })
+    socket.emit('game:start', { roomId })
   }
 
   const effectiveFee = room?.entryFee ?? feeInput
@@ -112,7 +110,6 @@ export default function Lobby() {
         Comparte este código con tus amigos para que se unan.
       </p>
 
-      {/* ── Config panel ── */}
       <div style={{ padding: 16, border: '1px solid #ddd', borderRadius: 8, marginBottom: 16 }}>
         <h4 style={{ margin: '0 0 12px' }}>Configuración</h4>
 
@@ -159,7 +156,6 @@ export default function Lobby() {
         </p>
       </div>
 
-      {/* ── Player list ── */}
       <h3>Jugadores ({room?.players.length ?? 0} / {room?.maxPlayers ?? 6})</h3>
       <ul>
         {room?.players.map((p) => (
@@ -186,7 +182,6 @@ export default function Lobby() {
       {!isHost && <p>Esperando que el anfitrión inicie el juego...</p>}
     </div>
 
-    {/* Chat sidebar */}
     <div style={{ width: 280, flexShrink: 0, position: 'sticky', top: 16, height: 400 }}>
       <Chat />
     </div>

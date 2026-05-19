@@ -17,6 +17,7 @@ export default function Chat() {
   const roomId = useGameStore((s) => s.roomId)
   const socket = useGameStore((s) => s.socket)
 
+
   useEffect(() => {
     if (!socket) return
     const handler = (msg: ChatMessage) => {
@@ -33,7 +34,7 @@ export default function Chat() {
   const handleSend = () => {
     const msg = input.trim()
     if (!msg || !socket || !roomId || !playerId) return
-    socket.emit('chat:message', { roomId, playerId, message: msg })
+    socket.emit('chat:message', { roomId, message: msg })
     setInput('')
   }
 

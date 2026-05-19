@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 import { useGameStore } from '../store/gameStore'
 import { createRoom, joinRoom, fetchRoom } from '../api/rooms'
+import { getProfile } from '../api/profile'
 import type { GameRoom } from '../types/game'
 
 export default function Home() {
-  const [name, setName] = useState('')
+  const [displayName, setDisplayName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -14,19 +16,29 @@ export default function Home() {
   const [previewLoading, setPreviewLoading] = useState(false)
 
   const navigate = useNavigate()
+  const playerId = useGameStore((s) => s.playerId)
+  const balance = useGameStore((s) => s.balance)
   const setIdentity = useGameStore((s) => s.setIdentity)
   const setBalance = useGameStore((s) => s.setBalance)
   const setMyBoards = useGameStore((s) => s.setMyBoards)
-  const balance = useGameStore((s) => s.balance)
+  const signOut = useGameStore((s) => s.signOut)
+
+  useEffect(() => {
+    getProfile()
+      .then(({ displayName, balance }) => {
+        setDisplayName(displayName)
+        setBalance(balance)
+      })
+      .catch(() => setError('Error al cargar el perfil'))
+  }, [])
 
   const handleCreate = async () => {
-    if (!name.trim()) return
     setLoading(true)
     setError(null)
     try {
-      const { roomId, hostId, room } = await createRoom(name.trim())
+      const { roomId, hostId, room } = await createRoom()
       const hostPlayer = room.players.find(p => p.id === hostId)
-      setIdentity({ playerId: hostId, playerName: name.trim(), isHost: true, roomId })
+      setIdentity({ playerId: playerId!, playerName: displayName, isHost: true, roomId })
       if (hostPlayer) {
         setBalance(hostPlayer.balance)
         setMyBoards(hostPlayer.boards)
@@ -56,12 +68,12 @@ export default function Home() {
   }
 
   const handleJoin = async () => {
-    if (!name.trim() || !previewRoom) return
+    if (!previewRoom) return
     setLoading(true)
     setError(null)
     try {
-      const { player, room } = await joinRoom(previewRoom.roomId, name.trim())
-      setIdentity({ playerId: player.id, playerName: name.trim(), isHost: false, roomId: room.roomId })
+      const { player, room } = await joinRoom(previewRoom.roomId)
+      setIdentity({ playerId: playerId!, playerName: displayName, isHost: false, roomId: room.roomId })
       setBalance(player.balance)
       setMyBoards(player.boards)
       navigate(`/lobby/${room.roomId}`)
@@ -72,21 +84,24 @@ export default function Home() {
     }
   }
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    signOut()
+    navigate('/auth')
+  }
+
   return (
     <div>
-      <h1>Lotería</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <h1 style={{ margin: 0 }}>Lotería</h1>
+        <button onClick={handleSignOut} style={{ fontSize: 13 }}>Cerrar sesión</button>
+      </div>
 
-      {balance > 0 && (
-        <p>Monedas: <strong>{balance}</strong></p>
+      {displayName && (
+        <p style={{ marginTop: 0, opacity: 0.7 }}>
+          Hola, <strong>{displayName}</strong> · Monedas: <strong>{balance}</strong>
+        </p>
       )}
-
-      <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Tu nombre"
-        maxLength={24}
-        style={{ display: 'block', marginBottom: 24 }}
-      />
 
       {/* ── Create ── */}
       <section>
@@ -95,7 +110,7 @@ export default function Home() {
           Configura el costo y tableros en el lobby.
         </p>
         {error && !previewRoom && <p style={{ color: 'red' }}>{error}</p>}
-        <button onClick={handleCreate} disabled={loading || !name.trim()}>
+        <button onClick={handleCreate} disabled={loading || !displayName}>
           {loading ? 'Creando...' : 'Crear sala'}
         </button>
       </section>
@@ -127,7 +142,6 @@ export default function Home() {
             </p>
             <p style={{ margin: '4px 0', fontSize: 14 }}>
               Costo por tablero: <strong>{previewRoom.entryFee} monedas</strong>
-              {' · '}Tableros elegibles en el lobby
             </p>
           </div>
         )}
@@ -135,7 +149,7 @@ export default function Home() {
         {error && previewRoom && <p style={{ color: 'red', marginTop: 8 }}>{error}</p>}
         <button
           onClick={handleJoin}
-          disabled={loading || !name.trim() || !previewRoom}
+          disabled={loading || !displayName || !previewRoom}
           style={{ marginTop: 12 }}
         >
           {loading ? 'Uniéndose...' : 'Unirse'}

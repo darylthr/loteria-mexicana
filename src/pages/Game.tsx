@@ -29,7 +29,6 @@ export default function Game() {
   const resetForNewGame = useGameStore((s) => s.resetForNewGame)
   const disconnectSocket = useGameStore((s) => s.disconnectSocket)
 
-  // Reconnect if page was refreshed mid-game
   useEffect(() => {
     if (!playerId || !roomId) {
       navigate('/')
@@ -37,11 +36,10 @@ export default function Game() {
     }
     if (!useGameStore.getState().socket) {
       const socket = useGameStore.getState().initSocket()
-      socket.emit('room:join', { roomId, playerId })
+      socket.emit('room:join', { roomId })
     }
   }, [playerId, roomId, navigate])
 
-  // Register socket listeners once on mount
   useEffect(() => {
     const socket = useGameStore.getState().socket
     if (!socket) return
@@ -93,26 +91,26 @@ export default function Game() {
 
   const handleDraw = () => {
     const socket = useGameStore.getState().socket
-    if (!socket || !roomId || !playerId) return
-    socket.emit('game:draw', { roomId, playerId })
+    if (!socket || !roomId) return
+    socket.emit('game:draw', { roomId })
   }
 
   const handleMark = (cardId: number, boardIndex: number) => {
     const socket = useGameStore.getState().socket
-    if (!socket || !roomId || !playerId) return
-    socket.emit('game:mark', { roomId, playerId, cardId, boardIndex })
+    if (!socket || !roomId) return
+    socket.emit('game:mark', { roomId, cardId, boardIndex })
   }
 
   const handleLoteria = () => {
     const socket = useGameStore.getState().socket
-    if (!socket || !roomId || !playerId) return
-    socket.emit('game:loteria', { roomId, playerId })
+    if (!socket || !roomId) return
+    socket.emit('game:loteria', { roomId })
   }
 
   const handleNewGame = () => {
     const socket = useGameStore.getState().socket
-    if (!socket || !roomId || !playerId) return
-    socket.emit('game:restart', { roomId, playerId })
+    if (!socket || !roomId) return
+    socket.emit('game:restart', { roomId })
   }
 
   const handleCloseGame = () => {
@@ -140,7 +138,6 @@ export default function Game() {
         />
       )}
 
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
         <div>
           <h3 style={{ margin: 0 }}>Sala {roomId}</h3>
@@ -156,13 +153,10 @@ export default function Game() {
         </div>
       </div>
 
-      {/* Main layout: game content + chat sidebar */}
       <div style={{ display: 'flex', gap: 16, marginTop: 16, alignItems: 'flex-start' }}>
 
-        {/* Game content */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
-            {/* Left column: card draw + prizes */}
             <div style={{ minWidth: 200 }}>
               <CurrentCard card={currentCard} />
 
@@ -202,7 +196,6 @@ export default function Game() {
               </div>
             </div>
 
-            {/* Player boards — one per board (1 or 2) */}
             <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
               {myBoards.map((board) => (
                 <div key={board.boardIndex}>
@@ -226,7 +219,6 @@ export default function Game() {
           </div>
         </div>
 
-        {/* Chat sidebar */}
         <div style={{ width: 280, flexShrink: 0, position: 'sticky', top: 16, height: 500 }}>
           <Chat />
         </div>

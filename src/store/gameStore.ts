@@ -3,14 +3,13 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import { io, Socket } from 'socket.io-client'
 import type { GameRoom, Player, PlayerBoard, LoteriaCard, PrizeSlot, PrizeClaim } from '../types/game'
 
-interface Identity {
+interface GameState {
   playerId: string | null
   playerName: string | null
   isHost: boolean
   roomId: string | null
-}
+  authToken: string | null
 
-interface GameState extends Identity {
   room: GameRoom | null
   myBoards: PlayerBoard[]
   balance: number
@@ -22,7 +21,8 @@ interface GameState extends Identity {
   socket: Socket | null
   connected: boolean
 
-  setIdentity: (identity: Identity) => void
+  initAuth: (userId: string, token: string) => void
+  setIdentity: (identity: { playerId: string | null; playerName: string | null; isHost: boolean; roomId: string | null }) => void
   setBalance: (balance: number) => void
   initSocket: () => Socket
   disconnectSocket: () => void
@@ -36,6 +36,7 @@ interface GameState extends Identity {
   setError: (error: string | null) => void
   resetGame: () => void
   resetForNewGame: (room: GameRoom) => void
+  signOut: () => void
 }
 
 export const useGameStore = create<GameState>()(
@@ -45,6 +46,8 @@ export const useGameStore = create<GameState>()(
       playerName: null,
       isHost: false,
       roomId: null,
+      authToken: null,
+
       room: null,
       myBoards: [],
       balance: 0,
@@ -56,6 +59,8 @@ export const useGameStore = create<GameState>()(
       socket: null,
       connected: false,
 
+      initAuth: (userId, token) => set({ playerId: userId, authToken: token }),
+
       setIdentity: (identity) => set(identity),
 
       setBalance: (balance) => set({ balance }),
@@ -63,7 +68,8 @@ export const useGameStore = create<GameState>()(
       initSocket: () => {
         const existing = get().socket
         if (existing?.connected) return existing
-        const socket = io({ autoConnect: false })
+        const token = get().authToken
+        const socket = io({ auth: { token }, autoConnect: false })
         socket.on('connect', () => set({ connected: true }))
         socket.on('disconnect', () => set({ connected: false }))
         socket.connect()
@@ -149,13 +155,31 @@ export const useGameStore = create<GameState>()(
             error: null,
           }
         }),
+
+      signOut: () =>
+        set({
+          playerId: null,
+          playerName: null,
+          authToken: null,
+          isHost: false,
+          roomId: null,
+          room: null,
+          myBoards: [],
+          balance: 0,
+          currentCard: null,
+          drawnCards: [],
+          claimedPrizes: {},
+          gameEnded: null,
+          error: null,
+          socket: null,
+          connected: false,
+        }),
     }),
     {
       name: 'loteria-session',
       storage: createJSONStorage(() => sessionStorage),
+      // Only persist room context for page-refresh recovery; identity comes from Supabase session
       partialize: (state) => ({
-        playerId: state.playerId,
-        playerName: state.playerName,
         isHost: state.isHost,
         roomId: state.roomId,
       }),
