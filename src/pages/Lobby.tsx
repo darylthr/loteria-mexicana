@@ -127,6 +127,11 @@ export default function Lobby() {
   const estimatedCost = (room?.entryFee ?? 0) * boardCount + 10 * customCount
   const canAfford = balance >= estimatedCost
 
+  const playersWithoutBoard = room?.players.filter(p => {
+    const raw = room.boardSelections[p.id]
+    return !(Array.isArray(raw) && raw.length > 0)
+  }) ?? []
+
   return (
     <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
       <div style={{ flex: 1 }}>
@@ -182,7 +187,12 @@ export default function Lobby() {
         {error && <p style={{ color: 'red' }}>{error}</p>}
 
         {isHost && (
-          <button onClick={handleStart} disabled={!room || room.players.length < 2} style={{ marginBottom: 24 }}>
+          <button
+            onClick={handleStart}
+            disabled={!room || room.players.length < 2 || playersWithoutBoard.length > 0}
+            title={playersWithoutBoard.length > 0 ? `Sin tablero: ${playersWithoutBoard.map(p => p.name).join(', ')}` : undefined}
+            style={{ marginBottom: 24 }}
+          >
             Iniciar juego
           </button>
         )}
