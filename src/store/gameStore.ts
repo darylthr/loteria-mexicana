@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { io, Socket } from 'socket.io-client'
-import type { GameRoom, Player, PlayerBoard, LoteriaCard, PrizeSlot, PrizeClaim } from '../types/game'
+import type { GameRoom, Player, PlayerBoard, LoteriaCard, PrizeSlot, PrizeClaim, AvailableBoard } from '../types/game'
 
 interface GameState {
   playerId: string | null
@@ -29,6 +29,7 @@ interface GameState {
   setRoom: (room: GameRoom) => void
   setMyBoards: (boards: PlayerBoard[]) => void
   updateBoard: (board: PlayerBoard) => void
+  updateAvailableBoard: (boardId: string, patch: Partial<AvailableBoard>) => void
   addPlayer: (player: Player) => void
   cardDrawn: (card: LoteriaCard) => void
   setPrizeClaimed: (slot: PrizeSlot, claim: PrizeClaim, room: GameRoom) => void
@@ -92,6 +93,18 @@ export const useGameStore = create<GameState>()(
           myBoards: s.myBoards.map((b) =>
             b.boardIndex === board.boardIndex ? board : b
           ),
+        })),
+
+      updateAvailableBoard: (boardId, patch) =>
+        set((s) => ({
+          room: s.room
+            ? {
+                ...s.room,
+                availableBoards: s.room.availableBoards.map(b =>
+                  b.id === boardId ? { ...b, ...patch } : b
+                ),
+              }
+            : null,
         })),
 
       addPlayer: (player) =>

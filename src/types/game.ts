@@ -38,6 +38,14 @@ export interface Player {
   balance: number
 }
 
+export interface AvailableBoard {
+  id: string
+  cards: LoteriaCard[]
+  isCustom: boolean
+  addedByPlayerId?: string
+  lockedByPlayerId: string | null
+}
+
 export interface GameRoom {
   roomId: string
   hostId: string
@@ -50,4 +58,6 @@ export interface GameRoom {
   entryFee: number
   pot: number
   claimedPrizes: Partial<Record<PrizeSlot, PrizeClaim>>
+  availableBoards: AvailableBoard[]
+  boardSelections: Record<string, { boardId: string; isCustom: boolean }>
 }

@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useGameStore } from '../store/gameStore'
 import Chat from '../components/Chat'
+import BoardPicker from '../components/BoardPicker'
+import BoardCreator from '../components/BoardCreator'
+import { getBoards } from '../api/boards'
+import type { CustomBoard } from '../api/boards'
+import type { AvailableBoard } from '../types/game'
 
 export default function Lobby() {
   const { roomId } = useParams<{ roomId: string }>()
@@ -19,10 +24,17 @@ export default function Lobby() {
   const setBalance = useGameStore((s) => s.setBalance)
   const addPlayer = useGameStore((s) => s.addPlayer)
   const setError = useGameStore((s) => s.setError)
+  const updateAvailableBoard = useGameStore((s) => s.updateAvailableBoard)
 
   const [feeInput, setFeeInput] = useState(0)
-  const [numBoards, setNumBoards] = useState(1)
   const [feeSaved, setFeeSaved] = useState(true)
+  const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null)
+  const [myCustomBoards, setMyCustomBoards] = useState<CustomBoard[]>([])
+  const [showCreator, setShowCreator] = useState(false)
+
+  useEffect(() => {
+    getBoards().then(({ boards }) => setMyCustomBoards(boards)).catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (!playerId || !roomId) return
@@ -35,7 +47,9 @@ export default function Lobby() {
       setMyBoards(player.boards)
       setBalance(player.balance)
       setFeeInput(room.entryFee)
-      setNumBoards(player.boards.length)
+      // Restore own selection if already made
+      const sel = room.boardSelections[player.id]
+      if (sel) setSelectedBoardId(sel.boardId)
       if (room.status === 'playing') navigate(`/game/${roomId}`)
     })
 
@@ -45,11 +59,16 @@ export default function Lobby() {
 
     socket.on('room:updated', ({ room }) => {
       setRoom(room)
-      const me = room.players.find(p => p.id === playerId)
-      if (me) {
-        setMyBoards(me.boards)
-        setNumBoards(me.boards.length)
-      }
+      setFeeInput(room.entryFee)
+    })
+
+    socket.on('board:locked', ({ boardId, playerId: lockerId, isCustom }) => {
+      updateAvailableBoard(boardId, { lockedByPlayerId: lockerId })
+      if (lockerId === playerId) setSelectedBoardId(boardId)
+    })
+
+    socket.on('board:unlocked', ({ boardId }) => {
+      updateAvailableBoard(boardId, { lockedByPlayerId: null })
     })
 
     socket.on('game:started', ({ room }) => {
@@ -69,17 +88,17 @@ export default function Lobby() {
       socket.off('room:joined')
       socket.off('room:player_joined')
       socket.off('room:updated')
+      socket.off('board:locked')
+      socket.off('board:unlocked')
       socket.off('game:started')
       socket.off('error')
     }
   }, [playerId, roomId])
 
-  const handleSelectBoards = (count: number) => {
-    if (count === numBoards) return
-    setNumBoards(count)
+  const handleSelectBoard = (boardId: string, isCustom: boolean) => {
     const socket = useGameStore.getState().socket
     if (!socket || !roomId) return
-    socket.emit('room:set_boards', { roomId, numBoards: count })
+    socket.emit('board:select', { roomId, boardId, isCustom })
   }
 
   const handleSaveFee = () => {
@@ -92,99 +111,107 @@ export default function Lobby() {
   const handleStart = () => {
     const socket = useGameStore.getState().socket
     if (!socket || !roomId) return
-    if (isHost && !feeSaved) {
-      socket.emit('room:configure', { roomId, entryFee: feeInput })
-    }
+    if (isHost && !feeSaved) socket.emit('room:configure', { roomId, entryFee: feeInput })
     socket.emit('game:start', { roomId })
   }
 
-  const effectiveFee = room?.entryFee ?? feeInput
-  const estimatedCost = effectiveFee * numBoards
+  const selectedIsCustom = selectedBoardId
+    ? (room?.boardSelections[playerId!]?.isCustom ?? false)
+    : false
+  const estimatedCost = (room?.entryFee ?? 0) + (selectedIsCustom ? 10 : 0)
   const canAfford = balance >= estimatedCost
 
   return (
     <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
-    <div style={{ flex: 1 }}>
-      <h2>Sala: {roomId}</h2>
-      <p style={{ opacity: 0.7, fontSize: 14 }}>
-        Comparte este código con tus amigos para que se unan.
-      </p>
+      <div style={{ flex: 1 }}>
+        <h2>Sala: {roomId}</h2>
+        <p style={{ opacity: 0.7, fontSize: 14 }}>Comparte este código con tus amigos.</p>
 
-      <div style={{ padding: 16, border: '1px solid #ddd', borderRadius: 8, marginBottom: 16 }}>
-        <h4 style={{ margin: '0 0 12px' }}>Configuración</h4>
-
-        {isHost && (
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ display: 'block', marginBottom: 4 }}>
-              Costo por tablero (monedas)
-            </label>
+        {/* Fee config */}
+        <div style={{ padding: 16, border: '1px solid #ddd', borderRadius: 8, marginBottom: 16 }}>
+          <h4 style={{ margin: '0 0 12px' }}>Configuración</h4>
+          {isHost ? (
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <label>Costo por tablero:</label>
               <input
-                type="number"
-                min={0}
-                max={500}
-                value={feeInput}
-                onChange={(e) => { setFeeInput(Number(e.target.value)); setFeeSaved(false) }}
+                type="number" min={0} max={500} value={feeInput}
+                onChange={e => { setFeeInput(Number(e.target.value)); setFeeSaved(false) }}
+                style={{ width: 70 }}
               />
-              <button onClick={handleSaveFee} disabled={feeSaved}>
-                {feeSaved ? 'Guardado ✓' : 'Guardar'}
-              </button>
+              <button onClick={handleSaveFee} disabled={feeSaved}>{feeSaved ? 'Guardado ✓' : 'Guardar'}</button>
             </div>
-          </div>
-        )}
-
-        {!isHost && room && (
-          <p style={{ margin: '0 0 12px', fontSize: 14 }}>
-            Costo por tablero: <strong>{room.entryFee} monedas</strong>
+          ) : (
+            <p style={{ margin: 0, fontSize: 14 }}>Costo por tablero: <strong>{room?.entryFee ?? 0} monedas</strong></p>
+          )}
+          <p style={{ margin: '8px 0 0', fontSize: 13, color: canAfford ? undefined : 'red' }}>
+            Costo al iniciar: <strong>{estimatedCost} monedas</strong>
+            {selectedIsCustom && <span style={{ opacity: 0.6 }}> (incluye +10 tablero personalizado)</span>}
+            {' '}· tienes {balance}
+            {!canAfford && ' — monedas insuficientes'}
           </p>
-        )}
-
-        <label style={{ display: 'block', marginBottom: 8 }}>Mis tableros</label>
-        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-          <button onClick={() => handleSelectBoards(1)} disabled={numBoards === 1}>
-            1 tablero
-          </button>
-          <button onClick={() => handleSelectBoards(2)} disabled={numBoards === 2}>
-            2 tableros
-          </button>
         </div>
 
-        <p style={{ margin: 0, fontSize: 14, color: canAfford ? undefined : 'red' }}>
-          Costo total al iniciar: <strong>{estimatedCost} monedas</strong>
-          {' '}(tienes {balance})
-          {!canAfford && ' — monedas insuficientes'}
-        </p>
+        {/* Players */}
+        <h3>Jugadores ({room?.players.length ?? 0}/{room?.maxPlayers ?? 6})</h3>
+        <ul style={{ paddingLeft: 20, marginBottom: 16 }}>
+          {room?.players.map(p => {
+            const hasSel = !!room.boardSelections[p.id]
+            return (
+              <li key={p.id}>
+                {p.name}
+                {p.id === room.hostId ? ' 👑' : ''}
+                {p.id === playerId ? ' (tú)' : ''}
+                {' — '}
+                {hasSel
+                  ? (room.boardSelections[p.id].isCustom ? '📋 tablero personalizado' : '✓ tablero elegido')
+                  : <span style={{ opacity: 0.5 }}>sin tablero</span>}
+              </li>
+            )
+          })}
+        </ul>
+
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+
+        {isHost && (
+          <button onClick={handleStart} disabled={!room || room.players.length < 2} style={{ marginBottom: 24 }}>
+            Iniciar juego
+          </button>
+        )}
+        {!isHost && <p style={{ opacity: 0.6, marginBottom: 24 }}>Esperando que el anfitrión inicie el juego...</p>}
+
+        {/* Board selection */}
+        {room && playerId && (
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <h3 style={{ margin: 0 }}>Elige tu tablero</h3>
+              <button onClick={() => setShowCreator(true)} style={{ fontSize: 13 }}>+ Crear tablero</button>
+            </div>
+            <BoardPicker
+              availableBoards={room.availableBoards ?? []}
+              myCustomBoards={myCustomBoards}
+              selectedBoardId={selectedBoardId}
+              playerId={playerId}
+              players={room.players}
+              onSelect={handleSelectBoard}
+            />
+          </div>
+        )}
       </div>
 
-      <h3>Jugadores ({room?.players.length ?? 0} / {room?.maxPlayers ?? 6})</h3>
-      <ul>
-        {room?.players.map((p) => (
-          <li key={p.id}>
-            {p.name}
-            {p.id === room.hostId ? ' 👑' : ''}
-            {p.id === playerId ? ' (tú)' : ''}
-            {' '}— {p.boards.length} tablero{p.boards.length > 1 ? 's' : ''}
-          </li>
-        ))}
-      </ul>
+      <div style={{ width: 280, flexShrink: 0, position: 'sticky', top: 16, height: 400 }}>
+        <Chat />
+      </div>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      {isHost && (
-        <button
-          onClick={handleStart}
-          disabled={!room || room.players.length < 2}
-        >
-          Iniciar juego
-        </button>
+      {showCreator && (
+        <BoardCreator
+          onSaved={async () => {
+            const { boards } = await getBoards()
+            setMyCustomBoards(boards)
+            setShowCreator(false)
+          }}
+          onCancel={() => setShowCreator(false)}
+        />
       )}
-
-      {!isHost && <p>Esperando que el anfitrión inicie el juego...</p>}
-    </div>
-
-    <div style={{ width: 280, flexShrink: 0, position: 'sticky', top: 16, height: 400 }}>
-      <Chat />
-    </div>
     </div>
   )
 }
