@@ -16,24 +16,19 @@ export function fetchRoom(roomId: string): Promise<{ room: GameRoom }> {
   return request(`/rooms/${roomId}`)
 }
 
-export function createRoom(
-  hostName: string,
-  entryFee: number,
-  numBoards: number,
-): Promise<{ roomId: string; hostId: string; room: GameRoom }> {
+export function createRoom(hostName: string): Promise<{ roomId: string; hostId: string; room: GameRoom }> {
   return request('/rooms', {
     method: 'POST',
-    body: JSON.stringify({ hostName, entryFee, numBoards }),
+    body: JSON.stringify({ hostName }),
   })
 }
 
 export function joinRoom(
   roomId: string,
   playerName: string,
-  numBoards: number,
 ): Promise<{ room: GameRoom; player: Player }> {
   return request(`/rooms/${roomId}/join`, {
     method: 'POST',
-    body: JSON.stringify({ playerName, numBoards }),
+    body: JSON.stringify({ playerName }),
   })
 }
