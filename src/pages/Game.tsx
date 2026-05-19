@@ -7,6 +7,7 @@ import CurrentCard from '../components/CurrentCard'
 import DrawnCards from '../components/DrawnCards'
 import WinnerOverlay from '../components/WinnerOverlay'
 import PrizeStatus from '../components/PrizeStatus'
+import Chat from '../components/Chat'
 
 export default function Game() {
   const { roomId } = useParams<{ roomId: string }>()
@@ -155,68 +156,81 @@ export default function Game() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', marginTop: 16 }}>
-        {/* Left column: card draw + prizes */}
-        <div style={{ minWidth: 200 }}>
-          <CurrentCard card={currentCard} />
+      {/* Main layout: game content + chat sidebar */}
+      <div style={{ display: 'flex', gap: 16, marginTop: 16, alignItems: 'flex-start' }}>
 
-          {isHost && (
-            <button
-              onClick={handleDraw}
-              disabled={deckExhausted || room?.status !== 'playing'}
-              style={{ marginTop: 12, display: 'block' }}
-            >
-              {deckExhausted ? 'Mazo agotado' : 'Siguiente carta'}
-            </button>
-          )}
+        {/* Game content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
+            {/* Left column: card draw + prizes */}
+            <div style={{ minWidth: 200 }}>
+              <CurrentCard card={currentCard} />
 
-          <button
-            onClick={handleLoteria}
-            disabled={!claimablePrize}
-            style={{ marginTop: 8, display: 'block' }}
-          >
-            ¡Lotería!
-          </button>
+              {isHost && (
+                <button
+                  onClick={handleDraw}
+                  disabled={deckExhausted || room?.status !== 'playing'}
+                  style={{ marginTop: 12, display: 'block' }}
+                >
+                  {deckExhausted ? 'Mazo agotado' : 'Siguiente carta'}
+                </button>
+              )}
 
-          {error && (
-            <p style={{ color: 'red', marginTop: 8 }}>
-              {error}{' '}
-              <button onClick={() => setError(null)}>×</button>
-            </p>
-          )}
+              <button
+                onClick={handleLoteria}
+                disabled={!claimablePrize}
+                style={{ marginTop: 8, display: 'block' }}
+              >
+                ¡Lotería!
+              </button>
 
-          <div style={{ marginTop: 20 }}>
-            {room && (
-              <PrizeStatus
-                pot={room.pot}
-                claimedPrizes={claimedPrizes}
-                myPlayerId={playerId}
-              />
-            )}
+              {error && (
+                <p style={{ color: 'red', marginTop: 8 }}>
+                  {error}{' '}
+                  <button onClick={() => setError(null)}>×</button>
+                </p>
+              )}
+
+              <div style={{ marginTop: 20 }}>
+                {room && (
+                  <PrizeStatus
+                    pot={room.pot}
+                    claimedPrizes={claimedPrizes}
+                    myPlayerId={playerId}
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Player boards — one per board (1 or 2) */}
+            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+              {myBoards.map((board) => (
+                <div key={board.boardIndex}>
+                  {myBoards.length > 1 && (
+                    <p style={{ margin: '0 0 4px', fontWeight: 600, fontSize: 14 }}>
+                      Tablero {board.boardIndex + 1}
+                    </p>
+                  )}
+                  <PlayerBoard
+                    board={board}
+                    drawnCardIds={drawnCardIds}
+                    onMark={(cardId) => handleMark(cardId, board.boardIndex)}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginTop: 24 }}>
+            <DrawnCards cards={drawnCards} />
           </div>
         </div>
 
-        {/* Player boards — one per board (1 or 2) */}
-        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-          {myBoards.map((board) => (
-            <div key={board.boardIndex}>
-              {myBoards.length > 1 && (
-                <p style={{ margin: '0 0 4px', fontWeight: 600, fontSize: 14 }}>
-                  Tablero {board.boardIndex + 1}
-                </p>
-              )}
-              <PlayerBoard
-                board={board}
-                drawnCardIds={drawnCardIds}
-                onMark={(cardId) => handleMark(cardId, board.boardIndex)}
-              />
-            </div>
-          ))}
+        {/* Chat sidebar */}
+        <div style={{ width: 280, flexShrink: 0, position: 'sticky', top: 16, height: 500 }}>
+          <Chat />
         </div>
-      </div>
 
-      <div style={{ marginTop: 24 }}>
-        <DrawnCards cards={drawnCards} />
       </div>
     </div>
   )

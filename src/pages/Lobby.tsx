@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useGameStore } from '../store/gameStore'
+import Chat from '../components/Chat'
 
 export default function Lobby() {
   const { roomId } = useParams<{ roomId: string }>()
@@ -104,7 +105,8 @@ export default function Lobby() {
   const canAfford = balance >= estimatedCost
 
   return (
-    <div>
+    <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+    <div style={{ flex: 1 }}>
       <h2>Sala: {roomId}</h2>
       <p style={{ opacity: 0.7, fontSize: 14 }}>
         Comparte este código con tus amigos para que se unan.
@@ -182,6 +184,12 @@ export default function Lobby() {
       )}
 
       {!isHost && <p>Esperando que el anfitrión inicie el juego...</p>}
+    </div>
+
+    {/* Chat sidebar */}
+    <div style={{ width: 280, flexShrink: 0, position: 'sticky', top: 16, height: 400 }}>
+      <Chat />
+    </div>
     </div>
   )
 }
