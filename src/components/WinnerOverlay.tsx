@@ -13,10 +13,12 @@ interface WinnerOverlayProps {
   playerName: string
   pattern: WinPattern
   isMe: boolean
+  isHost: boolean
   onClose: () => void
+  onNewGame: () => void
 }
 
-export default function WinnerOverlay({ playerName, pattern, isMe, onClose }: WinnerOverlayProps) {
+export default function WinnerOverlay({ playerName, pattern, isMe, isHost, onClose, onNewGame }: WinnerOverlayProps) {
   return (
     <div
       style={{
@@ -39,9 +41,21 @@ export default function WinnerOverlay({ playerName, pattern, isMe, onClose }: Wi
           </p>
         )}
         <p style={{ fontSize: 16, opacity: 0.7 }}>Patrón: {PATTERN_LABELS[pattern]}</p>
-        <button onClick={onClose} style={{ marginTop: 20, padding: '10px 24px' }}>
-          Volver al inicio
-        </button>
+        <div style={{ marginTop: 20, display: 'flex', gap: 12, justifyContent: 'center' }}>
+          {isHost && (
+            <button onClick={onNewGame} style={{ padding: '10px 24px' }}>
+              Nueva partida
+            </button>
+          )}
+          <button onClick={onClose} style={{ padding: '10px 24px' }}>
+            Volver al inicio
+          </button>
+        </div>
+        {!isHost && (
+          <p style={{ fontSize: 14, opacity: 0.6, marginTop: 12 }}>
+            El anfitrión puede iniciar una nueva partida
+          </p>
+        )}
       </div>
     </div>
   )

@@ -29,6 +29,7 @@ interface GameState extends Identity {
   setWinner: (winner: { playerId: string; playerName: string; pattern: WinPattern }) => void
   setError: (error: string | null) => void
   resetGame: () => void
+  resetForNewGame: (room: GameRoom) => void
   disconnectSocket: () => void
 }
 
@@ -91,6 +92,19 @@ export const useGameStore = create<GameState>()(
           drawnCards: [],
           winner: null,
           error: null,
+        }),
+
+      resetForNewGame: (room) =>
+        set((state) => {
+          const player = room.players.find(p => p.id === state.playerId)
+          return {
+            room,
+            myBoard: player?.board ?? state.myBoard,
+            currentCard: null,
+            drawnCards: [],
+            winner: null,
+            error: null,
+          }
         }),
 
       disconnectSocket: () => {

@@ -13,15 +13,7 @@ const WIN_PATTERNS: Array<{ pattern: WinPattern; positions: number[] }> = [
   { pattern: 'column',     positions: [3, 7, 11, 15] },
   { pattern: 'diagonal',   positions: [0, 5, 10, 15] },
   { pattern: 'diagonal',   positions: [3, 6, 9, 12] },
-  { pattern: 'square',     positions: [0, 1, 4, 5] },
-  { pattern: 'square',     positions: [1, 2, 5, 6] },
-  { pattern: 'square',     positions: [2, 3, 6, 7] },
-  { pattern: 'square',     positions: [4, 5, 8, 9] },
   { pattern: 'square',     positions: [5, 6, 9, 10] },
-  { pattern: 'square',     positions: [6, 7, 10, 11] },
-  { pattern: 'square',     positions: [8, 9, 12, 13] },
-  { pattern: 'square',     positions: [9, 10, 13, 14] },
-  { pattern: 'square',     positions: [10, 11, 14, 15] },
 ]
 
 export function detectWin(board: PlayerBoard): WinPattern | null {

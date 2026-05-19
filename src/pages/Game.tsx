@@ -22,6 +22,7 @@ export default function Game() {
 
   const setError = useGameStore((s) => s.setError)
   const resetGame = useGameStore((s) => s.resetGame)
+  const resetForNewGame = useGameStore((s) => s.resetForNewGame)
   const disconnectSocket = useGameStore((s) => s.disconnectSocket)
 
   // Reconnect if page was refreshed mid-game
@@ -57,6 +58,10 @@ export default function Game() {
       useGameStore.getState().setRoom(room)
     })
 
+    socket.on('game:restarted', ({ room }) => {
+      useGameStore.getState().resetForNewGame(room)
+    })
+
     socket.on('error', ({ message }) => {
       useGameStore.getState().setError(message)
     })
@@ -65,6 +70,7 @@ export default function Game() {
       socket.off('game:card_drawn')
       socket.off('game:card_marked')
       socket.off('game:winner')
+      socket.off('game:restarted')
       socket.off('error')
     }
   }, [])
@@ -101,6 +107,18 @@ export default function Game() {
     navigate('/')
   }
 
+  const handleNewGame = () => {
+    const socket = useGameStore.getState().socket
+    if (!socket || !roomId || !playerId) return
+    socket.emit('game:restart', { roomId, playerId })
+  }
+
+  const handleLeave = () => {
+    disconnectSocket()
+    resetGame()
+    navigate('/')
+  }
+
   return (
     <div>
       {winner && (
@@ -108,15 +126,20 @@ export default function Game() {
           playerName={winner.playerName}
           pattern={winner.pattern}
           isMe={winner.playerId === playerId}
+          isHost={isHost}
           onClose={handleCloseWinner}
+          onNewGame={handleNewGame}
         />
       )}
 
-      <div>
-        <h3>Sala {roomId}</h3>
-        {room && (
-          <span>Jugadores: {room.players.map((p) => p.name).join(', ')}</span>
-        )}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <h3 style={{ margin: 0 }}>Sala {roomId}</h3>
+          {room && (
+            <span>Jugadores: {room.players.map((p) => p.name).join(', ')}</span>
+          )}
+        </div>
+        <button onClick={handleLeave}>Salir del juego</button>
       </div>
 
       <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
