@@ -30,6 +30,7 @@ interface GameState {
   setMyBoards: (boards: PlayerBoard[]) => void
   updateBoard: (board: PlayerBoard) => void
   updateAvailableBoard: (boardId: string, patch: Partial<AvailableBoard>) => void
+  updateBoardSelection: (playerId: string, boardId: string, isCustom: boolean, action: 'add' | 'remove') => void
   addPlayer: (player: Player) => void
   cardDrawn: (card: LoteriaCard) => void
   setPrizeClaimed: (slot: PrizeSlot, claim: PrizeClaim, room: GameRoom) => void
@@ -106,6 +107,23 @@ export const useGameStore = create<GameState>()(
               }
             : null,
         })),
+
+      updateBoardSelection: (pid, boardId, isCustom, action) =>
+        set((s) => {
+          if (!s.room) return {}
+          const prev = s.room.boardSelections[pid]
+          const current = Array.isArray(prev) ? prev : []
+          const next =
+            action === 'add'
+              ? current.some(x => x.boardId === boardId) ? current : [...current, { boardId, isCustom }]
+              : current.filter(x => x.boardId !== boardId)
+          return {
+            room: {
+              ...s.room,
+              boardSelections: { ...s.room.boardSelections, [pid]: next },
+            },
+          }
+        }),
 
       addPlayer: (player) =>
         set((s) => ({

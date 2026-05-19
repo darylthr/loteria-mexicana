@@ -25,6 +25,7 @@ export default function Lobby() {
   const addPlayer = useGameStore((s) => s.addPlayer)
   const setError = useGameStore((s) => s.setError)
   const updateAvailableBoard = useGameStore((s) => s.updateAvailableBoard)
+  const updateBoardSelection = useGameStore((s) => s.updateBoardSelection)
 
   const [feeInput, setFeeInput] = useState(0)
   const [feeSaved, setFeeSaved] = useState(true)
@@ -48,7 +49,8 @@ export default function Lobby() {
       setBalance(player.balance)
       setFeeInput(room.entryFee)
       // Restore own selections if already made
-      const sels = room.boardSelections[player.id] ?? []
+      const raw = room.boardSelections[player.id]
+      const sels = Array.isArray(raw) ? raw : []
       setSelectedBoardIds(sels.map(s => s.boardId))
       if (room.status === 'playing') navigate(`/game/${roomId}`)
     })
@@ -62,13 +64,15 @@ export default function Lobby() {
       setFeeInput(room.entryFee)
     })
 
-    socket.on('board:locked', ({ boardId, playerId: lockerId }) => {
+    socket.on('board:locked', ({ boardId, playerId: lockerId, isCustom }) => {
       updateAvailableBoard(boardId, { lockedByPlayerId: lockerId })
+      updateBoardSelection(lockerId, boardId, isCustom, 'add')
       if (lockerId === playerId) setSelectedBoardIds(prev => prev.includes(boardId) ? prev : [...prev, boardId])
     })
 
     socket.on('board:unlocked', ({ boardId, playerId: unlockerId }) => {
       updateAvailableBoard(boardId, { lockedByPlayerId: null })
+      updateBoardSelection(unlockerId, boardId, false, 'remove')
       if (unlockerId === playerId) setSelectedBoardIds(prev => prev.filter(id => id !== boardId))
     })
 
@@ -116,7 +120,8 @@ export default function Lobby() {
     socket.emit('game:start', { roomId })
   }
 
-  const mySelections = room?.boardSelections[playerId!] ?? []
+  const mySelectionsRaw = room?.boardSelections[playerId!]
+  const mySelections = Array.isArray(mySelectionsRaw) ? mySelectionsRaw : []
   const customCount = mySelections.filter(s => s.isCustom).length
   const boardCount = Math.max(selectedBoardIds.length, 1)
   const estimatedCost = (room?.entryFee ?? 0) * boardCount + 10 * customCount
@@ -156,7 +161,8 @@ export default function Lobby() {
         <h3>Jugadores ({room?.players.length ?? 0}/{room?.maxPlayers ?? 6})</h3>
         <ul style={{ paddingLeft: 20, marginBottom: 16 }}>
           {room?.players.map(p => {
-            const sels = room.boardSelections[p.id] ?? []
+            const raw = room.boardSelections[p.id]
+            const sels = Array.isArray(raw) ? raw : []
             const count = sels.length
             const hasCustom = sels.some(s => s.isCustom)
             return (
