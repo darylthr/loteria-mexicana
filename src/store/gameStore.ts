@@ -29,6 +29,7 @@ interface GameState extends Identity {
   setWinner: (winner: { playerId: string; playerName: string; pattern: WinPattern }) => void
   setError: (error: string | null) => void
   resetGame: () => void
+  disconnectSocket: () => void
 }
 
 export const useGameStore = create<GameState>()(
@@ -91,6 +92,14 @@ export const useGameStore = create<GameState>()(
           winner: null,
           error: null,
         }),
+
+      disconnectSocket: () => {
+        const socket = get().socket
+        if (socket) {
+          socket.disconnect()
+        }
+        set({ socket: null, connected: false })
+      },
     }),
     {
       name: 'loteria-session',

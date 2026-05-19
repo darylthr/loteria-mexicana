@@ -23,8 +23,8 @@ export default function Home() {
       const { roomId, hostId } = await createRoom(name.trim())
       setIdentity({ playerId: hostId, playerName: name.trim(), isHost: true, roomId })
       navigate(`/lobby/${roomId}`)
-    } catch (e: any) {
-      setError(e.message)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Error desconocido')
     } finally {
       setLoading(false)
     }
@@ -43,8 +43,8 @@ export default function Home() {
         roomId: room.roomId,
       })
       navigate(`/lobby/${room.roomId}`)
-    } catch (e: any) {
-      setError(e.message)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Error desconocido')
     } finally {
       setLoading(false)
     }

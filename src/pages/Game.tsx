@@ -20,12 +20,21 @@ export default function Game() {
   const winner = useGameStore((s) => s.winner)
   const error = useGameStore((s) => s.error)
 
-  const setRoom = useGameStore((s) => s.setRoom)
-  const setMyBoard = useGameStore((s) => s.setMyBoard)
-  const cardDrawn = useGameStore((s) => s.cardDrawn)
-  const setWinner = useGameStore((s) => s.setWinner)
   const setError = useGameStore((s) => s.setError)
   const resetGame = useGameStore((s) => s.resetGame)
+  const disconnectSocket = useGameStore((s) => s.disconnectSocket)
+
+  // Reconnect if page was refreshed mid-game
+  useEffect(() => {
+    if (!playerId || !roomId) {
+      navigate('/')
+      return
+    }
+    if (!useGameStore.getState().socket) {
+      const socket = useGameStore.getState().initSocket()
+      socket.emit('room:join', { roomId, playerId })
+    }
+  }, [playerId, roomId, navigate])
 
   // Register socket event listeners once on mount.
   // Use useGameStore.getState() inside callbacks to avoid stale closures.
@@ -66,7 +75,7 @@ export default function Game() {
   )
 
   const winPattern = myBoard ? detectWin(myBoard) : null
-  const deckExhausted = drawnCards.length >= 54
+  const deckExhausted = room ? drawnCards.length >= room.deck.length : false
 
   const handleDraw = () => {
     const socket = useGameStore.getState().socket
@@ -87,15 +96,10 @@ export default function Game() {
   }
 
   const handleCloseWinner = () => {
+    disconnectSocket()
     resetGame()
     navigate('/')
   }
-
-  // Suppress unused-variable warnings for store actions used only as subscriptions
-  void setRoom
-  void setMyBoard
-  void cardDrawn
-  void setWinner
 
   return (
     <div>

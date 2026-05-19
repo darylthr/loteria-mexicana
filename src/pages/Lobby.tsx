@@ -37,7 +37,7 @@ export default function Lobby() {
     socket.on('game:started', ({ room }) => {
       const store = useGameStore.getState()
       setRoom(room)
-      const me = room.players.find((p: any) => p.id === store.playerId)
+      const me = room.players.find((p) => p.id === store.playerId)
       if (me) setMyBoard(me.board)
       navigate(`/game/${roomId}`)
     })
