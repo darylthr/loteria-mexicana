@@ -28,7 +28,7 @@ export default function Lobby() {
 
   const [feeInput, setFeeInput] = useState(0)
   const [feeSaved, setFeeSaved] = useState(true)
-  const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null)
+  const [selectedBoardIds, setSelectedBoardIds] = useState<string[]>([])
   const [myCustomBoards, setMyCustomBoards] = useState<CustomBoard[]>([])
   const [showCreator, setShowCreator] = useState(false)
 
@@ -47,9 +47,9 @@ export default function Lobby() {
       setMyBoards(player.boards)
       setBalance(player.balance)
       setFeeInput(room.entryFee)
-      // Restore own selection if already made
-      const sel = room.boardSelections[player.id]
-      if (sel) setSelectedBoardId(sel.boardId)
+      // Restore own selections if already made
+      const sels = room.boardSelections[player.id] ?? []
+      setSelectedBoardIds(sels.map(s => s.boardId))
       if (room.status === 'playing') navigate(`/game/${roomId}`)
     })
 
@@ -62,13 +62,14 @@ export default function Lobby() {
       setFeeInput(room.entryFee)
     })
 
-    socket.on('board:locked', ({ boardId, playerId: lockerId, isCustom }) => {
+    socket.on('board:locked', ({ boardId, playerId: lockerId }) => {
       updateAvailableBoard(boardId, { lockedByPlayerId: lockerId })
-      if (lockerId === playerId) setSelectedBoardId(boardId)
+      if (lockerId === playerId) setSelectedBoardIds(prev => prev.includes(boardId) ? prev : [...prev, boardId])
     })
 
-    socket.on('board:unlocked', ({ boardId }) => {
+    socket.on('board:unlocked', ({ boardId, playerId: unlockerId }) => {
       updateAvailableBoard(boardId, { lockedByPlayerId: null })
+      if (unlockerId === playerId) setSelectedBoardIds(prev => prev.filter(id => id !== boardId))
     })
 
     socket.on('game:started', ({ room }) => {
@@ -115,10 +116,10 @@ export default function Lobby() {
     socket.emit('game:start', { roomId })
   }
 
-  const selectedIsCustom = selectedBoardId
-    ? (room?.boardSelections[playerId!]?.isCustom ?? false)
-    : false
-  const estimatedCost = (room?.entryFee ?? 0) + (selectedIsCustom ? 10 : 0)
+  const mySelections = room?.boardSelections[playerId!] ?? []
+  const customCount = mySelections.filter(s => s.isCustom).length
+  const boardCount = Math.max(selectedBoardIds.length, 1)
+  const estimatedCost = (room?.entryFee ?? 0) * boardCount + 10 * customCount
   const canAfford = balance >= estimatedCost
 
   return (
@@ -145,7 +146,7 @@ export default function Lobby() {
           )}
           <p style={{ margin: '8px 0 0', fontSize: 13, color: canAfford ? undefined : 'red' }}>
             Costo al iniciar: <strong>{estimatedCost} monedas</strong>
-            {selectedIsCustom && <span style={{ opacity: 0.6 }}> (incluye +10 tablero personalizado)</span>}
+            {customCount > 0 && <span style={{ opacity: 0.6 }}> (incluye +10 por tablero personalizado)</span>}
             {' '}· tienes {balance}
             {!canAfford && ' — monedas insuficientes'}
           </p>
@@ -155,15 +156,17 @@ export default function Lobby() {
         <h3>Jugadores ({room?.players.length ?? 0}/{room?.maxPlayers ?? 6})</h3>
         <ul style={{ paddingLeft: 20, marginBottom: 16 }}>
           {room?.players.map(p => {
-            const hasSel = !!room.boardSelections[p.id]
+            const sels = room.boardSelections[p.id] ?? []
+            const count = sels.length
+            const hasCustom = sels.some(s => s.isCustom)
             return (
               <li key={p.id}>
                 {p.name}
                 {p.id === room.hostId ? ' 👑' : ''}
                 {p.id === playerId ? ' (tú)' : ''}
                 {' — '}
-                {hasSel
-                  ? (room.boardSelections[p.id].isCustom ? '📋 tablero personalizado' : '✓ tablero elegido')
+                {count > 0
+                  ? `${count} tablero${count > 1 ? 's' : ''}${hasCustom ? ' (personalizado)' : ''} ✓`
                   : <span style={{ opacity: 0.5 }}>sin tablero</span>}
               </li>
             )
@@ -189,7 +192,7 @@ export default function Lobby() {
             <BoardPicker
               availableBoards={room.availableBoards ?? []}
               myCustomBoards={myCustomBoards}
-              selectedBoardId={selectedBoardId}
+              selectedBoardIds={selectedBoardIds}
               playerId={playerId}
               players={room.players}
               onSelect={handleSelectBoard}

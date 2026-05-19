@@ -4,7 +4,7 @@ import type { CustomBoard } from '../api/boards'
 interface Props {
   availableBoards: AvailableBoard[]
   myCustomBoards: CustomBoard[]
-  selectedBoardId: string | null
+  selectedBoardIds: string[]
   playerId: string
   players: { id: string; name: string }[]
   onSelect: (boardId: string, isCustom: boolean) => void
@@ -58,15 +58,21 @@ function BoardCard({
   )
 }
 
-export default function BoardPicker({ availableBoards, myCustomBoards, selectedBoardId, playerId, players, onSelect }: Props) {
+export default function BoardPicker({ availableBoards, myCustomBoards, selectedBoardIds, playerId, players, onSelect }: Props) {
   const sharedBoards = availableBoards.filter(b => !b.isCustom)
   const myCustomInRoom = availableBoards.filter(b => b.isCustom && b.addedByPlayerId === playerId)
   const myCustomNotInRoom = myCustomBoards.filter(cb => !myCustomInRoom.some(b => b.id === cb.id))
 
   const getPlayerName = (pid: string | null) => pid ? (players.find(p => p.id === pid)?.name ?? pid) : null
 
+  const atMax = selectedBoardIds.length >= 2
+
   return (
     <div>
+      <p style={{ margin: '0 0 10px', fontSize: 13, opacity: 0.6 }}>
+        Seleccionados: {selectedBoardIds.length}/2 · Haz clic para elegir o deseleccionar
+      </p>
+
       {myCustomBoards.length > 0 && (
         <div style={{ marginBottom: 20 }}>
           <h4 style={{ margin: '0 0 8px', fontSize: 14 }}>Mis tableros (+10 monedas)</h4>
@@ -76,16 +82,17 @@ export default function BoardPicker({ availableBoards, myCustomBoards, selectedB
               const cards = inRoom
                 ? inRoom.cards
                 : cb.cardIds.map(id => ({ id, imageUrl: `/cards/${String(id).padStart(2, '0')}.jpg` }))
+              const selected = selectedBoardIds.includes(cb.id)
               return (
                 <BoardCard
                   key={cb.id}
                   id={cb.id}
                   cards={cards}
                   label={cb.name}
-                  locked={false}
+                  locked={atMax && !selected}
                   lockedByName={null}
                   isMe
-                  selected={selectedBoardId === cb.id}
+                  selected={selected}
                   onSelect={() => onSelect(cb.id, true)}
                 />
               )
@@ -96,19 +103,23 @@ export default function BoardPicker({ availableBoards, myCustomBoards, selectedB
 
       <h4 style={{ margin: '0 0 8px', fontSize: 14 }}>Tableros de la sala</h4>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8 }}>
-        {sharedBoards.map((b, i) => (
-          <BoardCard
-            key={b.id}
-            id={b.id}
-            cards={b.cards}
-            label={`#${i + 1}`}
-            locked={!!b.lockedByPlayerId}
-            lockedByName={getPlayerName(b.lockedByPlayerId)}
-            isMe={b.lockedByPlayerId === playerId}
-            selected={selectedBoardId === b.id}
-            onSelect={() => onSelect(b.id, false)}
-          />
-        ))}
+        {sharedBoards.map((b, i) => {
+          const selected = selectedBoardIds.includes(b.id)
+          const takenByOther = !!b.lockedByPlayerId && b.lockedByPlayerId !== playerId
+          return (
+            <BoardCard
+              key={b.id}
+              id={b.id}
+              cards={b.cards}
+              label={`#${i + 1}`}
+              locked={takenByOther || (atMax && !selected)}
+              lockedByName={takenByOther ? getPlayerName(b.lockedByPlayerId) : null}
+              isMe={b.lockedByPlayerId === playerId}
+              selected={selected}
+              onSelect={() => onSelect(b.id, false)}
+            />
+          )
+        })}
       </div>
     </div>
   )

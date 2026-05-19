@@ -59,5 +59,5 @@ export interface GameRoom {
   pot: number
   claimedPrizes: Partial<Record<PrizeSlot, PrizeClaim>>
   availableBoards: AvailableBoard[]
-  boardSelections: Record<string, { boardId: string; isCustom: boolean }>
+  boardSelections: Record<string, Array<{ boardId: string; isCustom: boolean }>>
 }

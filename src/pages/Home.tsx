@@ -17,7 +17,7 @@ export default function Home() {
   const [roomCode, setRoomCode] = useState('')
   const [previewRoom, setPreviewRoom] = useState<GameRoom | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
-  const [myBoards, setMyBoards] = useState<CustomBoard[]>([])
+  const [customBoards, setCustomBoards] = useState<CustomBoard[]>([])
   const [showCreator, setShowCreator] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
@@ -36,14 +36,14 @@ export default function Home() {
         setBalance(balance)
       })
       .catch(() => setError('Error al cargar el perfil'))
-    getBoards().then(({ boards }) => setMyBoards(boards)).catch(() => {})
+    getBoards().then(({ boards }) => setCustomBoards(boards)).catch(() => {})
   }, [])
 
   const handleDeleteBoard = async (boardId: string) => {
     setDeletingId(boardId)
     try {
       await deleteBoard(boardId)
-      setMyBoards(prev => prev.filter(b => b.id !== boardId))
+      setCustomBoards(prev => prev.filter(b => b.id !== boardId))
     } catch {
       // silently ignore
     } finally {
@@ -184,11 +184,11 @@ export default function Home() {
           <button onClick={() => setShowCreator(true)} style={{ fontSize: 13 }}>+ Crear tablero</button>
         </div>
 
-        {myBoards.length === 0 ? (
+        {customBoards.length === 0 ? (
           <p style={{ opacity: 0.5, fontSize: 14 }}>Aún no tienes tableros personalizados.</p>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {myBoards.map(b => (
+            {customBoards.map(b => (
               <li key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', border: '1px solid #ddd', borderRadius: 8 }}>
                 <span style={{ fontWeight: 600 }}>{b.name}</span>
                 <button
@@ -208,7 +208,7 @@ export default function Home() {
         <BoardCreator
           onSaved={async () => {
             const { boards } = await getBoards()
-            setMyBoards(boards)
+            setCustomBoards(boards)
             setShowCreator(false)
           }}
           onCancel={() => setShowCreator(false)}
