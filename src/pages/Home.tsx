@@ -4,6 +4,9 @@ import { supabase } from '../lib/supabase'
 import { useGameStore } from '../store/gameStore'
 import { createRoom, joinRoom, fetchRoom } from '../api/rooms'
 import { getProfile } from '../api/profile'
+import { getBoards, deleteBoard } from '../api/boards'
+import type { CustomBoard } from '../api/boards'
+import BoardCreator from '../components/BoardCreator'
 import type { GameRoom } from '../types/game'
 
 export default function Home() {
@@ -14,6 +17,9 @@ export default function Home() {
   const [roomCode, setRoomCode] = useState('')
   const [previewRoom, setPreviewRoom] = useState<GameRoom | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
+  const [myBoards, setMyBoards] = useState<CustomBoard[]>([])
+  const [showCreator, setShowCreator] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const navigate = useNavigate()
   const playerId = useGameStore((s) => s.playerId)
@@ -30,7 +36,20 @@ export default function Home() {
         setBalance(balance)
       })
       .catch(() => setError('Error al cargar el perfil'))
+    getBoards().then(({ boards }) => setMyBoards(boards)).catch(() => {})
   }, [])
+
+  const handleDeleteBoard = async (boardId: string) => {
+    setDeletingId(boardId)
+    try {
+      await deleteBoard(boardId)
+      setMyBoards(prev => prev.filter(b => b.id !== boardId))
+    } catch {
+      // silently ignore
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   const handleCreate = async () => {
     setLoading(true)
@@ -155,6 +174,46 @@ export default function Home() {
           {loading ? 'Uniéndose...' : 'Unirse'}
         </button>
       </section>
+
+      <hr style={{ margin: '24px 0' }} />
+
+      {/* ── My boards ── */}
+      <section>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h3 style={{ margin: 0 }}>Mis tableros</h3>
+          <button onClick={() => setShowCreator(true)} style={{ fontSize: 13 }}>+ Crear tablero</button>
+        </div>
+
+        {myBoards.length === 0 ? (
+          <p style={{ opacity: 0.5, fontSize: 14 }}>Aún no tienes tableros personalizados.</p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {myBoards.map(b => (
+              <li key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', border: '1px solid #ddd', borderRadius: 8 }}>
+                <span style={{ fontWeight: 600 }}>{b.name}</span>
+                <button
+                  onClick={() => handleDeleteBoard(b.id)}
+                  disabled={deletingId === b.id}
+                  style={{ fontSize: 12, opacity: 0.6 }}
+                >
+                  {deletingId === b.id ? '...' : 'Eliminar'}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {showCreator && (
+        <BoardCreator
+          onSaved={async () => {
+            const { boards } = await getBoards()
+            setMyBoards(boards)
+            setShowCreator(false)
+          }}
+          onCancel={() => setShowCreator(false)}
+        />
+      )}
     </div>
   )
 }

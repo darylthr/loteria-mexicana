@@ -96,11 +96,12 @@ export default function BoardPicker({ availableBoards, myCustomBoards, selectedB
 
       <h4 style={{ margin: '0 0 8px', fontSize: 14 }}>Tableros de la sala</h4>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8 }}>
-        {sharedBoards.map(b => (
+        {sharedBoards.map((b, i) => (
           <BoardCard
             key={b.id}
             id={b.id}
             cards={b.cards}
+            label={`#${i + 1}`}
             locked={!!b.lockedByPlayerId}
             lockedByName={getPlayerName(b.lockedByPlayerId)}
             isMe={b.lockedByPlayerId === playerId}
