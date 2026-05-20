@@ -136,27 +136,7 @@ export default function Lobby() {
 
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="shrink-0 bg-th-surface border-b border-th px-5 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-5">
-          <h1 className="text-xl font-black text-th-accent tracking-tight">LOTERÍA</h1>
-
-          <div className="h-5 w-px bg-th" />
-
-          {/* Room code */}
-          <div>
-            <p className="text-[10px] text-th-sub uppercase tracking-widest mb-0.5">Código de sala</p>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-lg font-black text-th tracking-widest leading-none">
-                {roomId}
-              </span>
-              <button
-                onClick={handleCopyCode}
-                className="text-xs px-2 py-0.5 rounded-md bg-th-ui hover:bg-th-ui-hover text-th-sub transition-colors"
-              >
-                {copied ? '✓ Copiado' : 'Copiar'}
-              </button>
-            </div>
-          </div>
-        </div>
+        <h1 className="text-xl font-black text-th-accent tracking-tight">LOTERÍA</h1>
 
         <div className="flex items-center gap-5">
           {balance !== undefined && (
@@ -177,8 +157,68 @@ export default function Lobby() {
       {/* ── Main 3-column area ─────────────────────────────── */}
       <div className="flex-1 flex gap-4 px-4 py-4 min-h-0 overflow-hidden">
 
-        {/* LEFT — players + config + start */}
+        {/* LEFT — room code + config + players + start */}
         <div className="w-60 shrink-0 flex flex-col gap-3">
+
+          {/* Room code */}
+          <div className="bg-th-surface rounded-2xl border border-th p-4 shrink-0">
+            <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-2">Código de sala</p>
+            <span className="font-mono text-2xl font-black text-th tracking-widest leading-none block mb-3">
+              {roomId}
+            </span>
+            <div className="flex gap-2">
+              <button
+                onClick={handleCopyCode}
+                className="flex-1 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-lg transition-colors"
+              >
+                {copied ? '✓ Copiado' : 'Copiar código'}
+              </button>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/join/${roomId}`)
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 2000)
+                }}
+                className="flex-1 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-lg transition-colors"
+              >
+                Compartir link
+              </button>
+            </div>
+          </div>
+
+          {/* Config */}
+          <div className="bg-th-surface rounded-2xl border border-th p-4 shrink-0">
+            <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">Costo de entrada</p>
+            {isHost ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number" min={0} max={500} value={feeInput}
+                    onChange={e => { setFeeInput(Number(e.target.value)); setFeeSaved(false) }}
+                    className="w-20 text-sm"
+                  />
+                  <span className="text-xs text-th-sub">mon./tablero</span>
+                </div>
+                {!feeSaved && (
+                  <button
+                    onClick={handleSaveFee}
+                    className="w-full py-1.5 bg-th-ui hover:bg-th-ui-hover text-th text-xs font-semibold rounded-lg transition-colors"
+                  >
+                    Guardar
+                  </button>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-th">
+                <span className="font-black text-th-accent">{room?.entryFee ?? 0}</span>
+                <span className="text-th-sub"> monedas/tablero</span>
+              </p>
+            )}
+            <p className={`mt-2 text-xs ${canAfford ? 'text-th-sub' : 'text-red-400 font-semibold'}`}>
+              Estimado: <strong>{estimatedCost}</strong> monedas
+              {!canAfford && ' · insuficiente'}
+            </p>
+          </div>
 
           {/* Players */}
           <div className="bg-th-surface rounded-2xl border border-th p-4 flex-1 overflow-y-auto">
@@ -212,40 +252,6 @@ export default function Lobby() {
                 )
               })}
             </ul>
-          </div>
-
-          {/* Config */}
-          <div className="bg-th-surface rounded-2xl border border-th p-4 shrink-0">
-            <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">Entrada</p>
-            {isHost ? (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number" min={0} max={500} value={feeInput}
-                    onChange={e => { setFeeInput(Number(e.target.value)); setFeeSaved(false) }}
-                    className="w-20 text-sm"
-                  />
-                  <span className="text-xs text-th-sub">mon./tablero</span>
-                </div>
-                {!feeSaved && (
-                  <button
-                    onClick={handleSaveFee}
-                    className="w-full py-1.5 bg-th-ui hover:bg-th-ui-hover text-th text-xs font-semibold rounded-lg transition-colors"
-                  >
-                    Guardar
-                  </button>
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-th">
-                <span className="font-black text-th-accent">{room?.entryFee ?? 0}</span>
-                <span className="text-th-sub"> monedas/tablero</span>
-              </p>
-            )}
-            <p className={`mt-2 text-xs ${canAfford ? 'text-th-sub' : 'text-red-400 font-semibold'}`}>
-              Costo estimado: <strong>{estimatedCost}</strong> monedas
-              {!canAfford && ' · insuficiente'}
-            </p>
           </div>
 
           {/* Error */}
