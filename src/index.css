@@ -114,6 +114,12 @@
   }
   input::placeholder { color: var(--th-text-sub); }
 
+  /* Animations */
+  @keyframes chevronMarch {
+    0%, 100% { transform: translateX(0px); opacity: 0.6; }
+    50%       { transform: translateX(5px); opacity: 1; }
+  }
+
   /* Range input */
   input[type="range"] {
     -webkit-appearance: none;

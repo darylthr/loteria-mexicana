@@ -242,9 +242,13 @@ export default function Home() {
           <button
             onClick={handleCreate}
             disabled={loading || !displayName}
-            className="flex items-center justify-center gap-3 w-full py-4 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xl rounded-xl transition-all shadow-xl shadow-black/30 active:scale-[0.98]"
+            className="relative flex items-center justify-center gap-3 w-full py-4 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xl rounded-xl transition-all shadow-xl shadow-black/30 active:scale-[0.98] overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18), rgba(0,0,0,0.08)), var(--th-accent)' }}
           >
-            <ChevronsRight className="w-5 h-5 opacity-60" />
+            <ChevronsRight
+              className="w-5 h-5 shrink-0"
+              style={{ animation: 'chevronMarch 1.2s ease-in-out infinite' }}
+            />
             {loading ? 'Creando...' : 'Crear sala'}
           </button>
 
