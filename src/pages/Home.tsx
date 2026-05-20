@@ -135,22 +135,20 @@ export default function Home() {
 
       {/* Minimal top-right nav */}
       <div className="absolute top-0 w-full p-8 flex justify-between z-30">
-        <div className="relative flex items-center gap-2">
+        <div
+          className="relative flex items-center gap-2"
+          onMouseEnter={() => setShowVolume(true)}
+          onMouseLeave={() => setShowVolume(false)}
+        >
           <button
             onClick={toggleMute}
-            onMouseEnter={() => setShowVolume(true)}
-            onMouseLeave={() => setShowVolume(false)}
             className="text-th-sub hover:text-th transition-colors"
             aria-label={muted ? 'Activar sonido' : 'Silenciar'}
           >
             {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
           </button>
           {showVolume && (
-            <div
-              className="absolute left-7 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-th-surface border border-th rounded-full px-3 py-1.5 shadow-lg"
-              onMouseEnter={() => setShowVolume(true)}
-              onMouseLeave={() => setShowVolume(false)}
-            >
+            <div className="flex items-center bg-th-surface border border-th rounded-full px-3 py-1.5 shadow-lg">
               <input
                 type="range"
                 min={0}
@@ -158,7 +156,6 @@ export default function Home() {
                 step={0.05}
                 value={volume}
                 onChange={e => setVolume(Number(e.target.value))}
-                className="w-20 h-1 accent-th-accent"
                 style={{ appearance: 'auto', padding: 0, border: 'none', background: 'transparent', width: '5rem' }}
               />
             </div>
