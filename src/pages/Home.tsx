@@ -163,7 +163,10 @@ export default function Home() {
         </div>
         <div className='flex flex-wrap items-center gap-6'>
           {balance !== undefined && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10">
+            <div
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10 rounded-full border border-th-accent/20"
+              style={{ animation: 'balancePulse 3s ease-in-out infinite' }}
+            >
               <Coins className="w-5 h-5 text-th-accent" />
               <span className="font-black text-th-accent text-lg font-ui">{balance}</span>
             </div>
@@ -205,10 +208,12 @@ export default function Home() {
           <div className='flex flex-wrap justify-center'>
 
             {/* Three-card display */}
-            <HeroLogo/>
+            <div style={{ animation: 'fadeSlideUp 0.6s ease both' }}>
+              <HeroLogo/>
+            </div>
 
             {/* Title */}
-            <div className="mt-12 mb-20">
+            <div className="mt-12 mb-20" style={{ animation: 'fadeSlideUp 0.6s ease 0.12s both' }}>
               <div className='flex flex-wrap items-end justify-center'>
                 <h1 className="text-6xl font-black fon -display text-th leading-none">
                   LOTER
@@ -221,7 +226,7 @@ export default function Home() {
           </div>
 
           {/* Nickname */}
-          <div className="w-full">
+          <div className="w-full" style={{ animation: 'fadeSlideUp 0.6s ease 0.22s both' }}>
             <input
               value={nickname}
               onChange={e => setNickname(e.target.value)}
@@ -243,7 +248,7 @@ export default function Home() {
             onClick={handleCreate}
             disabled={loading || !displayName}
             className="relative flex items-center justify-center gap-3 w-full py-4 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xl rounded-xl transition-all shadow-xl shadow-black/30 active:scale-[0.98] overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18), rgba(0,0,0,0.08)), var(--th-accent)' }}
+            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18), rgba(0,0,0,0.08)), var(--th-accent)', animation: 'fadeSlideUp 0.6s ease 0.32s both' }}
           >
             <ChevronsRight
               className="w-5 h-5 shrink-0"
@@ -253,7 +258,7 @@ export default function Home() {
           </button>
 
           {/* Secondary pill buttons */}
-          <div className="flex gap-3 flex-wrap w-full justify-between">
+          <div className="flex gap-3 flex-wrap w-full justify-between" style={{ animation: 'fadeSlideUp 0.6s ease 0.42s both' }}>
             <button
               onClick={() => { setShowJoin(v => !v); setError(null); setPreviewRoom(null) }}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
@@ -356,12 +361,12 @@ export default function Home() {
       <div className="max-w-3xl mx-auto px-4 pb-6">
         <SectionDivider label="Personalización" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-          <div className="bg-th-surface rounded-xl border border-th p-5">
+          <div className="bg-th-surface rounded-xl border border-th p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20">
             <p className="text-xs font-bold text-th-sub uppercase tracking-widest mb-1">Token de juego</p>
             <p className="text-xs text-th-sub mb-4">El objeto que aparece en tus cartas marcadas.</p>
             <TokenSelector value={token} onChange={handleToken} />
           </div>
-          <div className="bg-th-surface rounded-xl border border-th p-5">
+          <div className="bg-th-surface rounded-xl border border-th p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20">
             <ThemeSelector />
           </div>
         </div>
@@ -379,7 +384,7 @@ export default function Home() {
             { Icon: CheckSquare, step: '3', title: 'Marca tus cartas', desc: 'Toca las cartas de tu tablero conforme vayan apareciendo en pantalla.' },
             { Icon: Trophy,      step: '4', title: '¡Lotería!', desc: 'Completa un patrón y pulsa "¡Lotería!" para reclamar tu premio antes que los demás.' },
           ].map(s => (
-            <div key={s.step} className="bg-th-surface rounded-xl border border-th p-4 flex flex-col gap-2">
+            <div key={s.step} className="bg-th-surface rounded-xl border border-th p-4 flex flex-col gap-2 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20 hover:border-th-accent/30">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-th-accent/10 flex items-center justify-center shrink-0">
                   <s.Icon className="w-4 h-4 text-th-accent" />
@@ -402,7 +407,7 @@ export default function Home() {
               { Icon: Maximize2,label: 'Esquinas',pct: '45 %',  desc: 'Las 4 esquinas del tablero' },
               { Icon: Sparkles, label: 'Lotería', pct: '55 %+', desc: 'Tablero completo — jackpot' },
             ].map(p => (
-              <div key={p.label} className="flex flex-col gap-1 px-3 py-3 rounded-lg bg-th border border-th">
+              <div key={p.label} className="flex flex-col gap-1 px-3 py-3 rounded-lg bg-th border border-th transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:shadow-black/20 hover:border-th-accent/40">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <p.Icon className="w-3.5 h-3.5 text-th-accent" />

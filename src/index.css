@@ -119,6 +119,18 @@
     0%, 100% { transform: translateX(0px); opacity: 0.6; }
     50%       { transform: translateX(5px); opacity: 1; }
   }
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes balancePulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--th-accent) 30%, transparent); }
+    50%       { box-shadow: 0 0 0 6px color-mix(in srgb, var(--th-accent) 0%, transparent); }
+  }
 
   /* Range input */
   input[type="range"] {
