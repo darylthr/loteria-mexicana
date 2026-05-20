@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronsRight, Users, Layers, Plus, LayoutGrid, Volume2, CheckSquare, Trophy, Minus, Square, Maximize2, Sparkles, Coins } from 'lucide-react'
+import { LogOut, ChevronsRight, Users, Layers, Plus, LayoutGrid, Volume2, CheckSquare, Trophy, Minus, Square, Maximize2, Sparkles, Coins } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useGameStore } from '../store/gameStore'
 import { createRoom, joinRoom, fetchRoom } from '../api/rooms'
@@ -125,19 +125,25 @@ export default function Home() {
     <div className="bg-th min-h-screen">
 
       {/* Minimal top-right nav */}
-      <div className="fixed top-0 right-0 p-5 flex items-center gap-5 z-30">
-        {balance !== undefined && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10 border border-th-accent/25 rounded-full">
-            <Coins className="w-3.5 h-3.5 text-th-accent" />
-            <span className="font-black text-th-accent text-sm font-ui">{balance}</span>
-          </div>
-        )}
-        <button
-          onClick={handleSignOut}
-          className="text-sm text-th-sub hover:text-th transition-colors"
-        >
-          Salir
-        </button>
+      <div className="absolute top-0 w-full p-5 flex justify-between gap-5 z-30">
+        <div>
+          <ChevronsRight className="w-5 h-5 opacity-60" />
+        </div>
+        <div className='flex flex-wrap items-center gap-5'>
+          {balance !== undefined && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10">
+              <Coins className="w-4 h-4 text-th-accent" />
+              <span className="font-black text-th-accent text-sm font-ui">{balance}</span>
+            </div>
+          )}
+          <button
+            onClick={handleSignOut}
+            className="text-sm text-th-sub hover:text-th transition-colors flex flex-wrap"
+          >
+            Cerrar sesion
+            <LogOut className="w-5 h-5 opacity-60 ml-2.5" />
+          </button>
+        </div>
       </div>
 
       {/* ── Hero ───────────────────────────────────────────────── */}
@@ -148,10 +154,10 @@ export default function Home() {
           className="absolute inset-0 pointer-events-none"
           style={{
             backgroundImage: 'url(/images/bg/bg.png)',
-            backgroundSize: 'auto 60%',
-            backgroundPosition: 'center',
+            backgroundSize: 'auto 40%',
+            backgroundPosition: 'bottom',
             backgroundRepeat: 'no-repeat',
-            opacity: 0.9,
+            opacity: 0.18,
           }}
         />
 
@@ -164,23 +170,47 @@ export default function Home() {
         {/* Center content */}
         <div className="relative z-10 flex flex-col items-center text-center gap-5 w-full max-w-xs">
 
-          {/* El Gallo */}
-          <div className="relative flex justify-center">
-            <div className="absolute inset-x-0 bottom-0 h-16 bg-th-accent/25 blur-3xl rounded-full pointer-events-none" />
-            <img
-              src="/cards/01.jpg"
-              alt="El Gallo"
-              className="relative z-10 w-40 rounded-xl shadow-2xl shadow-black/60"
-              draggable={false}
-            />
-          </div>
+          {/* Logo & Title */}
+          <div className='flex flex-wrap justify-center'>
 
-          {/* Title */}
-          <div className="mt-4">
-            <h1 className="text-6xl font-black font-display text-th leading-none">
-              LOTERÍA
-            </h1>
-            <p className="text-th-sub text-sm mt-2 tracking-wide">El juego tradicional mexicano</p>
+            {/* Three-card display */}
+            <div className="flex items-end justify-center">
+              {/* Left card */}
+              <div className="-rotate-12 origin-bottom -mr-5 mb-2 opacity-80 z-0">
+                <div className="border-4 border-amber-900 rounded-2xl shadow-xl shadow-black/60">
+                  <div className="border-2 border-amber-50/80 rounded-xl overflow-hidden">
+                    <img src="/cards/33.jpg" alt="" className="w-24 block" draggable={false} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Center — El Gallo */}
+              <div className="z-10">
+                <div className="border-[6px] border-amber-900 rounded-3xl shadow-2xl shadow-black/60">
+                  <div className="border-4 border-amber-50 rounded-2xl overflow-hidden">
+                    <img src="/cards/01.jpg" alt="El Gallo" className="w-32 block" draggable={false} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right card */}
+              <div className="rotate-12 origin-bottom -ml-5 mb-2 opacity-80 z-0">
+                <div className="border-4 border-amber-900 rounded-2xl shadow-xl shadow-black/60">
+                  <div className="border-2 border-amber-50/80 rounded-xl overflow-hidden">
+                    <img src="/cards/27.jpg" alt="" className="w-24 block" draggable={false} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Title */}
+            <div className="mt-4">
+              <h1 className="text-6xl font-black font-display text-th leading-none">
+                LOTERÍA
+              </h1>
+              <p className="text-th-sub text-sm mt-2 tracking-wide">El juego tradicional mexicano</p>
+            </div>
+
           </div>
 
           {/* Greeting */}
@@ -270,6 +300,7 @@ export default function Home() {
           )}
 
         </div>
+        
       </section>
 
       {/* ── Mis tableros ───────────────────────────────────────── */}
