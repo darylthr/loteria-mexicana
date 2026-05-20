@@ -5,6 +5,7 @@ import { useGameStore } from '../store/gameStore'
 import Chat from '../components/Chat'
 import BoardPicker from '../components/BoardPicker'
 import BoardCreator from '../components/BoardCreator'
+import GameLoader from '../components/GameLoader'
 import { getBoards } from '../api/boards'
 import type { CustomBoard } from '../api/boards'
 
@@ -131,6 +132,14 @@ export default function Lobby() {
   }) ?? []
 
   const canStart = !!room && room.players.length >= 2 && playersWithoutBoard.length === 0
+
+  if (!room) {
+    return (
+      <div className="h-screen bg-th flex items-center justify-center">
+        <GameLoader message="Conectando a la sala…" />
+      </div>
+    )
+  }
 
   return (
     <div className="h-screen flex flex-col bg-th overflow-hidden">

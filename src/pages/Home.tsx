@@ -8,6 +8,7 @@ import { getProfile } from '../api/profile'
 import { getBoards, deleteBoard } from '../api/boards'
 import type { CustomBoard } from '../api/boards'
 import BoardCreator from '../components/BoardCreator'
+import GameLoader from '../components/GameLoader'
 import ThemeSelector from '../components/ThemeSelector'
 import { TokenSelector } from '../components/TokenMarker'
 import type { TokenType } from '../components/TokenMarker'
@@ -122,6 +123,14 @@ export default function Home() {
     await supabase.auth.signOut()
     signOut()
     navigate('/auth')
+  }
+
+  if (loading) {
+    return (
+      <div className="h-screen bg-th flex items-center justify-center">
+        <GameLoader message={previewRoom ? 'Uniéndose a la sala…' : 'Creando sala…'} />
+      </div>
+    )
   }
 
   return (
