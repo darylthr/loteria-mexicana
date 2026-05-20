@@ -3,7 +3,7 @@ import type { LoteriaCard } from '../types/game'
 export default function DrawnCards({ cards }: { cards: LoteriaCard[] }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-stone-500 uppercase tracking-wide shrink-0">
+      <span className="text-xs text-th-sub uppercase tracking-wide shrink-0">
         {cards.length} cartas
       </span>
       <div className="flex gap-1.5 overflow-x-auto pb-1">

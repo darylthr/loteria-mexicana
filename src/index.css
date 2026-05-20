@@ -2,67 +2,101 @@
 
 /* ── Theme variables ─────────────────────────────────── */
 :root {
-  --th-bg:      #1c1917;
-  --th-surface: #292524;
-  --th-border:  #44403c;
-  --th-accent:  #d97706;
-  --th-accent2: #b45309;
+  --th-bg:        #1e1b18;
+  --th-surface:   #272320;
+  --th-border:    #3c3733;
+  --th-accent:    #c87533;
+  --th-accent2:   #a85e28;
+  --th-text:      #e7e5e4;
+  --th-text-sub:  #79716b;
+  --th-ui:        #3c3733;
+  --th-ui-hover:  #4a4440;
+}
+
+[data-theme="light"] {
+  --th-bg:        #f5f0e8;
+  --th-surface:   #faf7f2;
+  --th-border:    #ddd5c8;
+  --th-accent:    #b45309;
+  --th-accent2:   #92400e;
+  --th-text:      #1c1917;
+  --th-text-sub:  #78716c;
+  --th-ui:        #e5ddd4;
+  --th-ui-hover:  #d9d0c5;
 }
 
 [data-theme="muertos"] {
-  --th-bg:      #16052e;
-  --th-surface: #240949;
-  --th-border:  #6d28d9;
-  --th-accent:  #f97316;
-  --th-accent2: #ea580c;
+  --th-bg:        #180c2c;
+  --th-surface:   #22143e;
+  --th-border:    #3d2470;
+  --th-accent:    #d9724a;
+  --th-accent2:   #bc5835;
+  --th-text:      #ece8f4;
+  --th-text-sub:  #9080b0;
+  --th-ui:        #3d2470;
+  --th-ui-hover:  #4e318a;
 }
 
 [data-theme="bandera"] {
-  --th-bg:      #042313;
-  --th-surface: #083420;
-  --th-border:  #15803d;
-  --th-accent:  #dc2626;
-  --th-accent2: #b91c1c;
+  --th-bg:        #0c1f18;
+  --th-surface:   #122a20;
+  --th-border:    #254d38;
+  --th-accent:    #b83030;
+  --th-accent2:   #992525;
+  --th-text:      #e8f0ec;
+  --th-text-sub:  #5d8a72;
+  --th-ui:        #254d38;
+  --th-ui-hover:  #306050;
 }
 
 [data-theme="independencia"] {
-  --th-bg:      #180a05;
-  --th-surface: #2b1107;
-  --th-border:  #92400e;
-  --th-accent:  #d4af37;
-  --th-accent2: #a8860a;
+  --th-bg:        #1a1208;
+  --th-surface:   #241a0c;
+  --th-border:    #5c4020;
+  --th-accent:    #c9a327;
+  --th-accent2:   #a8851e;
+  --th-text:      #f0ead8;
+  --th-text-sub:  #8c7a50;
+  --th-ui:        #5c4020;
+  --th-ui-hover:  #704e28;
 }
 
 /* ── Utility classes ─────────────────────────────────── */
 @layer utilities {
-  .bg-th         { background-color: var(--th-bg); }
-  .bg-th-surface { background-color: var(--th-surface); }
-  .border-th     { border-color: var(--th-border); }
-  .bg-th-accent  { background-color: var(--th-accent); }
-  .text-th-accent { color: var(--th-accent); }
+  .bg-th          { background-color: var(--th-bg); }
+  .bg-th-surface  { background-color: var(--th-surface); }
+  .bg-th-accent   { background-color: var(--th-accent); }
+  .bg-th-ui       { background-color: var(--th-ui); }
+  .border-th      { border-color: var(--th-border); }
   .border-th-accent { border-color: var(--th-accent); }
+  .text-th        { color: var(--th-text); }
+  .text-th-sub    { color: var(--th-text-sub); }
+  .text-th-accent { color: var(--th-accent); }
   .ring-th-accent { --tw-ring-color: var(--th-accent); }
-  .hover\:bg-th-accent2:hover { background-color: var(--th-accent2); }
+  .hover\:bg-th-accent2:hover  { background-color: var(--th-accent2); }
+  .hover\:bg-th-ui-hover:hover { background-color: var(--th-ui-hover); }
   .hover\:border-th-accent:hover { border-color: var(--th-accent); }
+  .hover\:text-th:hover { color: var(--th-text); }
 }
 
 /* ── Base ────────────────────────────────────────────── */
 @layer base {
   body {
     background-color: var(--th-bg);
-    @apply text-stone-100 antialiased;
+    color: var(--th-text);
+    @apply antialiased;
   }
 
   input, select, textarea {
     @apply px-3 py-2 rounded-lg border text-sm transition-colors;
     background-color: var(--th-surface);
     border-color: var(--th-border);
-    color: inherit;
+    color: var(--th-text);
   }
   input:focus, select:focus, textarea:focus {
     @apply outline-none ring-2;
     --tw-ring-color: var(--th-accent);
     border-color: transparent;
   }
-  input::placeholder { @apply text-stone-500; }
+  input::placeholder { color: var(--th-text-sub); }
 }

@@ -12,7 +12,7 @@ export default function ThemeSelector() {
 
   return (
     <div>
-      <p className="text-xs text-stone-400 uppercase tracking-wide mb-3">Tema</p>
+      <p className="text-xs text-th-sub uppercase tracking-wide mb-3">Tema</p>
       <div className="grid grid-cols-2 gap-2">
         {(Object.entries(THEMES) as [ThemeId, typeof THEMES[ThemeId]][]).map(([id, t]) => (
           <button
@@ -20,8 +20,8 @@ export default function ThemeSelector() {
             onClick={() => handleChange(id)}
             className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border transition-all text-left ${
               current === id
-                ? 'border-stone-400 bg-th-surface ring-2 ring-th-accent'
-                : 'border-th bg-th-surface hover:border-stone-500'
+                ? 'border-th-accent bg-th-surface ring-2 ring-th-accent'
+                : 'border-th bg-th-surface hover:border-th-accent'
             }`}
           >
             {/* Colour swatches */}
@@ -35,8 +35,8 @@ export default function ThemeSelector() {
               ))}
             </div>
             <div>
-              <p className="text-xs font-bold text-stone-100 leading-tight">{t.label}</p>
-              <p className="text-[10px] text-stone-500">{t.description}</p>
+              <p className="text-xs font-bold text-th leading-tight">{t.label}</p>
+              <p className="text-[10px] text-th-sub">{t.description}</p>
             </div>
           </button>
         ))}

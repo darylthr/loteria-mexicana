@@ -18,23 +18,23 @@ export default function WinnerOverlay({ room, myPlayerId, reason, isHost, onNewG
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-stone-900 border border-stone-700 rounded-3xl shadow-2xl max-w-md w-full p-8 text-center">
+      <div className="bg-th-surface border border-th rounded-3xl shadow-2xl max-w-md w-full p-8 text-center">
         <div className="text-5xl mb-3">
           {reason === 'all_prizes_claimed' ? '🎊' : '🃏'}
         </div>
-        <h2 className="text-2xl font-black text-white mb-1">
+        <h2 className="text-2xl font-black text-th mb-1">
           {reason === 'all_prizes_claimed' ? '¡Juego terminado!' : '¡Mazo agotado!'}
         </h2>
         {reason === 'deck_exhausted' && (
-          <p className="text-stone-400 text-sm mb-4">
+          <p className="text-th-sub text-sm mb-4">
             Los premios restantes se repartieron entre todos los jugadores.
           </p>
         )}
 
         {myEarnings > 0 && (
-          <div className="my-4 px-5 py-3 bg-green-900/50 border border-green-700 rounded-2xl">
+          <div className="my-4 px-5 py-3 bg-green-900/30 border border-green-700/50 rounded-2xl">
             <p className="text-green-400 text-xl font-black">+{myEarnings} monedas</p>
-            <p className="text-green-300/70 text-sm">¡Felicidades!</p>
+            <p className="text-green-400/60 text-sm">¡Felicidades!</p>
           </div>
         )}
 
@@ -45,9 +45,9 @@ export default function WinnerOverlay({ room, myPlayerId, reason, isHost, onNewG
             if (!claim) return null
             const isMe = claim.playerId === myPlayerId
             return (
-              <div key={slot} className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-sm ${isMe ? 'bg-green-900/40 border border-green-700' : 'bg-stone-800 border border-stone-700'}`}>
-                <span className="font-semibold text-stone-200">{label} <span className="text-stone-500 font-normal">({pct}%)</span></span>
-                <span className={`font-bold ${isMe ? 'text-green-400' : 'text-stone-400'}`}>
+              <div key={slot} className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-sm ${isMe ? 'bg-green-900/30 border border-green-700/50' : 'bg-th border border-th'}`}>
+                <span className="font-semibold text-th">{label} <span className="text-th-sub font-normal">({pct}%)</span></span>
+                <span className={`font-bold ${isMe ? 'text-green-400' : 'text-th-sub'}`}>
                   {isMe ? '¡Tú!' : claim.playerName} +{claim.amount}
                 </span>
               </div>
@@ -66,13 +66,13 @@ export default function WinnerOverlay({ room, myPlayerId, reason, isHost, onNewG
           )}
           <button
             onClick={onClose}
-            className="px-6 py-2.5 bg-stone-700 hover:bg-stone-600 text-white font-bold rounded-xl transition-colors"
+            className="px-6 py-2.5 bg-th-ui hover:bg-th-ui-hover text-th font-bold rounded-xl transition-colors"
           >
             Volver al inicio
           </button>
         </div>
         {!isHost && (
-          <p className="text-stone-500 text-xs mt-3">El anfitrión puede iniciar una nueva partida</p>
+          <p className="text-th-sub text-xs mt-3">El anfitrión puede iniciar una nueva partida</p>
         )}
       </div>
     </div>

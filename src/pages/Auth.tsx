@@ -62,8 +62,8 @@ export default function Auth() {
               onClick={() => { setMode('login'); setError(null) }}
               className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
                 mode === 'login'
-                  ? 'bg-stone-700 text-stone-100 shadow-sm'
-                  : 'text-stone-500 hover:text-stone-300'
+                  ? 'bg-th-ui text-th shadow-sm'
+                  : 'text-th-sub hover:text-th'
               }`}
             >
               Iniciar sesión
@@ -72,8 +72,8 @@ export default function Auth() {
               onClick={() => { setMode('register'); setError(null) }}
               className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
                 mode === 'register'
-                  ? 'bg-stone-700 text-stone-100 shadow-sm'
-                  : 'text-stone-500 hover:text-stone-300'
+                  ? 'bg-th-ui text-th shadow-sm'
+                  : 'text-th-sub hover:text-th'
               }`}
             >
               Registrarse

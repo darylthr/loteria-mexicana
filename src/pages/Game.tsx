@@ -108,15 +108,15 @@ export default function Game() {
       <header className="shrink-0 bg-th-surface border-b border-th px-5 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <span className="font-black text-th-accent text-lg tracking-tight">Lotería</span>
-          <span className="text-stone-500 text-sm font-mono tracking-widest">{roomId}</span>
+          <span className="text-th-sub text-sm font-mono tracking-widest">{roomId}</span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-stone-400">
+          <span className="text-sm text-th-sub">
             Monedas: <strong className="text-th-accent">{balance}</strong>
           </span>
           <button
             onClick={handleClose}
-            className="px-3 py-1.5 text-sm text-stone-400 hover:text-white hover:bg-stone-700 rounded-lg transition-colors"
+            className="px-3 py-1.5 text-sm text-th-sub hover:text-th hover:bg-th-ui rounded-lg transition-colors"
           >
             Salir
           </button>
@@ -169,7 +169,7 @@ export default function Game() {
           {myBoards.map((board) => (
             <div key={board.boardIndex} className="shrink-0">
               {myBoards.length > 1 && (
-                <p className="mb-1.5 text-xs font-bold text-stone-500 uppercase tracking-widest text-center">
+                <p className="mb-1.5 text-xs font-bold text-th-sub uppercase tracking-widest text-center">
                   Tablero {board.boardIndex + 1}
                 </p>
               )}
@@ -187,7 +187,7 @@ export default function Game() {
         <div className="w-64 shrink-0 flex flex-col gap-3 overflow-hidden">
           {/* Players */}
           <div className="bg-th-surface border border-th rounded-2xl p-3 shrink-0">
-            <p className="text-xs font-bold text-stone-400 uppercase tracking-wide mb-2">
+            <p className="text-xs font-bold text-th-sub uppercase tracking-wide mb-2">
               Jugadores
             </p>
             <ul className="space-y-1.5">
@@ -196,10 +196,10 @@ export default function Game() {
                 const hasClaim = Object.values(claimedPrizes).some(c => c?.playerId === p.id)
                 return (
                   <li key={p.id} className="flex items-center justify-between text-sm">
-                    <span className={`font-medium truncate ${isMe ? 'text-th-accent' : 'text-stone-200'}`}>
+                    <span className={`font-medium truncate ${isMe ? 'text-th-accent' : 'text-th'}`}>
                       {p.id === room?.hostId && <span className="mr-1 text-xs">👑</span>}
                       {p.name}
-                      {isMe && <span className="text-stone-500 text-xs ml-1">(tú)</span>}
+                      {isMe && <span className="text-th-sub text-xs ml-1">(tú)</span>}
                     </span>
                     {hasClaim && <span className="ml-2 text-green-400 text-xs shrink-0">★</span>}
                   </li>

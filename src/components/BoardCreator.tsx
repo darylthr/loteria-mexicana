@@ -45,10 +45,10 @@ export default function BoardCreator({ onSaved, onCancel }: Props) {
     <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
       <div className="bg-th-surface rounded-2xl shadow-2xl border border-th max-w-2xl w-full max-h-[90vh] flex flex-col">
         <div className="px-6 py-5 border-b border-th shrink-0">
-          <h3 className="text-lg font-bold text-stone-100">Crear tablero personalizado</h3>
-          <p className="text-sm text-stone-500 mt-0.5">
+          <h3 className="text-lg font-bold text-th">Crear tablero personalizado</h3>
+          <p className="text-sm text-th-sub mt-0.5">
             Selecciona exactamente 16 cartas ·{' '}
-            <span className={selected.length === 16 ? 'text-green-400 font-semibold' : 'text-stone-500'}>
+            <span className={selected.length === 16 ? 'text-green-400 font-semibold' : 'text-th-sub'}>
               {selected.length}/16
             </span>
           </p>
@@ -107,7 +107,7 @@ export default function BoardCreator({ onSaved, onCancel }: Props) {
             </button>
             <button
               onClick={onCancel}
-              className="px-5 py-2.5 bg-stone-700 hover:bg-stone-600 text-stone-200 font-semibold rounded-xl transition-colors"
+              className="px-5 py-2.5 bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-xl transition-colors"
             >
               Cancelar
             </button>

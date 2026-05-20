@@ -41,13 +41,13 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col h-full bg-th-surface rounded-2xl border border-th overflow-hidden">
-      <div className="px-4 py-3 border-b border-th font-bold text-stone-200 text-sm">
+      <div className="px-4 py-3 border-b border-th font-bold text-th text-sm">
         Chat
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 text-sm">
         {messages.length === 0 && (
-          <p className="text-stone-600 text-xs text-center mt-4">Sin mensajes aún</p>
+          <p className="text-th-sub text-xs text-center mt-4">Sin mensajes aún</p>
         )}
         {messages.map((msg, i) => {
           const isMe = msg.playerId === playerId
@@ -63,14 +63,14 @@ export default function Chat() {
               ) : (
                 <div>
                   <div className="flex items-baseline gap-1.5 mb-0.5">
-                    <span className={`text-xs font-bold ${isMe ? 'text-th-accent' : 'text-stone-400'}`}>
+                    <span className={`text-xs font-bold ${isMe ? 'text-th-accent' : 'text-th-sub'}`}>
                       {msg.playerName}
                     </span>
-                    <span className="text-stone-600 text-[10px]">
+                    <span className="text-th-sub text-[10px] opacity-60">
                       {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
-                  <p className="text-stone-200 leading-snug">{msg.message}</p>
+                  <p className="text-th leading-snug">{msg.message}</p>
                 </div>
               )}
             </div>

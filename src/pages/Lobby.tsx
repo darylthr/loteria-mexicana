@@ -137,13 +137,13 @@ export default function Lobby() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-black text-th-accent tracking-tight">Lotería</h1>
-            <p className="text-sm text-stone-500 font-mono">
-              Sala: <span className="font-bold text-stone-200 tracking-widest">{roomId}</span>
-              <span className="text-stone-600 ml-2">· comparte este código</span>
+            <p className="text-sm text-th-sub font-mono">
+              Sala: <span className="font-bold text-th tracking-widest">{roomId}</span>
+              <span className="text-th-sub ml-2">· comparte este código</span>
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-stone-500 uppercase tracking-wide">Monedas</p>
+            <p className="text-xs text-th-sub uppercase tracking-wide">Monedas</p>
             <p className="text-lg font-bold text-th-accent">{balance}</p>
           </div>
         </div>
@@ -155,10 +155,10 @@ export default function Lobby() {
 
           {/* Config */}
           <div className="bg-th-surface rounded-2xl border border-th p-5">
-            <h3 className="font-bold text-stone-100 mb-3">Configuración</h3>
+            <h3 className="font-bold text-th mb-3">Configuración</h3>
             {isHost ? (
               <div className="flex items-center gap-3">
-                <label className="text-sm text-stone-400 whitespace-nowrap">Costo por tablero:</label>
+                <label className="text-sm text-th-sub whitespace-nowrap">Costo por tablero:</label>
                 <input
                   type="number" min={0} max={500} value={feeInput}
                   onChange={e => { setFeeInput(Number(e.target.value)); setFeeSaved(false) }}
@@ -167,19 +167,19 @@ export default function Lobby() {
                 <button
                   onClick={handleSaveFee}
                   disabled={feeSaved}
-                  className="px-3 py-2 bg-stone-700 hover:bg-stone-600 disabled:opacity-50 text-stone-200 text-sm font-semibold rounded-lg transition-colors"
+                  className="px-3 py-2 bg-th-ui hover:bg-th-ui-hover disabled:opacity-50 text-th text-sm font-semibold rounded-lg transition-colors"
                 >
                   {feeSaved ? 'Guardado ✓' : 'Guardar'}
                 </button>
               </div>
             ) : (
-              <p className="text-sm text-stone-400">
-                Costo por tablero: <span className="font-bold text-stone-200">{room?.entryFee ?? 0} monedas</span>
+              <p className="text-sm text-th-sub">
+                Costo por tablero: <span className="font-bold text-th">{room?.entryFee ?? 0} monedas</span>
               </p>
             )}
-            <p className={`mt-2 text-sm ${canAfford ? 'text-stone-500' : 'text-red-400 font-medium'}`}>
+            <p className={`mt-2 text-sm ${canAfford ? 'text-th-sub' : 'text-red-400 font-medium'}`}>
               Costo estimado al iniciar: <strong>{estimatedCost} monedas</strong>
-              {customCount > 0 && <span className="text-stone-600"> (incl. +10 por tablero personalizado)</span>}
+              {customCount > 0 && <span className="text-th-sub opacity-70"> (incl. +10 por tablero personalizado)</span>}
               {' '}· tienes {balance}
               {!canAfford && ' — monedas insuficientes'}
             </p>
@@ -187,8 +187,8 @@ export default function Lobby() {
 
           {/* Players */}
           <div className="bg-th-surface rounded-2xl border border-th p-5">
-            <h3 className="font-bold text-stone-100 mb-3">
-              Jugadores <span className="text-stone-500 font-normal">({room?.players.length ?? 0}/{room?.maxPlayers ?? 6})</span>
+            <h3 className="font-bold text-th mb-3">
+              Jugadores <span className="text-th-sub font-normal">({room?.players.length ?? 0}/{room?.maxPlayers ?? 6})</span>
             </h3>
             <ul className="space-y-2">
               {room?.players.map(p => {
@@ -199,17 +199,17 @@ export default function Lobby() {
                 const isMe = p.id === playerId
                 return (
                   <li key={p.id} className="flex items-center justify-between py-2 border-b border-th last:border-0">
-                    <span className="font-medium text-stone-200">
+                    <span className="font-medium text-th">
                       {p.name}
                       {p.id === room.hostId && <span className="ml-1.5 text-th-accent">👑</span>}
-                      {isMe && <span className="ml-1.5 text-xs text-stone-500">(tú)</span>}
+                      {isMe && <span className="ml-1.5 text-xs text-th-sub">(tú)</span>}
                     </span>
                     {count > 0 ? (
-                      <span className="text-xs bg-green-900/40 text-green-400 font-semibold px-2.5 py-1 rounded-full border border-green-700/50">
+                      <span className="text-xs bg-green-900/30 text-green-400 font-semibold px-2.5 py-1 rounded-full border border-green-700/40">
                         {count} tablero{count > 1 ? 's' : ''}{hasCustom ? ' ★' : ''} ✓
                       </span>
                     ) : (
-                      <span className="text-xs bg-stone-800 text-stone-500 font-medium px-2.5 py-1 rounded-full">
+                      <span className="text-xs bg-th text-th-sub font-medium px-2.5 py-1 rounded-full border border-th">
                         sin tablero
                       </span>
                     )}
@@ -219,7 +219,7 @@ export default function Lobby() {
             </ul>
 
             {error && (
-              <div className="mt-3 px-3 py-2 bg-red-900/30 border border-red-700/50 rounded-lg text-red-300 text-sm">
+              <div className="mt-3 px-3 py-2 bg-red-900/30 border border-red-700/50 rounded-lg text-red-400 text-sm">
                 {error}
               </div>
             )}
@@ -235,7 +235,7 @@ export default function Lobby() {
                   Iniciar juego
                 </button>
               ) : (
-                <p className="text-sm text-stone-500 italic">Esperando que el anfitrión inicie el juego…</p>
+                <p className="text-sm text-th-sub italic">Esperando que el anfitrión inicie el juego…</p>
               )}
               {playersWithoutBoard.length > 0 && (
                 <p className="mt-2 text-sm text-th-accent">
@@ -249,10 +249,10 @@ export default function Lobby() {
           {room && playerId && (
             <div className="bg-th-surface rounded-2xl border border-th p-5">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-stone-100">Elige tu tablero</h3>
+                <h3 className="font-bold text-th">Elige tu tablero</h3>
                 <button
                   onClick={() => setShowCreator(true)}
-                  className="px-3 py-1.5 text-sm bg-stone-700 hover:bg-stone-600 text-stone-200 font-medium rounded-lg transition-colors"
+                  className="px-3 py-1.5 text-sm bg-th-ui hover:bg-th-ui-hover text-th font-medium rounded-lg transition-colors"
                 >
                   + Crear tablero
                 </button>

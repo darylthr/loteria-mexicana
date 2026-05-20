@@ -47,14 +47,14 @@ function BoardCard({
       <div className="p-1.5 bg-th-surface">
         <MiniBoard cards={cards} />
         {label && (
-          <p className="mt-1 text-center text-[11px] font-semibold text-stone-400 truncate">{label}</p>
+          <p className="mt-1 text-center text-[11px] font-semibold text-th-sub truncate">{label}</p>
         )}
       </div>
       {selected && (
         <div className="absolute top-1.5 right-1.5 bg-th-accent text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">✓</div>
       )}
       {locked && !isMe && lockedByName && (
-        <div className="absolute top-1.5 right-1.5 bg-stone-700 text-stone-200 text-[10px] font-bold px-1.5 py-0.5 rounded-full truncate max-w-[70%]">{lockedByName}</div>
+        <div className="absolute top-1.5 right-1.5 bg-th-ui text-th text-[10px] font-bold px-1.5 py-0.5 rounded-full truncate max-w-[70%]">{lockedByName}</div>
       )}
     </div>
   )
@@ -70,14 +70,14 @@ export default function BoardPicker({ availableBoards, myCustomBoards, selectedB
 
   return (
     <div>
-      <p className="text-sm text-stone-400 mb-4">
-        Seleccionados: <span className="font-bold text-stone-200">{selectedBoardIds.length}/2</span>
-        <span className="ml-2 text-stone-500">· haz clic para elegir o deseleccionar</span>
+      <p className="text-sm text-th-sub mb-4">
+        Seleccionados: <span className="font-bold text-th">{selectedBoardIds.length}/2</span>
+        <span className="ml-2 opacity-70">· haz clic para elegir o deseleccionar</span>
       </p>
 
       {myCustomBoards.length > 0 && (
         <div className="mb-6">
-          <h4 className="text-sm font-bold text-stone-400 mb-2 uppercase tracking-wide">
+          <h4 className="text-sm font-bold text-th-sub mb-2 uppercase tracking-wide">
             Mis tableros <span className="text-th-accent font-normal normal-case">+10 monedas</span>
           </h4>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
@@ -105,7 +105,7 @@ export default function BoardPicker({ availableBoards, myCustomBoards, selectedB
         </div>
       )}
 
-      <h4 className="text-sm font-bold text-stone-400 mb-2 uppercase tracking-wide">Tableros de la sala</h4>
+      <h4 className="text-sm font-bold text-th-sub mb-2 uppercase tracking-wide">Tableros de la sala</h4>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
         {sharedBoards.map((b, i) => {
           const selected = selectedBoardIds.includes(b.id)

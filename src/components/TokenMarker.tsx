@@ -80,8 +80,8 @@ interface TokenSelectorProps {
 
 export function TokenSelector({ value, onChange }: TokenSelectorProps) {
   return (
-    <div className="bg-stone-800 border border-stone-700 rounded-xl p-2">
-      <p className="text-[10px] text-stone-500 uppercase tracking-wide mb-1.5 text-center">Token</p>
+    <div className="bg-th-surface border border-th rounded-xl p-2">
+      <p className="text-[10px] text-th-sub uppercase tracking-wide mb-1.5 text-center">Token</p>
       <div className="flex gap-1.5 justify-center">
         {(Object.keys(TOKENS) as TokenType[]).map(t => {
           const T = TOKENS[t].component
@@ -92,8 +92,8 @@ export function TokenSelector({ value, onChange }: TokenSelectorProps) {
               title={TOKENS[t].label}
               className={`w-10 h-10 rounded-lg p-1 transition-all ${
                 value === t
-                  ? 'bg-stone-600 ring-2 ring-amber-500'
-                  : 'hover:bg-stone-700'
+                  ? 'bg-th-ui ring-2 ring-th-accent'
+                  : 'hover:bg-th-ui'
               }`}
             >
               <T />
