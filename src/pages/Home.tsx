@@ -8,6 +8,7 @@ import { getProfile } from '../api/profile'
 import { getBoards, deleteBoard } from '../api/boards'
 import type { CustomBoard } from '../api/boards'
 import BoardCreator from '../components/BoardCreator'
+import HeroLogo from '../components/HeroLogo'
 import GameLoader from '../components/GameLoader'
 import ThemeSelector from '../components/ThemeSelector'
 import { TokenSelector } from '../components/TokenMarker'
@@ -174,40 +175,16 @@ export default function Home() {
           <div className='flex flex-wrap justify-center'>
 
             {/* Three-card display */}
-            <div className="flex items-end justify-center">
-              {/* Left card */}
-              <div className="-rotate-12 origin-bottom -mr-5 mb-2 opacity-80 z-0">
-                <div className="border-4 border-amber-900 rounded-2xl shadow-xl shadow-black/60">
-                  <div className="border-2 border-amber-50/80 rounded-xl overflow-hidden">
-                    <img src="/cards/33.jpg" alt="" className="w-24 block" draggable={false} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Center — El Gallo */}
-              <div className="z-10">
-                <div className="border-[6px] border-amber-900 rounded-3xl shadow-2xl shadow-black/60">
-                  <div className="border-4 border-amber-50 rounded-2xl overflow-hidden">
-                    <img src="/cards/01.jpg" alt="El Gallo" className="w-32 block" draggable={false} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Right card */}
-              <div className="rotate-12 origin-bottom -ml-5 mb-2 opacity-80 z-0">
-                <div className="border-4 border-amber-900 rounded-2xl shadow-xl shadow-black/60">
-                  <div className="border-2 border-amber-50/80 rounded-xl overflow-hidden">
-                    <img src="/cards/27.jpg" alt="" className="w-24 block" draggable={false} />
-                  </div>
-                </div>
-              </div>
-            </div>
+            <HeroLogo/>
 
             {/* Title */}
-            <div className="mt-4">
-              <h1 className="text-6xl font-black font-display text-th leading-none">
-                LOTERÍA
-              </h1>
+            <div className="mt-12 mb-20">
+              <div className='flex flex-wrap items-end'>
+                <h1 className="text-6xl font-black font-display text-th leading-none">
+                  LOTERÍA
+                </h1>
+                <h2 className="text-4xl font-black text-red-400 leading-none">MX</h2>
+              </div>
               <p className="text-th-sub text-sm mt-2 tracking-wide">El juego tradicional mexicano</p>
             </div>
 
