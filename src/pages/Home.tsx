@@ -64,6 +64,7 @@ export default function Home() {
   const handleToken = (t: TokenType) => { setTokenState(t); localStorage.setItem('loteria-token', t) }
 
   const [nickname, setNickname] = useState('')
+  const [ctaHover, setCtaHover] = useState(false)
   const { muted, volume, toggleMute, setVolume } = useBackgroundMusic('/sounds/bg-music.mp3')
   const [showVolume, setShowVolume] = useState(false)
 
@@ -265,15 +266,34 @@ export default function Home() {
           {/* Primary CTA */}
           <button
             onClick={handleCreate}
+            onMouseEnter={() => setCtaHover(true)}
+            onMouseLeave={() => setCtaHover(false)}
             disabled={loading || !displayName}
-            className="relative flex items-center justify-center gap-3 w-full py-4 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xl rounded-xl transition-all shadow-xl shadow-black/30 active:scale-[0.98] overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18), rgba(0,0,0,0.08)), var(--th-accent)', animation: 'fadeSlideUp 0.6s ease 0.32s both' }}
+            className="relative flex items-center justify-center gap-3 w-full py-4 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xl rounded-xl transition-all duration-200 active:scale-[0.98] overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.18), rgba(0,0,0,0.08)), var(--th-accent)',
+              animation: 'fadeSlideUp 0.6s ease 0.32s both',
+              transform: ctaHover ? 'scale(1.03) translateY(-2px)' : undefined,
+              boxShadow: ctaHover
+                ? '0 8px 32px -4px color-mix(in srgb, var(--th-accent) 60%, transparent), 0 0 0 1px color-mix(in srgb, var(--th-accent) 40%, transparent)'
+                : '0 10px 24px -4px rgba(0,0,0,0.3)',
+            }}
           >
+            {/* Shimmer sweep on hover */}
+            {ctaHover && (
+              <span
+                className="absolute inset-y-0 w-1/2 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)',
+                  animation: 'shimmerSweep 0.65s ease forwards',
+                }}
+              />
+            )}
             <ChevronsRight
-              className="w-5 h-5 shrink-0"
+              className="w-5 h-5 shrink-0 relative"
               style={{ animation: 'chevronMarch 1.2s ease-in-out infinite' }}
             />
-            {loading ? 'Creando...' : 'Crear sala'}
+            <span className="relative">{loading ? 'Creando...' : 'Crear sala'}</span>
           </button>
 
           {/* Secondary pill buttons */}
