@@ -10,6 +10,7 @@ import { getBoards, deleteBoard } from '../api/boards'
 import type { CustomBoard } from '../api/boards'
 import BoardCreator from '../components/BoardCreator'
 import FadeIn from '../components/FadeIn'
+import FloatLetters from '../components/FloatLetters'
 import HeroLogo from '../components/HeroLogo'
 import GameLoader from '../components/GameLoader'
 import ThemeSelector from '../components/ThemeSelector'
@@ -18,21 +19,6 @@ import type { TokenType } from '../components/TokenMarker'
 import type { GameRoom } from '../types/game'
 
 
-function FloatLetters({ text, className = '' }: { text: string; className?: string }) {
-  return (
-    <>
-      {text.split('').map((char, i) => (
-        <span
-          key={i}
-          className={`inline-block transition-all duration-150 hover:-translate-y-3 hover:scale-110 ${className}`}
-          style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
-        >
-          {char}
-        </span>
-      ))}
-    </>
-  )
-}
 
 function SectionDivider({ label }: { label: string }) {
   return (
@@ -441,10 +427,10 @@ export default function Home() {
           <p className="text-xs font-bold text-th-sub uppercase tracking-widest mb-4">Premios · % del bote acumulado</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { Icon: Minus,    label: 'Línea',   pct: '25 %',  desc: 'Fila, columna o diagonal completa' },
-              { Icon: Square,   label: 'Cuadro',  pct: '35 %',  desc: 'Bloque 2 × 2 en cualquier esquina' },
-              { Icon: Maximize2,label: 'Esquinas',pct: '45 %',  desc: 'Las 4 esquinas del tablero' },
-              { Icon: Sparkles, label: 'Lotería', pct: '55 %+', desc: 'Tablero completo — jackpot' },
+              { Icon: Minus,    label: 'Línea',   pct: '20 %',  desc: 'Fila, columna o diagonal completa' },
+              { Icon: Square,   label: 'Cuadro',  pct: '20 %',  desc: 'Bloque 2 × 2 en cualquier esquina' },
+              { Icon: Maximize2,label: 'Esquinas',pct: '20 %',  desc: 'Las 4 esquinas del tablero' },
+              { Icon: Sparkles, label: 'Lotería', pct: '40 %', desc: 'Tablero completo — jackpot' },
             ].map(p => (
               <div key={p.label} className="flex flex-col gap-1 px-3 py-3 rounded-lg bg-th border border-th transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:shadow-black/20 hover:border-th-accent/40">
                 <div className="flex items-center justify-between">

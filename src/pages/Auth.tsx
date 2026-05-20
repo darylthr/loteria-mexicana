@@ -3,17 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronsRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { createProfile } from '../api/profile'
-
-const DECORATIVE = [
-  { id: '07', cls: 'absolute left-[3%]  top-[8%]    w-20 rotate-[-16deg] opacity-[0.07]' },
-  { id: '33', cls: 'absolute right-[4%] top-[6%]    w-24 rotate-[13deg]  opacity-[0.07]' },
-  { id: '16', cls: 'absolute left-[18%] top-[20%]   w-14 rotate-[6deg]   opacity-[0.04]' },
-  { id: '42', cls: 'absolute right-[17%] top-[22%]  w-14 rotate-[-10deg] opacity-[0.04]' },
-  { id: '04', cls: 'absolute left-[2%]  bottom-[10%] w-20 rotate-[15deg]  opacity-[0.07]' },
-  { id: '51', cls: 'absolute right-[3%] bottom-[8%]  w-24 rotate-[-13deg] opacity-[0.07]' },
-  { id: '22', cls: 'absolute left-[22%] bottom-[5%]  w-16 rotate-[-6deg]  opacity-[0.05]' },
-  { id: '10', cls: 'absolute right-[20%] bottom-[7%] w-16 rotate-[8deg]   opacity-[0.05]' },
-]
+import HeroLogo from '../components/HeroLogo'
+import FloatLetters from '../components/FloatLetters'
 
 export default function Auth() {
   const [mode, setMode] = useState<'login' | 'register'>('login')
@@ -22,26 +13,23 @@ export default function Auth() {
   const [displayName, setDisplayName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [btnHover, setBtnHover] = useState(false)
   const navigate = useNavigate()
 
   const handleLogin = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true); setError(null)
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
       navigate('/')
     } catch (e: any) {
       setError(e.message)
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
   }
 
   const handleRegister = async () => {
     if (!displayName.trim()) { setError('El nombre es requerido'); return }
-    setLoading(true)
-    setError(null)
+    setLoading(true); setError(null)
     try {
       const { data, error } = await supabase.auth.signUp({ email, password })
       if (error) throw error
@@ -50,9 +38,7 @@ export default function Auth() {
       navigate('/')
     } catch (e: any) {
       setError(e.message)
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
   }
 
   const handleKey = (e: React.KeyboardEvent) => {
@@ -62,48 +48,46 @@ export default function Auth() {
   return (
     <div className="min-h-screen bg-th flex items-center justify-center p-4 relative overflow-hidden">
 
-      {/* Scattered decorative cards */}
-      {DECORATIVE.map((d) => (
-        <img
-          key={d.id}
-          src={`/cards/${d.id.padStart(2, '0')}.jpg`}
-          alt=""
-          className={`${d.cls} rounded-lg pointer-events-none select-none`}
-        />
-      ))}
-
-      {/* Radial vignette */}
+      {/* Background image */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse 60% 70% at 50% 50%, var(--th-bg) 25%, transparent 100%)' }}
+        style={{
+          backgroundImage: 'url(/images/bg/bg.png)',
+          backgroundSize: 'auto 60%',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: 0.9,
+        }}
       />
 
-      {/* Card */}
+      {/* Vignette */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse 60% 70% at 50% 50%, transparent 20%, var(--th-bg) 80%)' }}
+      />
+
+      {/* Content */}
       <div className="relative z-10 w-full max-w-sm">
 
         {/* Hero */}
         <div className="text-center mb-8">
-          {/* Card fan */}
-          <div className="relative w-44 h-40 mx-auto mb-5">
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-28 h-8 bg-th-accent/20 blur-xl rounded-full pointer-events-none" />
-
-            <div className="absolute bottom-0 left-[5%]  w-16 h-22 rounded-lg overflow-hidden shadow-xl rotate-[-18deg] origin-bottom opacity-75">
-              <img src="/cards/33.jpg" alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[4.5rem] h-28 rounded-lg overflow-hidden shadow-2xl z-10 ring-2 ring-th-accent/40">
-              <img src="/cards/27.jpg" alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="absolute bottom-0 right-[5%] w-16 h-22 rounded-lg overflow-hidden shadow-xl rotate-[18deg] origin-bottom opacity-75">
-              <img src="/cards/04.jpg" alt="" className="w-full h-full object-cover" />
-            </div>
+          <div style={{ animation: 'fadeSlideUp 0.6s ease both' }}>
+            <HeroLogo />
           </div>
-          <h1 className="text-5xl font-black text-th font-display leading-none">LOTERÍA</h1>
-          <p className="text-th-sub text-sm mt-2">El juego tradicional mexicano</p>
+
+          <div style={{ animation: 'fadeSlideUp 0.6s ease 0.12s both' }}>
+            <h1 className="text-5xl font-black text-th font-display leading-none mt-6">
+              <FloatLetters text="LOTERÍA" />
+            </h1>
+            <p className="text-th-sub text-sm mt-2">El juego tradicional mexicano</p>
+          </div>
         </div>
 
         {/* Form card */}
-        <div className="bg-th-surface rounded-xl border border-th p-6 shadow-2xl shadow-black/40">
-
+        <div
+          className="bg-th-surface rounded-xl border border-th p-6 shadow-2xl shadow-black/40"
+          style={{ animation: 'fadeSlideUp 0.6s ease 0.22s both' }}
+        >
           {/* Mode tabs */}
           <div className="flex rounded-lg bg-th p-1 mb-5">
             <button
@@ -158,11 +142,34 @@ export default function Auth() {
 
           <button
             onClick={mode === 'login' ? handleLogin : handleRegister}
+            onMouseEnter={() => setBtnHover(true)}
+            onMouseLeave={() => setBtnHover(false)}
             disabled={loading || !email || !password}
-            className="mt-5 flex items-center justify-center gap-2 w-full py-3.5 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-base rounded-xl transition-all shadow-lg shadow-black/20 active:scale-[0.98]"
+            className="mt-5 relative flex items-center justify-center gap-2 w-full py-3.5 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-base rounded-xl transition-all duration-200 active:scale-[0.98] overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.18), rgba(0,0,0,0.08)), var(--th-accent)',
+              transform: btnHover ? 'scale(1.03) translateY(-2px)' : undefined,
+              boxShadow: btnHover
+                ? '0 8px 32px -4px color-mix(in srgb, var(--th-accent) 60%, transparent), 0 0 0 1px color-mix(in srgb, var(--th-accent) 40%, transparent)'
+                : '0 10px 24px -4px rgba(0,0,0,0.3)',
+            }}
           >
-            <ChevronsRight className="w-5 h-5 opacity-60" />
-            {loading ? 'Un momento…' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
+            {btnHover && (
+              <span
+                className="absolute inset-y-0 w-1/2 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)',
+                  animation: 'shimmerSweep 0.65s ease forwards',
+                }}
+              />
+            )}
+            <ChevronsRight
+              className="w-5 h-5 shrink-0 relative"
+              style={{ animation: 'chevronMarch 1.2s ease-in-out infinite' }}
+            />
+            <span className="relative">
+              {loading ? 'Un momento…' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
+            </span>
           </button>
         </div>
       </div>
