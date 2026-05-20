@@ -100,7 +100,7 @@
   }
 
   input, select, textarea {
-    @apply px-3 py-2 rounded-lg border text-sm transition-colors;
+    @apply w-full px-3 py-2 rounded-lg border text-sm transition-colors;
     background-color: var(--th-surface);
     border-color: var(--th-border);
     color: var(--th-text);
