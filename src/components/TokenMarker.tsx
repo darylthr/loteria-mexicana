@@ -41,16 +41,18 @@ export function TokenSelector({ value, onChange }: TokenSelectorProps) {
             key={t}
             onClick={() => onChange(t)}
             title={TOKENS[t].label}
-            className={`w-12 h-12 rounded-lg p-1.5 transition-all ${
-              value === t ? 'bg-th-ui ring-2 ring-th-accent' : 'hover:bg-th-ui'
+            className={`w-12 h-12 rounded-lg p-1 transition-all ${
+              value === t ? 'ring-2 ring-th-accent' : 'opacity-70 hover:opacity-100'
             }`}
           >
-            <img
-              src={TOKENS[t].src}
-              alt={TOKENS[t].label}
-              className="w-full h-full object-contain"
-              style={{ mixBlendMode: 'screen' }}
-            />
+            <div className="w-full h-full rounded-md bg-neutral-900 flex items-center justify-center overflow-hidden">
+              <img
+                src={TOKENS[t].src}
+                alt={TOKENS[t].label}
+                className="w-full h-full object-contain"
+                style={{ mixBlendMode: 'screen' }}
+              />
+            </div>
           </button>
         ))}
       </div>

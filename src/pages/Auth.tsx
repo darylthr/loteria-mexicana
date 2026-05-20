@@ -83,13 +83,19 @@ export default function Auth() {
 
         {/* Hero */}
         <div className="text-center mb-8">
-          <div className="mb-5">
-            <img
-              src="/assets/loteria.png"
-              alt="Tablero Lotería"
-              className="w-48 h-auto object-contain rounded-lg rotate-[-2deg] shadow-2xl shadow-black/50 mx-auto"
-              style={{ filter: 'drop-shadow(0 12px 32px rgba(0,0,0,0.6))' }}
-            />
+          {/* Card fan */}
+          <div className="relative w-44 h-40 mx-auto mb-5">
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-28 h-8 bg-th-accent/20 blur-xl rounded-full pointer-events-none" />
+
+            <div className="absolute bottom-0 left-[5%]  w-16 h-22 rounded-lg overflow-hidden shadow-xl rotate-[-18deg] origin-bottom opacity-75">
+              <img src="/cards/33.jpg" alt="" className="w-full h-full object-cover" />
+            </div>
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[4.5rem] h-28 rounded-lg overflow-hidden shadow-2xl z-10 ring-2 ring-th-accent/40">
+              <img src="/cards/27.jpg" alt="" className="w-full h-full object-cover" />
+            </div>
+            <div className="absolute bottom-0 right-[5%] w-16 h-22 rounded-lg overflow-hidden shadow-xl rotate-[18deg] origin-bottom opacity-75">
+              <img src="/cards/04.jpg" alt="" className="w-full h-full object-cover" />
+            </div>
           </div>
           <h1 className="text-5xl font-black text-th font-display leading-none">LOTERÍA</h1>
           <p className="text-th-sub text-sm mt-2">El juego tradicional mexicano</p>

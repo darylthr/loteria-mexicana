@@ -165,14 +165,26 @@ export default function Home() {
         {/* Center content */}
         <div className="relative z-10 flex flex-col items-center text-center gap-5 w-full max-w-xs">
 
-          {/* Lotería board */}
-          <div className="relative">
-            <img
-              src="/assets/loteria.png"
-              alt="Tablero Lotería"
-              className="w-64 h-auto object-contain rounded-xl rotate-[-3deg] shadow-2xl shadow-black/50"
-              style={{ filter: 'drop-shadow(0 16px 48px rgba(0,0,0,0.7))' }}
-            />
+          {/* Card fan */}
+          <div className="relative w-64 h-52">
+            {/* Accent glow behind the fan */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-40 h-12 bg-th-accent/20 blur-2xl rounded-full pointer-events-none" />
+
+            <div className="absolute bottom-0 left-[3%]  w-[4.8rem] h-28 rounded-lg overflow-hidden shadow-xl rotate-[-22deg] origin-bottom opacity-75">
+              <img src="/cards/08.jpg" alt="" className="w-full h-full object-cover" />
+            </div>
+            <div className="absolute bottom-0 left-[20%] w-[4.8rem] h-28 rounded-lg overflow-hidden shadow-xl rotate-[-10deg] origin-bottom opacity-88">
+              <img src="/cards/33.jpg" alt="" className="w-full h-full object-cover" />
+            </div>
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[5.5rem] h-32 rounded-lg overflow-hidden shadow-2xl z-10 ring-2 ring-th-accent/50">
+              <img src="/cards/27.jpg" alt="" className="w-full h-full object-cover" />
+            </div>
+            <div className="absolute bottom-0 right-[20%] w-[4.8rem] h-28 rounded-lg overflow-hidden shadow-xl rotate-[10deg] origin-bottom opacity-88">
+              <img src="/cards/04.jpg" alt="" className="w-full h-full object-cover" />
+            </div>
+            <div className="absolute bottom-0 right-[3%]  w-[4.8rem] h-28 rounded-lg overflow-hidden shadow-xl rotate-[22deg] origin-bottom opacity-75">
+              <img src="/cards/14.jpg" alt="" className="w-full h-full object-cover" />
+            </div>
           </div>
 
           {/* Title */}
