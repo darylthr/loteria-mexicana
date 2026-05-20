@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronsRight, Users, Layers, Plus, LayoutGrid, Volume2, CheckSquare, Trophy, Minus, Square, Maximize2, Sparkles } from 'lucide-react'
+import { ChevronsRight, Users, Layers, Plus, LayoutGrid, Volume2, CheckSquare, Trophy, Minus, Square, Maximize2, Sparkles, Coins } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useGameStore } from '../store/gameStore'
 import { createRoom, joinRoom, fetchRoom } from '../api/rooms'
@@ -130,9 +130,9 @@ export default function Home() {
       {/* Minimal top-right nav */}
       <div className="fixed top-0 right-0 p-5 flex items-center gap-5 z-30">
         {balance !== undefined && (
-          <div className="text-right">
-            <p className="text-[10px] text-th-sub uppercase tracking-widest">Monedas</p>
-            <p className="text-base font-bold text-th-accent">{balance}</p>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10 border border-th-accent/25 rounded-full">
+            <Coins className="w-3.5 h-3.5 text-th-accent" />
+            <span className="font-black text-th-accent text-sm font-ui">{balance}</span>
           </div>
         )}
         <button

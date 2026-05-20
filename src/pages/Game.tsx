@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ChevronsRight, Crown, Check, Star, X } from 'lucide-react'
+import { ChevronsRight, Crown, Check, Star, X, Copy, Share2, Coins } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import { detectClaimablePrize } from '../utils/winDetection'
 import PlayerBoard from '../components/PlayerBoard'
@@ -112,9 +112,9 @@ export default function Game() {
         </div>
         <div className="flex items-center gap-5">
           {balance !== undefined && (
-            <div className="text-right">
-              <p className="text-[10px] text-th-sub uppercase tracking-widest">Monedas</p>
-              <p className="text-base font-bold text-th-accent">{balance}</p>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10 border border-th-accent/25 rounded-full">
+              <Coins className="w-3.5 h-3.5 text-th-accent" />
+              <span className="font-black text-th-accent text-sm font-ui">{balance}</span>
             </div>
           )}
           <button
@@ -133,23 +133,28 @@ export default function Game() {
         <div className="w-52 shrink-0 flex flex-col gap-3">
 
           {/* Room code */}
-          <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0">
+          <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0 overflow-hidden relative">
+            <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-th-accent/8 blur-2xl pointer-events-none" />
             <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-2">Código de sala</p>
-            <span className="font-mono font-ui text-2xl font-black text-th tracking-widest leading-none block mb-3">
-              {roomId}
-            </span>
+            <div className="bg-th rounded-lg border border-th-accent/20 px-3 py-2.5 mb-3 flex items-center justify-center">
+              <span className="font-mono font-ui text-2xl font-black text-th tracking-[0.25em] leading-none">
+                {roomId}
+              </span>
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={() => { navigator.clipboard.writeText(roomId ?? ''); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
-                className="flex-1 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-md transition-colors flex items-center justify-center gap-1.5"
+                className="flex-1 py-2 text-xs bg-th-accent/12 hover:bg-th-accent/20 text-th-accent font-semibold rounded-md transition-colors flex items-center justify-center gap-1.5 border border-th-accent/25"
               >
-                {copied ? <><Check className="w-3 h-3" /> Copiado</> : 'Copiar'}
+                {copied
+                  ? <><Check className="w-3 h-3" /> Copiado</>
+                  : <><Copy className="w-3 h-3" /> Copiar</>}
               </button>
               <button
                 onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/join/${roomId}`); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
-                className="flex-1 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-md transition-colors"
+                className="flex-1 py-2 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-md transition-colors flex items-center justify-center gap-1.5"
               >
-                Link
+                <Share2 className="w-3 h-3" /> Compartir
               </button>
             </div>
           </div>
