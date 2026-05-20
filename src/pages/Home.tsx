@@ -45,8 +45,7 @@ export default function Home() {
   )
   const handleToken = (t: TokenType) => { setTokenState(t); localStorage.setItem('loteria-token', t) }
 
-  const [nickname, setNickname] = useState(() => localStorage.getItem('loteria-nickname') ?? '')
-  const handleNickname = (v: string) => { setNickname(v); localStorage.setItem('loteria-nickname', v) }
+  const [nickname, setNickname] = useState('')
 
   const navigate = useNavigate()
   const playerId = useGameStore((s) => s.playerId)
@@ -61,7 +60,6 @@ export default function Home() {
       .then(({ displayName, balance }) => {
         setDisplayName(displayName)
         setBalance(balance)
-        if (!localStorage.getItem('loteria-nickname')) setNickname(displayName)
       })
       .catch(() => setError('Error al cargar el perfil'))
     getBoards().then(({ boards }) => setCustomBoards(boards)).catch(() => {})
@@ -206,8 +204,8 @@ export default function Home() {
             <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-1.5">Apodo</p>
             <input
               value={nickname}
-              onChange={e => handleNickname(e.target.value)}
-              placeholder={displayName || 'Tu apodo'}
+              onChange={e => setNickname(e.target.value)}
+              placeholder="Ingresa un apodo"
               maxLength={20}
               className="text-center font-black text-xl py-4 rounded-xl"
             />
