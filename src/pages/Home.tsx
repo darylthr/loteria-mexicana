@@ -18,6 +18,22 @@ import type { TokenType } from '../components/TokenMarker'
 import type { GameRoom } from '../types/game'
 
 
+function FloatLetters({ text, className = '' }: { text: string; className?: string }) {
+  return (
+    <>
+      {text.split('').map((char, i) => (
+        <span
+          key={i}
+          className={`inline-block transition-all duration-150 hover:-translate-y-3 hover:scale-110 ${className}`}
+          style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+        >
+          {char}
+        </span>
+      ))}
+    </>
+  )
+}
+
 function SectionDivider({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-4">
@@ -215,11 +231,13 @@ export default function Home() {
 
             {/* Title */}
             <div className="mt-12 mb-20" style={{ animation: 'fadeSlideUp 0.6s ease 0.12s both' }}>
-              <div className='flex flex-wrap items-end justify-center'>
-                <h1 className="text-6xl font-black fon -display text-th leading-none">
-                  LOTER
+              <div className='flex items-end justify-center'>
+                <h1 className="text-6xl font-black font-display text-th leading-none">
+                  <FloatLetters text="LOTER" />
                 </h1>
-                <h2 className="text-6xl font-black text-red-400 leading-none">.io</h2>
+                <h2 className="text-6xl font-black text-red-400 leading-none">
+                  <FloatLetters text=".io" />
+                </h2>
               </div>
               <p className="text-th-sub text-xl mt-2 tracking-wide">La loteria tradicional mexicana.</p>
             </div>
