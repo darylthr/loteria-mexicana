@@ -25,6 +25,16 @@ const DECORATIVE = [
   { id: '27', cls: 'absolute right-[41%] bottom-[4%] w-12 rotate-[-4deg] opacity-[0.04]' },
 ]
 
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-4">
+      <div className="flex-1 h-px border-t border-th" />
+      <span className="text-xs font-bold text-th-sub uppercase tracking-widest px-1">{label}</span>
+      <div className="flex-1 h-px border-t border-th" />
+    </div>
+  )
+}
+
 export default function Home() {
   const [displayName, setDisplayName] = useState('')
   const [loading, setLoading] = useState(false)
@@ -264,31 +274,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Below fold: boards + customization ─────────────────── */}
-      <div ref={boardsRef} className="max-w-3xl mx-auto px-4 pb-16 space-y-5">
-
-        <div className="flex items-center gap-4">
-          <div className="flex-1 h-px bg-th" />
-          <span className="text-xs text-th-sub uppercase tracking-widest px-2">Tu perfil</span>
-          <div className="flex-1 h-px bg-th" />
-        </div>
-
-        {/* My boards */}
-        <div className="bg-th-surface rounded-2xl border border-th p-6">
+      {/* ── Mis tableros ───────────────────────────────────────── */}
+      <div ref={boardsRef} className="max-w-3xl mx-auto px-4 pt-4 pb-6">
+        <SectionDivider label="Mis tableros" />
+        <div className="bg-th-surface rounded-2xl border border-th p-6 mt-5">
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-base font-bold text-th">Mis tableros</h2>
-              <p className="text-xs text-th-sub mt-0.5">Personalizados · +10 monedas al usarlos</p>
-            </div>
+            <p className="text-xs text-th-sub">Tableros personalizados · +10 monedas al usarlos</p>
             <button
               onClick={() => setShowCreator(true)}
               className="px-4 py-2 bg-th-accent hover:bg-th-accent2 text-white text-sm font-bold rounded-lg transition-colors"
             >
-              + Crear
+              + Crear tablero
             </button>
           </div>
           {customBoards.length === 0 ? (
-            <p className="text-th-sub text-sm text-center py-5">Aún no tienes tableros personalizados.</p>
+            <p className="text-th-sub text-sm text-center py-6">Aún no tienes tableros personalizados.</p>
           ) : (
             <ul className="divide-y divide-th">
               {customBoards.map(b => (
@@ -306,19 +306,66 @@ export default function Home() {
             </ul>
           )}
         </div>
+      </div>
 
-        {/* Customization */}
-        <div className="bg-th-surface rounded-2xl border border-th p-6">
-          <h2 className="text-base font-bold text-th mb-5">Personalización</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <p className="text-xs text-th-sub uppercase tracking-wide mb-3">Token de juego</p>
-              <TokenSelector value={token} onChange={handleToken} />
-            </div>
+      {/* ── Personalización ────────────────────────────────────── */}
+      <div className="max-w-3xl mx-auto px-4 pb-6">
+        <SectionDivider label="Personalización" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+          <div className="bg-th-surface rounded-2xl border border-th p-5">
+            <p className="text-xs font-bold text-th-sub uppercase tracking-widest mb-1">Token de juego</p>
+            <p className="text-xs text-th-sub mb-4">El objeto que aparece en tus cartas marcadas.</p>
+            <TokenSelector value={token} onChange={handleToken} />
+          </div>
+          <div className="bg-th-surface rounded-2xl border border-th p-5">
             <ThemeSelector />
           </div>
         </div>
+      </div>
 
+      {/* ── Cómo jugar ─────────────────────────────────────────── */}
+      <div className="max-w-3xl mx-auto px-4 pb-20">
+        <SectionDivider label="Cómo jugar" />
+
+        {/* Steps */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
+          {[
+            { icon: '🎴', step: '1', title: 'Elige tablero', desc: 'Selecciona hasta 2 tableros antes del juego. Los personalizados dan +10 monedas.' },
+            { icon: '🃏', step: '2', title: 'Canillita canta', desc: 'El anfitrión saca cartas una por una y las muestra a todos los jugadores.' },
+            { icon: '✅', step: '3', title: 'Marca tus cartas', desc: 'Toca las cartas de tu tablero conforme vayan apareciendo en pantalla.' },
+            { icon: '🏆', step: '4', title: '¡Lotería!', desc: 'Completa un patrón y pulsa "¡Lotería!" para reclamar tu premio antes que los demás.' },
+          ].map(s => (
+            <div key={s.step} className="bg-th-surface rounded-2xl border border-th p-4 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{s.icon}</span>
+                <span className="text-[10px] font-black text-th-sub uppercase tracking-widest">Paso {s.step}</span>
+              </div>
+              <p className="font-bold text-th text-sm leading-tight">{s.title}</p>
+              <p className="text-xs text-th-sub leading-relaxed">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Prize tiers */}
+        <div className="mt-4 bg-th-surface rounded-2xl border border-th p-5">
+          <p className="text-xs font-bold text-th-sub uppercase tracking-widest mb-4">Premios · % del bote acumulado</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { icon: '➖', label: 'Línea', pct: '25 %', desc: 'Fila, columna o diagonal completa' },
+              { icon: '⬛', label: 'Cuadro', pct: '35 %', desc: 'Bloque 2 × 2 en cualquier esquina' },
+              { icon: '◼', label: 'Esquinas', pct: '45 %', desc: 'Las 4 esquinas del tablero' },
+              { icon: '🎊', label: 'Lotería', pct: '55 %+', desc: 'Tablero completo — jackpot' },
+            ].map(p => (
+              <div key={p.label} className="flex flex-col gap-1 px-3 py-3 rounded-xl bg-th border border-th">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-th text-sm">{p.label}</span>
+                  <span className="font-black text-th-accent text-sm">{p.pct}</span>
+                </div>
+                <p className="text-xs text-th-sub leading-snug">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {showCreator && (
