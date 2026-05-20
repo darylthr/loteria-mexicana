@@ -9,6 +9,7 @@ import { getProfile } from '../api/profile'
 import { getBoards, deleteBoard } from '../api/boards'
 import type { CustomBoard } from '../api/boards'
 import BoardCreator from '../components/BoardCreator'
+import FadeIn from '../components/FadeIn'
 import HeroLogo from '../components/HeroLogo'
 import GameLoader from '../components/GameLoader'
 import ThemeSelector from '../components/ThemeSelector'
@@ -325,8 +326,8 @@ export default function Home() {
 
       {/* ── Mis tableros ───────────────────────────────────────── */}
       <div ref={boardsRef} className="max-w-3xl mx-auto px-4 pt-4 pb-6">
-        <SectionDivider label="Mis tableros" />
-        <div className="bg-th-surface rounded-xl border border-th p-6 mt-5">
+        <FadeIn><SectionDivider label="Mis tableros" /></FadeIn>
+        <FadeIn delay={0.08} className="bg-th-surface rounded-xl border border-th p-6 mt-5">
           <div className="flex items-center justify-between mb-4">
             <p className="text-xs text-th-sub">Tableros personalizados · +10 monedas al usarlos</p>
             <button
@@ -341,7 +342,7 @@ export default function Home() {
           ) : (
             <ul className="divide-y divide-th">
               {customBoards.map(b => (
-                <li key={b.id} className="flex items-center justify-between py-3">
+                <li key={b.id} className="flex items-center justify-between py-3 transition-colors hover:bg-th-accent/5 px-1 rounded">
                   <span className="font-medium text-th text-sm">{b.name}</span>
                   <button
                     onClick={() => handleDeleteBoard(b.id)}
@@ -354,27 +355,27 @@ export default function Home() {
               ))}
             </ul>
           )}
-        </div>
+        </FadeIn>
       </div>
 
       {/* ── Personalización ────────────────────────────────────── */}
       <div className="max-w-3xl mx-auto px-4 pb-6">
-        <SectionDivider label="Personalización" />
+        <FadeIn><SectionDivider label="Personalización" /></FadeIn>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-          <div className="bg-th-surface rounded-xl border border-th p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20">
+          <FadeIn delay={0.05} className="bg-th-surface rounded-xl border border-th p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20">
             <p className="text-xs font-bold text-th-sub uppercase tracking-widest mb-1">Token de juego</p>
             <p className="text-xs text-th-sub mb-4">El objeto que aparece en tus cartas marcadas.</p>
             <TokenSelector value={token} onChange={handleToken} />
-          </div>
-          <div className="bg-th-surface rounded-xl border border-th p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20">
+          </FadeIn>
+          <FadeIn delay={0.12} className="bg-th-surface rounded-xl border border-th p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20">
             <ThemeSelector />
-          </div>
+          </FadeIn>
         </div>
       </div>
 
       {/* ── Cómo jugar ─────────────────────────────────────────── */}
       <div className="max-w-3xl mx-auto px-4 pb-20">
-        <SectionDivider label="Cómo jugar" />
+        <FadeIn><SectionDivider label="Cómo jugar" /></FadeIn>
 
         {/* Steps */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
@@ -383,8 +384,8 @@ export default function Home() {
             { Icon: Volume2,     step: '2', title: 'Canillita canta', desc: 'El anfitrión saca cartas una por una y las muestra a todos los jugadores.' },
             { Icon: CheckSquare, step: '3', title: 'Marca tus cartas', desc: 'Toca las cartas de tu tablero conforme vayan apareciendo en pantalla.' },
             { Icon: Trophy,      step: '4', title: '¡Lotería!', desc: 'Completa un patrón y pulsa "¡Lotería!" para reclamar tu premio antes que los demás.' },
-          ].map(s => (
-            <div key={s.step} className="bg-th-surface rounded-xl border border-th p-4 flex flex-col gap-2 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20 hover:border-th-accent/30">
+          ].map((s, i) => (
+            <FadeIn key={s.step} delay={i * 0.08} className="bg-th-surface rounded-xl border border-th p-4 flex flex-col gap-2 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20 hover:border-th-accent/30">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-th-accent/10 flex items-center justify-center shrink-0">
                   <s.Icon className="w-4 h-4 text-th-accent" />
@@ -393,12 +394,12 @@ export default function Home() {
               </div>
               <p className="font-bold text-th text-sm leading-tight">{s.title}</p>
               <p className="text-xs text-th-sub leading-relaxed">{s.desc}</p>
-            </div>
+            </FadeIn>
           ))}
         </div>
 
         {/* Prize tiers */}
-        <div className="mt-4 bg-th-surface rounded-xl border border-th p-5">
+        <FadeIn delay={0.05} className="mt-4 bg-th-surface rounded-xl border border-th p-5">
           <p className="text-xs font-bold text-th-sub uppercase tracking-widest mb-4">Premios · % del bote acumulado</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
@@ -419,10 +420,11 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </div>
+        </FadeIn>
       </div>
 
       {/* ── Footer ─────────────────────────────────────────── */}
+      <FadeIn>
       <footer className="border-t border-th px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-th-sub">
         <p>desarrollado por <span className="font-semibold text-th">daryl</span> &amp; <span className="font-semibold text-th">shemita</span></p>
 
@@ -444,6 +446,7 @@ export default function Home() {
           </a>
         </div>
       </footer>
+      </FadeIn>
 
       {showCreator && (
         <BoardCreator
