@@ -14,18 +14,6 @@ import { TokenSelector } from '../components/TokenMarker'
 import type { TokenType } from '../components/TokenMarker'
 import type { GameRoom } from '../types/game'
 
-const DECORATIVE = [
-  { id: '01', cls: 'absolute left-[3%] top-[10%] w-20 rotate-[-18deg] opacity-[0.08]' },
-  { id: '33', cls: 'absolute right-[4%] top-[8%] w-24 rotate-[14deg] opacity-[0.08]' },
-  { id: '16', cls: 'absolute left-[17%] top-[22%] w-14 rotate-[7deg] opacity-[0.05]' },
-  { id: '38', cls: 'absolute right-[16%] top-[24%] w-14 rotate-[-11deg] opacity-[0.05]' },
-  { id: '04', cls: 'absolute left-[2%] bottom-[12%] w-20 rotate-[16deg] opacity-[0.08]' },
-  { id: '47', cls: 'absolute right-[3%] bottom-[10%] w-24 rotate-[-14deg] opacity-[0.08]' },
-  { id: '22', cls: 'absolute left-[21%] bottom-[6%] w-16 rotate-[-7deg] opacity-[0.06]' },
-  { id: '10', cls: 'absolute right-[19%] bottom-[8%] w-16 rotate-[9deg] opacity-[0.06]' },
-  { id: '52', cls: 'absolute left-[43%] bottom-[2%] w-12 rotate-[4deg] opacity-[0.04]' },
-  { id: '27', cls: 'absolute right-[41%] bottom-[4%] w-12 rotate-[-4deg] opacity-[0.04]' },
-]
 
 function SectionDivider({ label }: { label: string }) {
   return (
@@ -155,20 +143,22 @@ export default function Home() {
       {/* ── Hero ───────────────────────────────────────────────── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-4 pb-8">
 
-        {/* Scattered decorative card images */}
-        {DECORATIVE.map((d) => (
-          <img
-            key={d.id}
-            src={`/cards/${d.id.padStart(2, '0')}.jpg`}
-            alt=""
-            className={`${d.cls} rounded-lg pointer-events-none select-none`}
-          />
-        ))}
-
-        {/* Radial vignette so center text is always readable */}
+        {/* Background image */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse 55% 60% at 50% 50%, var(--th-bg) 30%, transparent 100%)' }}
+          style={{
+            backgroundImage: 'url(/images/bg/bg.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            opacity: 0.18,
+          }}
+        />
+
+        {/* Vignette to keep center content readable */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse 60% 70% at 50% 50%, transparent 20%, var(--th-bg) 80%)' }}
         />
 
         {/* Center content */}
