@@ -156,7 +156,7 @@ export default function Game() {
         </div>
 
         {/* CENTER — my boards */}
-        <div className="flex-1 flex items-center justify-center gap-5 min-w-0 overflow-auto">
+        <div className="flex-1 flex flex-wrap items-start justify-center gap-5 min-w-0 overflow-y-auto content-start pt-4">
           {myBoards.map((board) => (
             <div key={board.boardIndex} className="shrink-0">
               {myBoards.length > 1 && (
