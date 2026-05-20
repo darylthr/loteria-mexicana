@@ -203,13 +203,13 @@ export default function Home() {
 
           {/* Nickname */}
           <div className="w-full">
-            <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-1.5">Tu nombre</p>
+            <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-1.5">Apodo</p>
             <input
               value={nickname}
               onChange={e => handleNickname(e.target.value)}
               placeholder={displayName || 'Tu apodo'}
               maxLength={20}
-              className="text-center font-semibold"
+              className="text-center font-black text-xl py-4 rounded-xl"
             />
           </div>
 
