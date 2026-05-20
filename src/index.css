@@ -99,6 +99,8 @@
     @apply antialiased;
   }
 
+  button:not(:disabled) { cursor: pointer; }
+
   input, select, textarea {
     @apply w-full px-3 py-2 rounded-lg border text-sm transition-colors;
     background-color: var(--th-surface);
