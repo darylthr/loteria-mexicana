@@ -20,7 +20,6 @@ export function TokenMarker({ token }: TokenMarkerProps) {
           src={TOKENS[token].src}
           alt={TOKENS[token].label}
           className="w-full h-full object-contain drop-shadow-lg"
-          style={{ mixBlendMode: 'screen' }}
         />
       </div>
     </div>
