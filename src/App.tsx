@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 import { useGameStore } from './store/gameStore'
+import { initTheme } from './lib/theme'
 import Auth from './pages/Auth'
 import Home from './pages/Home'
 import Lobby from './pages/Lobby'
@@ -39,6 +40,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  useEffect(() => { initTheme() }, [])
+
   return (
     <BrowserRouter>
       <Routes>

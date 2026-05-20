@@ -38,23 +38,23 @@ function BoardCard({
       onClick={() => !taken && onSelect()}
       className={`relative rounded-xl overflow-hidden transition-all border-2 ${
         selected
-          ? 'border-amber-500 ring-2 ring-amber-400/40 shadow-md shadow-amber-400/20'
+          ? 'border-th-accent ring-2 ring-th-accent shadow-md'
           : taken
-          ? 'border-stone-300 opacity-40 cursor-not-allowed'
-          : 'border-stone-200 hover:border-amber-400 hover:shadow-md cursor-pointer'
+          ? 'border-th opacity-40 cursor-not-allowed'
+          : 'border-th hover:border-th-accent hover:shadow-md cursor-pointer'
       }`}
     >
-      <div className="p-1.5 bg-white">
+      <div className="p-1.5 bg-th-surface">
         <MiniBoard cards={cards} />
         {label && (
-          <p className="mt-1 text-center text-[11px] font-semibold text-stone-600 truncate">{label}</p>
+          <p className="mt-1 text-center text-[11px] font-semibold text-stone-400 truncate">{label}</p>
         )}
       </div>
       {selected && (
-        <div className="absolute top-1.5 right-1.5 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">✓</div>
+        <div className="absolute top-1.5 right-1.5 bg-th-accent text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">✓</div>
       )}
       {locked && !isMe && lockedByName && (
-        <div className="absolute top-1.5 right-1.5 bg-stone-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full truncate max-w-[70%]">{lockedByName}</div>
+        <div className="absolute top-1.5 right-1.5 bg-stone-700 text-stone-200 text-[10px] font-bold px-1.5 py-0.5 rounded-full truncate max-w-[70%]">{lockedByName}</div>
       )}
     </div>
   )
@@ -71,14 +71,14 @@ export default function BoardPicker({ availableBoards, myCustomBoards, selectedB
   return (
     <div>
       <p className="text-sm text-stone-400 mb-4">
-        Seleccionados: <span className="font-bold text-stone-700">{selectedBoardIds.length}/2</span>
-        <span className="ml-2 text-stone-400">· haz clic para elegir o deseleccionar</span>
+        Seleccionados: <span className="font-bold text-stone-200">{selectedBoardIds.length}/2</span>
+        <span className="ml-2 text-stone-500">· haz clic para elegir o deseleccionar</span>
       </p>
 
       {myCustomBoards.length > 0 && (
         <div className="mb-6">
-          <h4 className="text-sm font-bold text-stone-600 mb-2 uppercase tracking-wide">
-            Mis tableros <span className="text-amber-600 font-normal normal-case">+10 monedas</span>
+          <h4 className="text-sm font-bold text-stone-400 mb-2 uppercase tracking-wide">
+            Mis tableros <span className="text-th-accent font-normal normal-case">+10 monedas</span>
           </h4>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
             {myCustomBoards.map(cb => {
@@ -105,7 +105,7 @@ export default function BoardPicker({ availableBoards, myCustomBoards, selectedB
         </div>
       )}
 
-      <h4 className="text-sm font-bold text-stone-600 mb-2 uppercase tracking-wide">Tableros de la sala</h4>
+      <h4 className="text-sm font-bold text-stone-400 mb-2 uppercase tracking-wide">Tableros de la sala</h4>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
         {sharedBoards.map((b, i) => {
           const selected = selectedBoardIds.includes(b.id)

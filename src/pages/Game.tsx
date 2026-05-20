@@ -92,7 +92,7 @@ export default function Game() {
   const handleClose = () => { disconnectSocket(); resetGame(); navigate('/') }
 
   return (
-    <div className="h-screen flex flex-col bg-stone-900 text-stone-100 overflow-hidden">
+    <div className="h-screen flex flex-col bg-th text-stone-100 overflow-hidden">
       {gameEnded && room && (
         <WinnerOverlay
           room={room}
@@ -105,14 +105,14 @@ export default function Game() {
       )}
 
       {/* Header */}
-      <header className="shrink-0 bg-stone-800 border-b border-stone-700 px-5 py-2.5 flex items-center justify-between">
+      <header className="shrink-0 bg-th-surface border-b border-th px-5 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <span className="font-black text-amber-400 text-lg tracking-tight">Lotería</span>
+          <span className="font-black text-th-accent text-lg tracking-tight">Lotería</span>
           <span className="text-stone-500 text-sm font-mono tracking-widest">{roomId}</span>
         </div>
         <div className="flex items-center gap-4">
           <span className="text-sm text-stone-400">
-            Monedas: <strong className="text-amber-400">{balance}</strong>
+            Monedas: <strong className="text-th-accent">{balance}</strong>
           </span>
           <button
             onClick={handleClose}
@@ -137,7 +137,7 @@ export default function Game() {
               <button
                 onClick={handleDraw}
                 disabled={deckExhausted || room?.status !== 'playing'}
-                className="w-full py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-colors text-sm"
+                className="w-full py-2 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-colors text-sm"
               >
                 {deckExhausted ? 'Mazo agotado' : 'Sacar carta'}
               </button>
@@ -186,7 +186,7 @@ export default function Game() {
         {/* RIGHT — players + chat */}
         <div className="w-64 shrink-0 flex flex-col gap-3 overflow-hidden">
           {/* Players */}
-          <div className="bg-stone-800 border border-stone-700 rounded-2xl p-3 shrink-0">
+          <div className="bg-th-surface border border-th rounded-2xl p-3 shrink-0">
             <p className="text-xs font-bold text-stone-400 uppercase tracking-wide mb-2">
               Jugadores
             </p>
@@ -196,7 +196,7 @@ export default function Game() {
                 const hasClaim = Object.values(claimedPrizes).some(c => c?.playerId === p.id)
                 return (
                   <li key={p.id} className="flex items-center justify-between text-sm">
-                    <span className={`font-medium truncate ${isMe ? 'text-amber-400' : 'text-stone-200'}`}>
+                    <span className={`font-medium truncate ${isMe ? 'text-th-accent' : 'text-stone-200'}`}>
                       {p.id === room?.hostId && <span className="mr-1 text-xs">👑</span>}
                       {p.name}
                       {isMe && <span className="text-stone-500 text-xs ml-1">(tú)</span>}
@@ -216,7 +216,7 @@ export default function Game() {
       </div>
 
       {/* BOTTOM — drawn cards */}
-      <div className="shrink-0 bg-stone-800 border-t border-stone-700 px-4 py-3">
+      <div className="shrink-0 bg-th-surface border-t border-th px-4 py-3">
         <DrawnCards cards={drawnCards} />
       </div>
     </div>

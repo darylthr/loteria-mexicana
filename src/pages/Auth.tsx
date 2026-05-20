@@ -55,15 +55,15 @@ export default function Auth() {
           <p className="text-amber-200/70 mt-1 text-sm">El juego tradicional mexicano</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-2xl p-6">
+        <div className="bg-th-surface rounded-2xl shadow-2xl border border-th p-6">
           {/* Mode tabs */}
-          <div className="flex rounded-lg bg-stone-100 p-1 mb-5">
+          <div className="flex rounded-lg bg-th p-1 mb-5">
             <button
               onClick={() => { setMode('login'); setError(null) }}
               className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
                 mode === 'login'
-                  ? 'bg-white text-stone-900 shadow-sm'
-                  : 'text-stone-500 hover:text-stone-700'
+                  ? 'bg-stone-700 text-stone-100 shadow-sm'
+                  : 'text-stone-500 hover:text-stone-300'
               }`}
             >
               Iniciar sesión
@@ -72,8 +72,8 @@ export default function Auth() {
               onClick={() => { setMode('register'); setError(null) }}
               className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
                 mode === 'register'
-                  ? 'bg-white text-stone-900 shadow-sm'
-                  : 'text-stone-500 hover:text-stone-700'
+                  ? 'bg-stone-700 text-stone-100 shadow-sm'
+                  : 'text-stone-500 hover:text-stone-300'
               }`}
             >
               Registrarse
@@ -81,7 +81,7 @@ export default function Auth() {
           </div>
 
           {error && (
-            <div className="mb-4 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            <div className="mb-4 px-3 py-2 bg-red-900/40 border border-red-700 rounded-lg text-red-300 text-sm">
               {error}
             </div>
           )}
@@ -115,7 +115,7 @@ export default function Auth() {
           <button
             onClick={mode === 'login' ? handleLogin : handleRegister}
             disabled={loading || !email || !password}
-            className="mt-5 w-full py-2.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+            className="mt-5 w-full py-2.5 bg-th-accent hover:bg-th-accent2 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
           >
             {loading ? 'Un momento...' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
           </button>

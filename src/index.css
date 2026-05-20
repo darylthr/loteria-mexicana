@@ -1,11 +1,68 @@
 @import "tailwindcss";
 
+/* ── Theme variables ─────────────────────────────────── */
+:root {
+  --th-bg:      #1c1917;
+  --th-surface: #292524;
+  --th-border:  #44403c;
+  --th-accent:  #d97706;
+  --th-accent2: #b45309;
+}
+
+[data-theme="muertos"] {
+  --th-bg:      #16052e;
+  --th-surface: #240949;
+  --th-border:  #6d28d9;
+  --th-accent:  #f97316;
+  --th-accent2: #ea580c;
+}
+
+[data-theme="bandera"] {
+  --th-bg:      #042313;
+  --th-surface: #083420;
+  --th-border:  #15803d;
+  --th-accent:  #dc2626;
+  --th-accent2: #b91c1c;
+}
+
+[data-theme="independencia"] {
+  --th-bg:      #180a05;
+  --th-surface: #2b1107;
+  --th-border:  #92400e;
+  --th-accent:  #d4af37;
+  --th-accent2: #a8860a;
+}
+
+/* ── Utility classes ─────────────────────────────────── */
+@layer utilities {
+  .bg-th         { background-color: var(--th-bg); }
+  .bg-th-surface { background-color: var(--th-surface); }
+  .border-th     { border-color: var(--th-border); }
+  .bg-th-accent  { background-color: var(--th-accent); }
+  .text-th-accent { color: var(--th-accent); }
+  .border-th-accent { border-color: var(--th-accent); }
+  .ring-th-accent { --tw-ring-color: var(--th-accent); }
+  .hover\:bg-th-accent2:hover { background-color: var(--th-accent2); }
+  .hover\:border-th-accent:hover { border-color: var(--th-accent); }
+}
+
+/* ── Base ────────────────────────────────────────────── */
 @layer base {
   body {
-    @apply bg-stone-100 text-stone-900 antialiased;
+    background-color: var(--th-bg);
+    @apply text-stone-100 antialiased;
   }
 
   input, select, textarea {
-    @apply px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 w-full focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm transition-colors;
+    @apply px-3 py-2 rounded-lg border text-sm transition-colors;
+    background-color: var(--th-surface);
+    border-color: var(--th-border);
+    color: inherit;
   }
+  input:focus, select:focus, textarea:focus {
+    @apply outline-none ring-2;
+    --tw-ring-color: var(--th-accent);
+    border-color: transparent;
+  }
+  input::placeholder { @apply text-stone-500; }
 }

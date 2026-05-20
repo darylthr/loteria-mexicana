@@ -59,7 +59,7 @@ export default function WinnerOverlay({ room, myPlayerId, reason, isHost, onNewG
           {isHost && (
             <button
               onClick={onNewGame}
-              className="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition-colors"
+              className="px-6 py-2.5 bg-th-accent hover:bg-th-accent2 text-white font-bold rounded-xl transition-colors"
             >
               Nueva partida
             </button>

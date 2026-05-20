@@ -9,10 +9,10 @@ interface PrizeStatusProps {
 
 export default function PrizeStatus({ pot, claimedPrizes, myPlayerId }: PrizeStatusProps) {
   return (
-    <div className="bg-stone-800 rounded-2xl border border-stone-700 p-4 space-y-2">
+    <div className="bg-th-surface rounded-2xl border border-th p-4 space-y-2">
       <div className="flex items-center justify-between mb-1">
         <span className="text-xs text-stone-400 uppercase tracking-wide">Bote</span>
-        <span className="font-bold text-amber-400">{pot} mon.</span>
+        <span className="font-bold text-th-accent">{pot} mon.</span>
       </div>
       {PRIZE_SLOT_ORDER.map((slot) => {
         const { label, pct } = PRIZE_INFO[slot]
