@@ -13,10 +13,23 @@ interface Props {
 
 function MiniBoard({ cards }: { cards: { id: number; imageUrl: string }[] }) {
   return (
-    <div className="grid grid-cols-4 gap-0.5">
-      {cards.map(c => (
-        <img key={c.id} src={c.imageUrl} alt="" className="w-full aspect-[2/3] object-cover rounded-sm" />
-      ))}
+    <div
+      className="rounded-xl p-1.5 shadow-lg shadow-black/50"
+      style={{
+        background: 'linear-gradient(145deg, #7c4a22 0%, #5c3214 50%, #3e1f0a 100%)',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,220,160,0.15), inset 0 -1px 0 rgba(0,0,0,0.4)',
+      }}
+    >
+      <div
+        className="rounded-lg overflow-hidden"
+        style={{ boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.5)' }}
+      >
+        <div className="grid grid-cols-4 gap-[1px] bg-black/40">
+          {cards.map(c => (
+            <img key={c.id} src={c.imageUrl} alt="" className="w-full aspect-[2/3] object-cover" />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -37,20 +50,18 @@ function BoardCard({
   return (
     <div
       onClick={() => !taken && onSelect()}
-      className={`relative rounded-lg overflow-hidden transition-all border-2 ${
+      className={`relative transition-all rounded-xl ${
         selected
-          ? 'border-th-accent ring-2 ring-th-accent shadow-md'
+          ? 'ring-2 ring-th-accent ring-offset-2 ring-offset-th-surface cursor-pointer'
           : taken
-          ? 'border-th opacity-40 cursor-not-allowed'
-          : 'border-th hover:border-th-accent hover:shadow-md cursor-pointer'
+          ? 'opacity-40 cursor-not-allowed'
+          : 'cursor-pointer hover:scale-[1.02]'
       }`}
     >
-      <div className="p-1.5 bg-th-surface">
-        <MiniBoard cards={cards} />
-        {label && (
-          <p className="mt-1 text-center text-[11px] font-semibold text-th-sub truncate">{label}</p>
-        )}
-      </div>
+      <MiniBoard cards={cards} />
+      {label && (
+        <p className="mt-1.5 text-center text-[11px] font-semibold text-th-sub truncate">{label}</p>
+      )}
       {selected && (
         <div className="absolute top-1.5 right-1.5 bg-th-accent text-white p-0.5 rounded-full">
           <Check className="w-2.5 h-2.5" />
