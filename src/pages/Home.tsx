@@ -45,6 +45,9 @@ export default function Home() {
   )
   const handleToken = (t: TokenType) => { setTokenState(t); localStorage.setItem('loteria-token', t) }
 
+  const [nickname, setNickname] = useState(() => localStorage.getItem('loteria-nickname') ?? '')
+  const handleNickname = (v: string) => { setNickname(v); localStorage.setItem('loteria-nickname', v) }
+
   const navigate = useNavigate()
   const playerId = useGameStore((s) => s.playerId)
   const balance = useGameStore((s) => s.balance)
@@ -55,7 +58,11 @@ export default function Home() {
 
   useEffect(() => {
     getProfile()
-      .then(({ displayName, balance }) => { setDisplayName(displayName); setBalance(balance) })
+      .then(({ displayName, balance }) => {
+        setDisplayName(displayName)
+        setBalance(balance)
+        if (!localStorage.getItem('loteria-nickname')) setNickname(displayName)
+      })
       .catch(() => setError('Error al cargar el perfil'))
     getBoards().then(({ boards }) => setCustomBoards(boards)).catch(() => {})
   }, [])
@@ -179,23 +186,28 @@ export default function Home() {
 
             {/* Title */}
             <div className="mt-12 mb-20">
-              <div className='flex flex-wrap items-end'>
-                <h1 className="text-6xl font-black font-display text-th leading-none">
-                  LOTERÍA
+              <div className='flex flex-wrap items-end justify-center'>
+                <h1 className="text-6xl font-black fon -display text-th leading-none">
+                  LOTER
                 </h1>
-                <h2 className="text-4xl font-black text-red-400 leading-none">MX</h2>
+                <h2 className="text-6xl font-black text-red-400 leading-none">.io</h2>
               </div>
-              <p className="text-th-sub text-sm mt-2 tracking-wide">El juego tradicional mexicano</p>
+              <p className="text-th-sub text-xl mt-2 tracking-wide">La loteria tradicional mexicana.</p>
             </div>
 
           </div>
 
-          {/* Greeting */}
-          {displayName && (
-            <p className="text-th-sub text-sm">
-              Hola, <span className="font-bold text-th">{displayName}</span>
-            </p>
-          )}
+          {/* Nickname */}
+          <div className="w-full">
+            <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-1.5">Tu nombre</p>
+            <input
+              value={nickname}
+              onChange={e => handleNickname(e.target.value)}
+              placeholder={displayName || 'Tu apodo'}
+              maxLength={20}
+              className="text-center font-semibold"
+            />
+          </div>
 
           {/* Error */}
           {error && (
