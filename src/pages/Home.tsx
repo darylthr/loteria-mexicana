@@ -79,7 +79,7 @@ export default function Home() {
     setLoading(true); setError(null)
     try {
       const name = nickname.trim() || displayName
-      if (name !== displayName) await updateProfile(name)
+      if (name && name !== displayName) await updateProfile(name).catch(() => {})
       const { roomId, hostId, room } = await createRoom()
       const hostPlayer = room.players.find(p => p.id === hostId)
       setIdentity({ playerId: playerId!, playerName: nickname || displayName, isHost: true, roomId })
@@ -108,7 +108,7 @@ export default function Home() {
     setLoading(true); setError(null)
     try {
       const name = nickname.trim() || displayName
-      if (name !== displayName) await updateProfile(name)
+      if (name && name !== displayName) await updateProfile(name).catch(() => {})
       const { player, room } = await joinRoom(previewRoom.roomId)
       setIdentity({ playerId: playerId!, playerName: nickname || displayName, isHost: false, roomId: room.roomId })
       setBalance(player.balance)
