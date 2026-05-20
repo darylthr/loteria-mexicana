@@ -1,7 +1,19 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ChevronsRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { createProfile } from '../api/profile'
+
+const DECORATIVE = [
+  { id: '07', cls: 'absolute left-[3%]  top-[8%]    w-20 rotate-[-16deg] opacity-[0.07]' },
+  { id: '33', cls: 'absolute right-[4%] top-[6%]    w-24 rotate-[13deg]  opacity-[0.07]' },
+  { id: '16', cls: 'absolute left-[18%] top-[20%]   w-14 rotate-[6deg]   opacity-[0.04]' },
+  { id: '42', cls: 'absolute right-[17%] top-[22%]  w-14 rotate-[-10deg] opacity-[0.04]' },
+  { id: '04', cls: 'absolute left-[2%]  bottom-[10%] w-20 rotate-[15deg]  opacity-[0.07]' },
+  { id: '51', cls: 'absolute right-[3%] bottom-[8%]  w-24 rotate-[-13deg] opacity-[0.07]' },
+  { id: '22', cls: 'absolute left-[22%] bottom-[5%]  w-16 rotate-[-6deg]  opacity-[0.05]' },
+  { id: '10', cls: 'absolute right-[20%] bottom-[7%] w-16 rotate-[8deg]   opacity-[0.05]' },
+]
 
 export default function Auth() {
   const [mode, setMode] = useState<'login' | 'register'>('login')
@@ -48,22 +60,53 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-900 via-amber-900 to-red-950 p-4">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen bg-th flex items-center justify-center p-4 relative overflow-hidden">
+
+      {/* Scattered decorative cards */}
+      {DECORATIVE.map((d) => (
+        <img
+          key={d.id}
+          src={`/cards/${d.id.padStart(2, '0')}.jpg`}
+          alt=""
+          className={`${d.cls} rounded-lg pointer-events-none select-none`}
+        />
+      ))}
+
+      {/* Radial vignette */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse 60% 70% at 50% 50%, var(--th-bg) 25%, transparent 100%)' }}
+      />
+
+      {/* Card */}
+      <div className="relative z-10 w-full max-w-sm">
+
+        {/* Hero */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-black text-amber-400 font-display">Lotería</h1>
-          <p className="text-amber-200/70 mt-1 text-sm">El juego tradicional mexicano</p>
+          <div className="relative w-28 h-36 mx-auto mb-5">
+            <div className="absolute bottom-0 left-0 w-[4.5rem] h-24 rounded-lg overflow-hidden shadow-lg rotate-[-13deg] origin-bottom opacity-70">
+              <img src="/cards/33.jpg" alt="" className="w-full h-full object-cover" />
+            </div>
+            <div className="absolute bottom-0 right-0 w-[4.5rem] h-24 rounded-lg overflow-hidden shadow-lg rotate-[13deg] origin-bottom opacity-70">
+              <img src="/cards/04.jpg" alt="" className="w-full h-full object-cover" />
+            </div>
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-28 rounded-lg overflow-hidden shadow-2xl z-10 ring-2 ring-th-accent/40">
+              <img src="/cards/27.jpg" alt="" className="w-full h-full object-cover" />
+            </div>
+          </div>
+          <h1 className="text-5xl font-black text-th font-display leading-none">LOTERÍA</h1>
+          <p className="text-th-sub text-sm mt-2">El juego tradicional mexicano</p>
         </div>
 
-        <div className="bg-th-surface rounded-xl shadow-2xl border border-th p-6">
+        {/* Form card */}
+        <div className="bg-th-surface rounded-xl border border-th p-6 shadow-2xl shadow-black/40">
+
           {/* Mode tabs */}
           <div className="flex rounded-lg bg-th p-1 mb-5">
             <button
               onClick={() => { setMode('login'); setError(null) }}
               className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
-                mode === 'login'
-                  ? 'bg-th-ui text-th shadow-sm'
-                  : 'text-th-sub hover:text-th'
+                mode === 'login' ? 'bg-th-ui text-th shadow-sm' : 'text-th-sub hover:text-th'
               }`}
             >
               Iniciar sesión
@@ -71,9 +114,7 @@ export default function Auth() {
             <button
               onClick={() => { setMode('register'); setError(null) }}
               className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
-                mode === 'register'
-                  ? 'bg-th-ui text-th shadow-sm'
-                  : 'text-th-sub hover:text-th'
+                mode === 'register' ? 'bg-th-ui text-th shadow-sm' : 'text-th-sub hover:text-th'
               }`}
             >
               Registrarse
@@ -81,7 +122,7 @@ export default function Auth() {
           </div>
 
           {error && (
-            <div className="mb-4 px-3 py-2 bg-red-900/40 border border-red-700 rounded-lg text-red-300 text-sm">
+            <div className="mb-4 px-3 py-2 bg-red-900/40 border border-red-700/60 rounded-lg text-red-300 text-sm">
               {error}
             </div>
           )}
@@ -115,9 +156,10 @@ export default function Auth() {
           <button
             onClick={mode === 'login' ? handleLogin : handleRegister}
             disabled={loading || !email || !password}
-            className="mt-5 w-full py-2.5 bg-th-accent hover:bg-th-accent2 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+            className="mt-5 flex items-center justify-center gap-2 w-full py-3.5 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-base rounded-xl transition-all shadow-lg shadow-black/20 active:scale-[0.98]"
           >
-            {loading ? 'Un momento...' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
+            <ChevronsRight className="w-5 h-5 opacity-60" />
+            {loading ? 'Un momento…' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
           </button>
         </div>
       </div>
