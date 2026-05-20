@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ChevronsRight, Crown, Check, Star, X, Copy, Share2, Coins } from 'lucide-react'
+import { ChevronsRight, Crown, Check, Star, X, Copy, Share2, Coins, Volume2, VolumeX, LogOut } from 'lucide-react'
+import { useBackgroundMusic } from '../hooks/useBackgroundMusic'
 import { useGameStore } from '../store/gameStore'
 import { detectClaimablePrize } from '../utils/winDetection'
 import PlayerBoard from '../components/PlayerBoard'
@@ -34,6 +35,8 @@ export default function Game() {
     (localStorage.getItem('loteria-token') as TokenType | null) ?? 'bean'
   )
   const [copied, setCopied] = useState(false)
+  const [showVolume, setShowVolume] = useState(false)
+  const { muted, volume, toggleMute, setVolume } = useBackgroundMusic('/sounds/bg-music.mp3')
 
   useEffect(() => {
     if (!playerId || !roomId) { navigate('/'); return }
@@ -106,22 +109,50 @@ export default function Game() {
 
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="shrink-0 bg-th-surface border-b border-th px-5 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-xl font-black text-th-accent font-display">LOTERÍA</h1>
-          <span className="font-mono font-ui text-xs text-th-sub tracking-widest hidden sm:inline">{roomId}</span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-black text-th-accent font-display">LOTERÍA</h1>
+            <span className="font-mono font-ui text-xs text-th-sub tracking-widest hidden sm:inline">{roomId}</span>
+          </div>
+          <div
+            className="relative flex items-center gap-2"
+            onMouseEnter={() => setShowVolume(true)}
+            onMouseLeave={() => setShowVolume(false)}
+          >
+            <button
+              onClick={toggleMute}
+              className="text-th-sub hover:text-th transition-colors"
+              aria-label={muted ? 'Activar sonido' : 'Silenciar'}
+            >
+              {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+            </button>
+            {showVolume && (
+              <div className="flex items-center bg-th-surface border border-th rounded-full px-3 py-1.5 shadow-lg">
+                <input
+                  type="range" min={0} max={1} step={0.05} value={volume}
+                  onChange={e => setVolume(Number(e.target.value))}
+                  className="w-20"
+                />
+              </div>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-5">
           {balance !== undefined && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10 border border-th-accent/25 rounded-full">
-              <Coins className="w-3.5 h-3.5 text-th-accent" />
+            <div
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10 rounded-full border border-th-accent/20"
+              style={{ animation: 'balancePulse 3s ease-in-out infinite' }}
+            >
+              <Coins className="w-4 h-4 text-th-accent" />
               <span className="font-black text-th-accent text-sm font-ui">{balance}</span>
             </div>
           )}
           <button
             onClick={handleClose}
-            className="text-sm text-th-sub hover:text-th transition-colors"
+            className="text-th-sub hover:text-th transition-colors"
+            aria-label="Salir"
           >
-            Salir
+            <LogOut className="w-5 h-5 opacity-60" />
           </button>
         </div>
       </header>

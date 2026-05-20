@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ChevronsRight, Crown, Check, Copy, Share2, Coins } from 'lucide-react'
+import { ChevronsRight, Crown, Check, Copy, Share2, Coins, Volume2, VolumeX, LogOut } from 'lucide-react'
+import { useBackgroundMusic } from '../hooks/useBackgroundMusic'
 import { useGameStore } from '../store/gameStore'
 import Chat from '../components/Chat'
 import BoardPicker from '../components/BoardPicker'
@@ -34,6 +35,8 @@ export default function Lobby() {
   const [myCustomBoards, setMyCustomBoards] = useState<CustomBoard[]>([])
   const [showCreator, setShowCreator] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [showVolume, setShowVolume] = useState(false)
+  const { muted, volume, toggleMute, setVolume } = useBackgroundMusic('/sounds/bg-music.mp3')
 
   useEffect(() => {
     getBoards().then(({ boards }) => setMyCustomBoards(boards)).catch(() => {})
@@ -146,20 +149,44 @@ export default function Lobby() {
 
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="shrink-0 bg-th-surface border-b border-th px-5 py-3 flex items-center justify-between">
-        <h1 className="text-xl font-black text-th-accent font-display">LOTERÍA</h1>
+        <div className="flex items-center gap-4">
+          <div
+            className="relative flex items-center gap-2"
+            onMouseEnter={() => setShowVolume(true)}
+            onMouseLeave={() => setShowVolume(false)}
+          >
+            <button
+              onClick={toggleMute}
+              className="text-th-sub hover:text-th transition-colors"
+              aria-label={muted ? 'Activar sonido' : 'Silenciar'}
+            >
+              {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+            </button>
+            {showVolume && (
+              <div className="flex items-center bg-th-surface border border-th rounded-full px-3 py-1.5 shadow-lg">
+                <input
+                  type="range" min={0} max={1} step={0.05} value={volume}
+                  onChange={e => setVolume(Number(e.target.value))}
+                  className="w-20"
+                />
+              </div>
+            )}
+          </div>
+        </div>
 
         <div className="flex items-center gap-5">
           {balance !== undefined && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10 border border-th-accent/25 rounded-full">
-              <Coins className="w-3.5 h-3.5 text-th-accent" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10">
+              <Coins className="w-4 h-4 text-th-accent" />
               <span className="font-black text-th-accent text-sm font-ui">{balance}</span>
             </div>
           )}
           <button
             onClick={() => navigate('/')}
-            className="text-sm text-th-sub hover:text-th transition-colors"
+            className="text-th-sub hover:text-th transition-colors"
+            aria-label="Salir"
           >
-            Salir
+            <LogOut className="w-5 h-5 opacity-60" />
           </button>
         </div>
       </header>
@@ -206,18 +233,25 @@ export default function Lobby() {
             <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">Costo de entrada</p>
             {isHost ? (
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center rounded-lg border border-th overflow-hidden bg-th">
+                  <button
+                    onClick={() => { setFeeInput(v => Math.max(0, v - 10)); setFeeSaved(false) }}
+                    className="h-[36px] px-2.5 py-2 text-th-sub hover:text-th hover:bg-th-ui-hover transition-colors text-base font-bold leading-none shrink-0"
+                  >−</button>
                   <input
                     type="number" min={0} max={500} value={feeInput}
-                    onChange={e => { setFeeInput(Number(e.target.value)); setFeeSaved(false) }}
-                    className="w-20 text-sm"
+                    onChange={e => { setFeeInput(Math.max(0, Math.min(500, Number(e.target.value)))); setFeeSaved(false) }}
+                    className="flex-1 text-center text-sm font-black text-th bg-transparent border-none ring-0 focus:ring-0 px-0 py-2 min-w-0"
                   />
-                  <span className="text-xs text-th-sub">mon./tablero</span>
+                  <button
+                    onClick={() => { setFeeInput(v => Math.min(500, v + 10)); setFeeSaved(false) }}
+                    className="h-[36px] px-2.5 py-2 text-th-sub hover:text-th hover:bg-th-ui-hover transition-colors text-base font-bold leading-none shrink-0"
+                  >+</button>
                 </div>
                 {!feeSaved && (
                   <button
                     onClick={handleSaveFee}
-                    className="w-full py-1.5 bg-th-ui hover:bg-th-ui-hover text-th text-xs font-semibold rounded-lg transition-colors"
+                    className="w-full py-1.5 bg-th-accent/15 hover:bg-th-accent/25 border border-th-accent/30 text-th-accent text-xs font-semibold rounded-lg transition-colors"
                   >
                     Guardar
                   </button>

@@ -53,10 +53,10 @@ export default function Auth() {
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage: 'url(/images/bg/bg.png)',
-          backgroundSize: 'auto 60%',
-          backgroundPosition: 'center',
+          backgroundSize: 'auto 40%',
+          backgroundPosition: 'bottom',
           backgroundRepeat: 'no-repeat',
-          opacity: 0.9,
+          opacity: 0.1,
         }}
       />
 
@@ -75,11 +75,16 @@ export default function Auth() {
             <HeroLogo />
           </div>
 
-          <div style={{ animation: 'fadeSlideUp 0.6s ease 0.12s both' }}>
-            <h1 className="text-5xl font-black text-th font-display leading-none mt-6">
-              <FloatLetters text="LOTERÍA" />
-            </h1>
-            <p className="text-th-sub text-sm mt-2">El juego tradicional mexicano</p>
+          <div className="mt-12 mb-10" style={{ animation: 'fadeSlideUp 0.6s ease 0.12s both' }}>
+            <div className='flex items-end justify-center'>
+              <h1 className="text-6xl font-black font-display text-th leading-none">
+                <FloatLetters text="LOTER" />
+              </h1>
+              <h2 className="text-6xl font-black text-red-400 leading-none">
+                <FloatLetters text=".io" />
+              </h2>
+            </div>
+            <p className="text-th-sub text-xl mt-2 tracking-wide">La loteria tradicional mexicana.</p>
           </div>
         </div>
 

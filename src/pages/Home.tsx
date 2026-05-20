@@ -167,10 +167,7 @@ export default function Home() {
         </div>
         <div className='flex flex-wrap items-center gap-6'>
           {balance !== undefined && (
-            <div
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10 rounded-full border border-th-accent/20"
-              style={{ animation: 'balancePulse 3s ease-in-out infinite' }}
-            >
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10">
               <Coins className="w-5 h-5 text-th-accent" />
               <span className="font-black text-th-accent text-lg font-ui">{balance}</span>
             </div>
