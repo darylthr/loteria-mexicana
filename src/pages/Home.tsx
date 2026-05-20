@@ -165,17 +165,14 @@ export default function Home() {
         {/* Center content */}
         <div className="relative z-10 flex flex-col items-center text-center gap-5 w-full max-w-xs">
 
-          {/* Card fan icon */}
-          <div className="relative w-32 h-40">
-            <div className="absolute bottom-0 left-0 w-20 h-28 rounded-lg overflow-hidden shadow-lg rotate-[-14deg] origin-bottom opacity-75">
-              <img src="/cards/33.jpg" alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="absolute bottom-0 right-0 w-20 h-28 rounded-lg overflow-hidden shadow-lg rotate-[14deg] origin-bottom opacity-75">
-              <img src="/cards/04.jpg" alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[5.5rem] h-32 rounded-lg overflow-hidden shadow-2xl z-10 ring-2 ring-th-accent/40">
-              <img src="/cards/27.jpg" alt="" className="w-full h-full object-cover" />
-            </div>
+          {/* Lotería board */}
+          <div className="relative">
+            <img
+              src="/assets/loteria.png"
+              alt="Tablero Lotería"
+              className="w-64 h-auto object-contain rounded-xl rotate-[-3deg] shadow-2xl shadow-black/50"
+              style={{ filter: 'drop-shadow(0 16px 48px rgba(0,0,0,0.7))' }}
+            />
           </div>
 
           {/* Title */}
