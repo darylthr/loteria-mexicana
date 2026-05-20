@@ -1,32 +1,24 @@
 import type { LoteriaCard } from '../types/game'
+import { TokenMarker } from './TokenMarker'
+import type { TokenType } from './TokenMarker'
 
 interface CardTileProps {
   card: LoteriaCard
   isMarked: boolean
   isDrawn: boolean
+  token: TokenType
   onClick: () => void
 }
 
-export default function CardTile({ card, isMarked, isDrawn, onClick }: CardTileProps) {
-  const clickable = isDrawn && !isMarked
-
+export default function CardTile({ card, isMarked, isDrawn, token, onClick }: CardTileProps) {
   return (
     <div
-      onClick={clickable ? onClick : undefined}
+      onClick={isDrawn && !isMarked ? onClick : undefined}
       title={card.name}
-      className={`relative rounded overflow-hidden select-none opacity-60 ${clickable ? 'cursor-pointer' : ''}`}
+      className={`relative rounded overflow-hidden select-none ${isDrawn && !isMarked ? 'cursor-pointer' : ''}`}
     >
-      <img
-        src={card.imageUrl}
-        alt={card.name}
-        className="w-full block"
-        draggable={false}
-      />
-      {isMarked && (
-        <div className="absolute inset-0 flex items-center justify-center bg-green-900/60">
-          <span className="text-green-400 text-3xl drop-shadow">⬤</span>
-        </div>
-      )}
+      <img src={card.imageUrl} alt={card.name} className="w-full block" draggable={false} />
+      {isMarked && <TokenMarker token={token} />}
     </div>
   )
 }

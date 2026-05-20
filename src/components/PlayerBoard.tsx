@@ -1,13 +1,15 @@
 import CardTile from './CardTile'
 import type { PlayerBoard as PlayerBoardType } from '../types/game'
+import type { TokenType } from './TokenMarker'
 
 interface PlayerBoardProps {
   board: PlayerBoardType
   drawnCardIds: Set<number>
+  token: TokenType
   onMark: (cardId: number) => void
 }
 
-export default function PlayerBoard({ board, drawnCardIds, onMark }: PlayerBoardProps) {
+export default function PlayerBoard({ board, drawnCardIds, token, onMark }: PlayerBoardProps) {
   const marked = new Set(board.markedCards)
 
   return (
@@ -18,6 +20,7 @@ export default function PlayerBoard({ board, drawnCardIds, onMark }: PlayerBoard
           card={card}
           isMarked={marked.has(card.id)}
           isDrawn={drawnCardIds.has(card.id)}
+          token={token}
           onClick={() => onMark(card.id)}
         />
       ))}

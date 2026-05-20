@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useGameStore } from '../store/gameStore'
 import { detectClaimablePrize } from '../utils/winDetection'
@@ -8,6 +8,8 @@ import DrawnCards from '../components/DrawnCards'
 import WinnerOverlay from '../components/WinnerOverlay'
 import PrizeStatus from '../components/PrizeStatus'
 import Chat from '../components/Chat'
+import { TokenSelector } from '../components/TokenMarker'
+import type { TokenType } from '../components/TokenMarker'
 
 export default function Game() {
   const { roomId } = useParams<{ roomId: string }>()
@@ -27,6 +29,11 @@ export default function Game() {
   const setError = useGameStore((s) => s.setError)
   const resetGame = useGameStore((s) => s.resetGame)
   const disconnectSocket = useGameStore((s) => s.disconnectSocket)
+
+  const [token, setToken] = useState<TokenType>(() =>
+    (localStorage.getItem('loteria-token') as TokenType | null) ?? 'bean'
+  )
+  const handleToken = (t: TokenType) => { setToken(t); localStorage.setItem('loteria-token', t) }
 
   useEffect(() => {
     if (!playerId || !roomId) { navigate('/'); return }
@@ -147,6 +154,8 @@ export default function Game() {
               ¡Lotería!
             </button>
           </div>
+          <TokenSelector value={token} onChange={handleToken} />
+
           {error && (
             <div className="px-3 py-2 bg-red-900/50 border border-red-700 rounded-lg text-red-300 text-xs flex gap-2">
               <span className="flex-1">{error}</span>
@@ -167,6 +176,7 @@ export default function Game() {
               <PlayerBoard
                 board={board}
                 drawnCardIds={drawnCardIds}
+                token={token}
                 onMark={(cardId) => handleMark(cardId, board.boardIndex)}
               />
             </div>
