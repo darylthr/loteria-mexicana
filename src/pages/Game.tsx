@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { ChevronsRight, Crown, Check, Star, X } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import { detectClaimablePrize } from '../utils/winDetection'
 import PlayerBoard from '../components/PlayerBoard'
@@ -106,8 +107,8 @@ export default function Game() {
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="shrink-0 bg-th-surface border-b border-th px-5 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-xl font-black text-th-accent tracking-tight">LOTERÍA</h1>
-          <span className="font-mono text-xs text-th-sub tracking-widest hidden sm:inline">{roomId}</span>
+          <h1 className="text-xl font-black text-th-accent font-display">LOTERÍA</h1>
+          <span className="font-mono font-ui text-xs text-th-sub tracking-widest hidden sm:inline">{roomId}</span>
         </div>
         <div className="flex items-center gap-5">
           {balance !== undefined && (
@@ -132,21 +133,21 @@ export default function Game() {
         <div className="w-52 shrink-0 flex flex-col gap-3">
 
           {/* Room code */}
-          <div className="bg-th-surface rounded-2xl border border-th p-4 shrink-0">
+          <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0">
             <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-2">Código de sala</p>
-            <span className="font-mono text-2xl font-black text-th tracking-widest leading-none block mb-3">
+            <span className="font-mono font-ui text-2xl font-black text-th tracking-widest leading-none block mb-3">
               {roomId}
             </span>
             <div className="flex gap-2">
               <button
                 onClick={() => { navigator.clipboard.writeText(roomId ?? ''); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
-                className="flex-1 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-lg transition-colors"
+                className="flex-1 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-md transition-colors flex items-center justify-center gap-1.5"
               >
-                {copied ? '✓ Copiado' : 'Copiar'}
+                {copied ? <><Check className="w-3 h-3" /> Copiado</> : 'Copiar'}
               </button>
               <button
                 onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/join/${roomId}`); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
-                className="flex-1 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-lg transition-colors"
+                className="flex-1 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-md transition-colors"
               >
                 Link
               </button>
@@ -154,41 +155,41 @@ export default function Game() {
           </div>
 
           {/* Current card */}
-          <div className="bg-th-surface rounded-2xl border border-th p-4 shrink-0">
+          <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0">
             <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">Carta actual</p>
             <CurrentCard card={currentCard} />
           </div>
 
           {/* Actions */}
-          <div className="bg-th-surface rounded-2xl border border-th p-4 shrink-0 space-y-2">
+          <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0 space-y-2">
             <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">Acciones</p>
             {isHost && (
               <button
                 onClick={handleDraw}
                 disabled={deckExhausted || room?.status !== 'playing'}
-                className="flex items-center justify-center gap-2 w-full py-3 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-sm rounded-2xl transition-all shadow-lg shadow-black/20 active:scale-[0.98]"
+                className="flex items-center justify-center gap-2 w-full py-3 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-sm rounded-xl transition-all shadow-lg shadow-black/20 active:scale-[0.98]"
               >
-                <span className="opacity-60 text-xs">»»</span>
+                <ChevronsRight className="w-4 h-4 opacity-60" />
                 {deckExhausted ? 'Mazo agotado' : 'Sacar carta'}
               </button>
             )}
             <button
               onClick={handleLoteria}
               disabled={!claimablePrize}
-              className={`flex items-center justify-center gap-2 w-full py-3 font-black text-sm rounded-2xl transition-all active:scale-[0.98] ${
+              className={`flex items-center justify-center gap-2 w-full py-3 font-black text-sm rounded-xl transition-all active:scale-[0.98] ${
                 claimablePrize
                   ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/30'
                   : 'bg-th-ui text-th-sub cursor-not-allowed opacity-50'
               }`}
             >
-              {claimablePrize && <span className="opacity-70 text-xs">»»</span>}
+              {claimablePrize && <ChevronsRight className="w-4 h-4 opacity-70" />}
               ¡Lotería!
             </button>
           </div>
 
           {/* Prizes */}
           {room && (
-            <div className="bg-th-surface rounded-2xl border border-th p-4 shrink-0">
+            <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0">
               <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">Premios</p>
               <PrizeStatus pot={room.pot} claimedPrizes={claimedPrizes} myPlayerId={playerId} />
             </div>
@@ -196,15 +197,17 @@ export default function Game() {
 
           {/* Error */}
           {error && (
-            <div className="shrink-0 px-3 py-2 bg-red-900/30 border border-red-700/40 rounded-xl text-red-400 text-xs flex gap-2">
+            <div className="shrink-0 px-3 py-2 bg-red-900/30 border border-red-700/40 rounded-lg text-red-400 text-xs flex gap-2">
               <span className="flex-1">{error}</span>
-              <button onClick={() => setError(null)} className="shrink-0 hover:text-red-200">×</button>
+              <button onClick={() => setError(null)} className="shrink-0 hover:text-red-200 flex items-center">
+                <X className="w-3.5 h-3.5" />
+              </button>
             </div>
           )}
         </div>
 
         {/* CENTER — my boards */}
-        <div className="flex-1 bg-th-surface rounded-2xl border border-th flex flex-col min-w-0 overflow-hidden">
+        <div className="flex-1 bg-th-surface rounded-xl border border-th flex flex-col min-w-0 overflow-hidden">
           <div className="shrink-0 px-5 py-4 border-b border-th">
             <p className="font-bold text-th text-sm">Mi tablero</p>
             <p className="text-xs text-th-sub mt-0.5">
@@ -233,7 +236,7 @@ export default function Game() {
         {/* RIGHT — players + chat */}
         <div className="w-56 shrink-0 flex flex-col gap-3 overflow-hidden">
           {/* Players */}
-          <div className="bg-th-surface rounded-2xl border border-th p-4 shrink-0">
+          <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0">
             <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">
               Jugadores · {room?.players.length ?? 0}
             </p>
@@ -243,12 +246,16 @@ export default function Game() {
                 const hasClaim = Object.values(claimedPrizes).some(c => c?.playerId === p.id)
                 return (
                   <li key={p.id} className="flex items-center justify-between py-1.5 border-b border-th last:border-0 gap-2">
-                    <span className={`font-medium text-sm truncate ${isMe ? 'text-th-accent' : 'text-th'}`}>
-                      {p.id === room?.hostId && <span className="mr-1 text-xs">👑</span>}
+                    <span className={`font-medium text-sm truncate flex items-center gap-1 ${isMe ? 'text-th-accent' : 'text-th'}`}>
+                      {p.id === room?.hostId && <Crown className="w-3 h-3 shrink-0" />}
                       {p.name}
-                      {isMe && <span className="text-th-sub text-xs ml-1">(tú)</span>}
+                      {isMe && <span className="text-th-sub text-xs ml-0.5">(tú)</span>}
                     </span>
-                    {hasClaim && <span className="shrink-0 text-[10px] bg-green-900/30 text-green-400 font-bold px-2 py-0.5 rounded-full border border-green-700/30">★ ganó</span>}
+                    {hasClaim && (
+                      <span className="shrink-0 text-[10px] bg-green-900/30 text-green-400 font-bold px-2 py-0.5 rounded-full border border-green-700/30 flex items-center gap-1">
+                        <Star className="w-2.5 h-2.5" /> ganó
+                      </span>
+                    )}
                   </li>
                 )
               })}

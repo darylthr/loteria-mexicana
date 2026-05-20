@@ -43,7 +43,7 @@ export default function BoardCreator({ onSaved, onCancel }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-      <div className="bg-th-surface rounded-2xl shadow-2xl border border-th max-w-2xl w-full max-h-[90vh] flex flex-col">
+      <div className="bg-th-surface rounded-xl shadow-2xl border border-th max-w-2xl w-full max-h-[90vh] flex flex-col">
         <div className="px-6 py-5 border-b border-th shrink-0">
           <h3 className="text-lg font-bold text-th">Crear tablero personalizado</h3>
           <p className="text-sm text-th-sub mt-0.5">
@@ -101,13 +101,13 @@ export default function BoardCreator({ onSaved, onCancel }: Props) {
             <button
               onClick={handleSave}
               disabled={saving || selected.length !== 16 || !name.trim()}
-              className="px-5 py-2.5 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-colors"
+              className="px-5 py-2.5 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors"
             >
               {saving ? 'Guardando...' : 'Guardar tablero'}
             </button>
             <button
               onClick={onCancel}
-              className="px-5 py-2.5 bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-xl transition-colors"
+              className="px-5 py-2.5 bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-lg transition-colors"
             >
               Cancelar
             </button>

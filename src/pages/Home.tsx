@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ChevronsRight, Users, Layers, Plus, LayoutGrid, Volume2, CheckSquare, Trophy, Minus, Square, Maximize2, Sparkles } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useGameStore } from '../store/gameStore'
 import { createRoom, joinRoom, fetchRoom } from '../api/rooms'
@@ -179,7 +180,7 @@ export default function Home() {
 
           {/* Title */}
           <div>
-            <h1 className="text-6xl font-black tracking-tighter text-th leading-none">
+            <h1 className="text-6xl font-black font-display text-th leading-none">
               LOTERÍA
             </h1>
             <p className="text-th-sub text-sm mt-2 tracking-wide">El juego tradicional mexicano</p>
@@ -194,7 +195,7 @@ export default function Home() {
 
           {/* Error */}
           {error && (
-            <div className="w-full px-4 py-2.5 bg-red-900/30 border border-red-700/40 rounded-xl text-red-400 text-sm">
+            <div className="w-full px-4 py-2.5 bg-red-900/30 border border-red-700/40 rounded-lg text-red-400 text-sm">
               {error}
             </div>
           )}
@@ -203,9 +204,9 @@ export default function Home() {
           <button
             onClick={handleCreate}
             disabled={loading || !displayName}
-            className="flex items-center justify-center gap-3 w-full py-4 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xl rounded-2xl transition-all shadow-xl shadow-black/30 active:scale-[0.98]"
+            className="flex items-center justify-center gap-3 w-full py-4 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xl rounded-xl transition-all shadow-xl shadow-black/30 active:scale-[0.98]"
           >
-            <span className="opacity-60 text-base font-bold">»»</span>
+            <ChevronsRight className="w-5 h-5 opacity-60" />
             {loading ? 'Creando...' : 'Crear sala'}
           </button>
 
@@ -219,13 +220,13 @@ export default function Home() {
                   : 'bg-th-ui hover:bg-th-ui-hover text-th'
               }`}
             >
-              <span>👥</span> Unirse a sala
+              <Users className="w-4 h-4" /> Unirse a sala
             </button>
             <button
               onClick={() => boardsRef.current?.scrollIntoView({ behavior: 'smooth' })}
               className="flex items-center gap-2 px-5 py-2.5 bg-th-ui hover:bg-th-ui-hover text-th rounded-full text-sm font-semibold transition-colors"
             >
-              <span>🎴</span> Mis tableros
+              <Layers className="w-4 h-4" /> Mis tableros
             </button>
           </div>
 
@@ -250,10 +251,10 @@ export default function Home() {
                 </button>
               </div>
               {previewRoom && (
-                <div className="px-4 py-3 bg-th-surface rounded-xl border border-th text-left space-y-2">
+                <div className="px-4 py-3 bg-th-surface rounded-lg border border-th text-left space-y-2">
                   <div>
                     <p className="font-semibold text-th text-sm">
-                      Sala <span className="font-mono text-th-accent">{previewRoom.roomId}</span>
+                      Sala <span className="font-mono font-ui text-th-accent">{previewRoom.roomId}</span>
                     </p>
                     <p className="text-th-sub text-xs mt-0.5">
                       {previewRoom.players.length}/{previewRoom.maxPlayers} jugadores · {previewRoom.entryFee} monedas/tablero
@@ -262,7 +263,7 @@ export default function Home() {
                   <button
                     onClick={handleJoin}
                     disabled={loading || !displayName}
-                    className="w-full py-2.5 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 text-white font-bold rounded-xl transition-colors text-sm"
+                    className="w-full py-2.5 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 text-white font-bold rounded-lg transition-colors text-sm"
                   >
                     {loading ? 'Uniéndose...' : 'Unirse'}
                   </button>
@@ -277,14 +278,14 @@ export default function Home() {
       {/* ── Mis tableros ───────────────────────────────────────── */}
       <div ref={boardsRef} className="max-w-3xl mx-auto px-4 pt-4 pb-6">
         <SectionDivider label="Mis tableros" />
-        <div className="bg-th-surface rounded-2xl border border-th p-6 mt-5">
+        <div className="bg-th-surface rounded-xl border border-th p-6 mt-5">
           <div className="flex items-center justify-between mb-4">
             <p className="text-xs text-th-sub">Tableros personalizados · +10 monedas al usarlos</p>
             <button
               onClick={() => setShowCreator(true)}
-              className="px-4 py-2 bg-th-accent hover:bg-th-accent2 text-white text-sm font-bold rounded-lg transition-colors"
+              className="px-4 py-2 bg-th-accent hover:bg-th-accent2 text-white text-sm font-bold rounded-lg transition-colors flex items-center gap-1.5"
             >
-              + Crear tablero
+              <Plus className="w-3.5 h-3.5" /> Crear tablero
             </button>
           </div>
           {customBoards.length === 0 ? (
@@ -312,12 +313,12 @@ export default function Home() {
       <div className="max-w-3xl mx-auto px-4 pb-6">
         <SectionDivider label="Personalización" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-          <div className="bg-th-surface rounded-2xl border border-th p-5">
+          <div className="bg-th-surface rounded-xl border border-th p-5">
             <p className="text-xs font-bold text-th-sub uppercase tracking-widest mb-1">Token de juego</p>
             <p className="text-xs text-th-sub mb-4">El objeto que aparece en tus cartas marcadas.</p>
             <TokenSelector value={token} onChange={handleToken} />
           </div>
-          <div className="bg-th-surface rounded-2xl border border-th p-5">
+          <div className="bg-th-surface rounded-xl border border-th p-5">
             <ThemeSelector />
           </div>
         </div>
@@ -330,14 +331,16 @@ export default function Home() {
         {/* Steps */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
           {[
-            { icon: '🎴', step: '1', title: 'Elige tablero', desc: 'Selecciona hasta 2 tableros antes del juego. Los personalizados dan +10 monedas.' },
-            { icon: '🃏', step: '2', title: 'Canillita canta', desc: 'El anfitrión saca cartas una por una y las muestra a todos los jugadores.' },
-            { icon: '✅', step: '3', title: 'Marca tus cartas', desc: 'Toca las cartas de tu tablero conforme vayan apareciendo en pantalla.' },
-            { icon: '🏆', step: '4', title: '¡Lotería!', desc: 'Completa un patrón y pulsa "¡Lotería!" para reclamar tu premio antes que los demás.' },
+            { Icon: LayoutGrid,  step: '1', title: 'Elige tablero', desc: 'Selecciona hasta 2 tableros antes del juego. Los personalizados dan +10 monedas.' },
+            { Icon: Volume2,     step: '2', title: 'Canillita canta', desc: 'El anfitrión saca cartas una por una y las muestra a todos los jugadores.' },
+            { Icon: CheckSquare, step: '3', title: 'Marca tus cartas', desc: 'Toca las cartas de tu tablero conforme vayan apareciendo en pantalla.' },
+            { Icon: Trophy,      step: '4', title: '¡Lotería!', desc: 'Completa un patrón y pulsa "¡Lotería!" para reclamar tu premio antes que los demás.' },
           ].map(s => (
-            <div key={s.step} className="bg-th-surface rounded-2xl border border-th p-4 flex flex-col gap-2">
+            <div key={s.step} className="bg-th-surface rounded-xl border border-th p-4 flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <span className="text-2xl">{s.icon}</span>
+                <div className="w-8 h-8 rounded-lg bg-th-accent/10 flex items-center justify-center shrink-0">
+                  <s.Icon className="w-4 h-4 text-th-accent" />
+                </div>
                 <span className="text-[10px] font-black text-th-sub uppercase tracking-widest">Paso {s.step}</span>
               </div>
               <p className="font-bold text-th text-sm leading-tight">{s.title}</p>
@@ -347,19 +350,22 @@ export default function Home() {
         </div>
 
         {/* Prize tiers */}
-        <div className="mt-4 bg-th-surface rounded-2xl border border-th p-5">
+        <div className="mt-4 bg-th-surface rounded-xl border border-th p-5">
           <p className="text-xs font-bold text-th-sub uppercase tracking-widest mb-4">Premios · % del bote acumulado</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { icon: '➖', label: 'Línea', pct: '25 %', desc: 'Fila, columna o diagonal completa' },
-              { icon: '⬛', label: 'Cuadro', pct: '35 %', desc: 'Bloque 2 × 2 en cualquier esquina' },
-              { icon: '◼', label: 'Esquinas', pct: '45 %', desc: 'Las 4 esquinas del tablero' },
-              { icon: '🎊', label: 'Lotería', pct: '55 %+', desc: 'Tablero completo — jackpot' },
+              { Icon: Minus,    label: 'Línea',   pct: '25 %',  desc: 'Fila, columna o diagonal completa' },
+              { Icon: Square,   label: 'Cuadro',  pct: '35 %',  desc: 'Bloque 2 × 2 en cualquier esquina' },
+              { Icon: Maximize2,label: 'Esquinas',pct: '45 %',  desc: 'Las 4 esquinas del tablero' },
+              { Icon: Sparkles, label: 'Lotería', pct: '55 %+', desc: 'Tablero completo — jackpot' },
             ].map(p => (
-              <div key={p.label} className="flex flex-col gap-1 px-3 py-3 rounded-xl bg-th border border-th">
+              <div key={p.label} className="flex flex-col gap-1 px-3 py-3 rounded-lg bg-th border border-th">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-th text-sm">{p.label}</span>
-                  <span className="font-black text-th-accent text-sm">{p.pct}</span>
+                  <div className="flex items-center gap-1.5">
+                    <p.Icon className="w-3.5 h-3.5 text-th-accent" />
+                    <span className="font-bold text-th text-sm">{p.label}</span>
+                  </div>
+                  <span className="font-black text-th-accent text-sm font-ui">{p.pct}</span>
                 </div>
                 <p className="text-xs text-th-sub leading-snug">{p.desc}</p>
               </div>

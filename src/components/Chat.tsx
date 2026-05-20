@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Send } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 
 interface ChatMessage {
@@ -40,7 +41,7 @@ export default function Chat() {
   const isSystem = (pid: string) => pid === ''
 
   return (
-    <div className="flex flex-col h-full bg-th-surface rounded-2xl border border-th overflow-hidden">
+    <div className="flex flex-col h-full bg-th-surface rounded-xl border border-th overflow-hidden">
       <div className="px-4 py-3 border-b border-th font-bold text-th text-sm">
         Chat
       </div>
@@ -91,9 +92,9 @@ export default function Chat() {
         <button
           onClick={handleSend}
           disabled={!input.trim()}
-          className="px-3 py-2 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 text-white text-sm font-semibold rounded-lg transition-colors"
+          className="px-3 py-2 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 text-white rounded-lg transition-colors flex items-center justify-center"
         >
-          →
+          <Send className="w-4 h-4" />
         </button>
       </div>
     </div>

@@ -51,11 +51,11 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-900 via-amber-900 to-red-950 p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-black text-amber-400 tracking-tight">Lotería</h1>
+          <h1 className="text-5xl font-black text-amber-400 font-display">Lotería</h1>
           <p className="text-amber-200/70 mt-1 text-sm">El juego tradicional mexicano</p>
         </div>
 
-        <div className="bg-th-surface rounded-2xl shadow-2xl border border-th p-6">
+        <div className="bg-th-surface rounded-xl shadow-2xl border border-th p-6">
           {/* Mode tabs */}
           <div className="flex rounded-lg bg-th p-1 mb-5">
             <button

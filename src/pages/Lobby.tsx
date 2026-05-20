@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { ChevronsRight, Crown, Check } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import Chat from '../components/Chat'
 import BoardPicker from '../components/BoardPicker'
@@ -136,7 +137,7 @@ export default function Lobby() {
 
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="shrink-0 bg-th-surface border-b border-th px-5 py-3 flex items-center justify-between">
-        <h1 className="text-xl font-black text-th-accent tracking-tight">LOTERÍA</h1>
+        <h1 className="text-xl font-black text-th-accent font-display">LOTERÍA</h1>
 
         <div className="flex items-center gap-5">
           {balance !== undefined && (
@@ -161,17 +162,17 @@ export default function Lobby() {
         <div className="w-60 shrink-0 flex flex-col gap-3">
 
           {/* Room code */}
-          <div className="bg-th-surface rounded-2xl border border-th p-4 shrink-0">
+          <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0">
             <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-2">Código de sala</p>
-            <span className="font-mono text-2xl font-black text-th tracking-widest leading-none block mb-3">
+            <span className="font-mono font-ui text-2xl font-black text-th tracking-widest leading-none block mb-3">
               {roomId}
             </span>
             <div className="flex gap-2">
               <button
                 onClick={handleCopyCode}
-                className="flex-1 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-lg transition-colors"
+                className="flex-1 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-md transition-colors flex items-center justify-center gap-1.5"
               >
-                {copied ? '✓ Copiado' : 'Copiar código'}
+                {copied ? <><Check className="w-3 h-3" /> Copiado</> : 'Copiar código'}
               </button>
               <button
                 onClick={() => {
@@ -179,7 +180,7 @@ export default function Lobby() {
                   setCopied(true)
                   setTimeout(() => setCopied(false), 2000)
                 }}
-                className="flex-1 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-lg transition-colors"
+                className="flex-1 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-md transition-colors"
               >
                 Compartir link
               </button>
@@ -187,7 +188,7 @@ export default function Lobby() {
           </div>
 
           {/* Config */}
-          <div className="bg-th-surface rounded-2xl border border-th p-4 shrink-0">
+          <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0">
             <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">Costo de entrada</p>
             {isHost ? (
               <div className="space-y-2">
@@ -221,7 +222,7 @@ export default function Lobby() {
           </div>
 
           {/* Players */}
-          <div className="bg-th-surface rounded-2xl border border-th p-4 flex-1 overflow-y-auto">
+          <div className="bg-th-surface rounded-xl border border-th p-4 flex-1 overflow-y-auto">
             <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">
               Jugadores · {room?.players.length ?? 0}/{room?.maxPlayers ?? 6}
             </p>
@@ -234,14 +235,14 @@ export default function Lobby() {
                 const isMe = p.id === playerId
                 return (
                   <li key={p.id} className="flex items-center justify-between py-2 border-b border-th last:border-0 gap-2">
-                    <span className="font-medium text-th text-sm truncate">
-                      {p.id === room.hostId && <span className="text-th-accent mr-1">👑</span>}
+                    <span className="font-medium text-th text-sm truncate flex items-center gap-1">
+                      {p.id === room.hostId && <Crown className="w-3 h-3 text-th-accent shrink-0" />}
                       {p.name}
-                      {isMe && <span className="text-th-sub text-xs ml-1">(tú)</span>}
+                      {isMe && <span className="text-th-sub text-xs ml-0.5">(tú)</span>}
                     </span>
                     {count > 0 ? (
-                      <span className="shrink-0 text-[10px] bg-green-900/30 text-green-400 font-bold px-2 py-0.5 rounded-full border border-green-700/30">
-                        {count}{hasCustom ? '★' : ''} ✓
+                      <span className="shrink-0 text-[10px] bg-green-900/30 text-green-400 font-bold px-2 py-0.5 rounded-full border border-green-700/30 flex items-center gap-1">
+                        {count}{hasCustom ? '+' : ''} <Check className="w-2.5 h-2.5" />
                       </span>
                     ) : (
                       <span className="shrink-0 text-[10px] bg-th text-th-sub px-2 py-0.5 rounded-full border border-th">
@@ -256,7 +257,7 @@ export default function Lobby() {
 
           {/* Error */}
           {error && (
-            <div className="shrink-0 px-3 py-2 bg-red-900/30 border border-red-700/40 rounded-xl text-red-400 text-xs">
+            <div className="shrink-0 px-3 py-2 bg-red-900/30 border border-red-700/40 rounded-lg text-red-400 text-xs">
               {error}
             </div>
           )}
@@ -269,9 +270,9 @@ export default function Lobby() {
                   onClick={handleStart}
                   disabled={!canStart}
                   title={playersWithoutBoard.length > 0 ? `Sin tablero: ${playersWithoutBoard.map(p => p.name).join(', ')}` : undefined}
-                  className="flex items-center justify-center gap-2 w-full py-3.5 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-base rounded-2xl transition-all shadow-lg shadow-black/20 active:scale-[0.98]"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-base rounded-xl transition-all shadow-lg shadow-black/20 active:scale-[0.98]"
                 >
-                  <span className="opacity-60 text-sm">»»</span>
+                  <ChevronsRight className="w-5 h-5 opacity-60" />
                   Iniciar juego
                 </button>
                 {playersWithoutBoard.length > 0 && (
@@ -286,7 +287,7 @@ export default function Lobby() {
                 )}
               </div>
             ) : (
-              <div className="py-3.5 rounded-2xl border border-th bg-th-surface text-center">
+              <div className="py-3.5 rounded-xl border border-th bg-th-surface text-center">
                 <p className="text-sm text-th-sub">Esperando al anfitrión…</p>
               </div>
             )}
@@ -294,7 +295,7 @@ export default function Lobby() {
         </div>
 
         {/* CENTER — board picker */}
-        <div className="flex-1 bg-th-surface rounded-2xl border border-th flex flex-col min-w-0 overflow-hidden">
+        <div className="flex-1 bg-th-surface rounded-xl border border-th flex flex-col min-w-0 overflow-hidden">
           <div className="shrink-0 px-5 py-4 border-b border-th flex items-center justify-between">
             <div>
               <p className="font-bold text-th text-sm">Elige tu tablero</p>
@@ -302,9 +303,9 @@ export default function Lobby() {
             </div>
             <button
               onClick={() => setShowCreator(true)}
-              className="px-3 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-lg transition-colors shrink-0"
+              className="px-3 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-md transition-colors shrink-0 flex items-center gap-1.5"
             >
-              + Crear tablero
+              <ChevronsRight className="w-3 h-3" /> Crear tablero
             </button>
           </div>
           <div className="flex-1 overflow-y-auto px-5 py-4">

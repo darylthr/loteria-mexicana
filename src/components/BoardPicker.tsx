@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react'
 import type { AvailableBoard } from '../types/game'
 import type { CustomBoard } from '../api/boards'
 
@@ -36,7 +37,7 @@ function BoardCard({
   return (
     <div
       onClick={() => !taken && onSelect()}
-      className={`relative rounded-xl overflow-hidden transition-all border-2 ${
+      className={`relative rounded-lg overflow-hidden transition-all border-2 ${
         selected
           ? 'border-th-accent ring-2 ring-th-accent shadow-md'
           : taken
@@ -51,7 +52,9 @@ function BoardCard({
         )}
       </div>
       {selected && (
-        <div className="absolute top-1.5 right-1.5 bg-th-accent text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">✓</div>
+        <div className="absolute top-1.5 right-1.5 bg-th-accent text-white p-0.5 rounded-full">
+          <Check className="w-2.5 h-2.5" />
+        </div>
       )}
       {locked && !isMe && lockedByName && (
         <div className="absolute top-1.5 right-1.5 bg-th-ui text-th text-[10px] font-bold px-1.5 py-0.5 rounded-full truncate max-w-[70%]">{lockedByName}</div>

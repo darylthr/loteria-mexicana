@@ -61,6 +61,13 @@
   --th-ui-hover:  #704e28;
 }
 
+/* ── Font families ───────────────────────────────────── */
+:root {
+  --font-display: "SF Pro Rounded", ui-rounded, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  --font-body:    "SF Pro Text", "SF Pro", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  --font-ui:      "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
 /* ── Utility classes ─────────────────────────────────── */
 @layer utilities {
   .bg-th          { background-color: var(--th-bg); }
@@ -77,11 +84,16 @@
   .hover\:bg-th-ui-hover:hover { background-color: var(--th-ui-hover); }
   .hover\:border-th-accent:hover { border-color: var(--th-accent); }
   .hover\:text-th:hover { color: var(--th-text); }
+
+  .font-display { font-family: var(--font-display); letter-spacing: 0.01em; }
+  .font-ui      { font-family: var(--font-ui); letter-spacing: -0.02em; }
 }
 
 /* ── Base ────────────────────────────────────────────── */
 @layer base {
   body {
+    font-family: var(--font-body);
+    letter-spacing: -0.01em;
     background-color: var(--th-bg);
     color: var(--th-text);
     @apply antialiased;

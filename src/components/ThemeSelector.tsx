@@ -18,7 +18,7 @@ export default function ThemeSelector() {
           <button
             key={id}
             onClick={() => handleChange(id)}
-            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border transition-all text-left ${
+            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all text-left ${
               current === id
                 ? 'border-th-accent bg-th-surface ring-2 ring-th-accent'
                 : 'border-th bg-th-surface hover:border-th-accent'
