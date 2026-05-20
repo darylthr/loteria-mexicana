@@ -20,6 +20,18 @@ export async function createProfile(displayName: string): Promise<void> {
   }
 }
 
+export async function updateProfile(displayName: string): Promise<void> {
+  const res = await fetch('/api/profile', {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify({ displayName }),
+  })
+  if (!res.ok) {
+    const body = await res.json()
+    throw new Error(body.error ?? 'Failed to update profile')
+  }
+}
+
 export async function getProfile(): Promise<{ displayName: string; balance: number }> {
   const res = await fetch('/api/profile', { headers: await authHeaders() })
   if (!res.ok) throw new Error('Failed to fetch profile')
