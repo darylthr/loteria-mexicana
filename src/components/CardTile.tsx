@@ -14,9 +14,7 @@ export default function CardTile({ card, isMarked, isDrawn, onClick }: CardTileP
     <div
       onClick={clickable ? onClick : undefined}
       title={card.name}
-      className={`relative rounded overflow-hidden select-none ${
-        clickable ? 'cursor-pointer' : isMarked ? 'opacity-60' : 'opacity-40'
-      }`}
+      className={`relative rounded overflow-hidden select-none opacity-60 ${clickable ? 'cursor-pointer' : ''}`}
     >
       <img
         src={card.imageUrl}
