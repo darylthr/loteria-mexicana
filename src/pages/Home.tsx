@@ -148,10 +148,10 @@ export default function Home() {
           className="absolute inset-0 pointer-events-none"
           style={{
             backgroundImage: 'url(/images/bg/bg.png)',
-            backgroundSize: 'cover',
+            backgroundSize: 'auto 60%',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            opacity: 0.18,
+            opacity: 0.9,
           }}
         />
 
