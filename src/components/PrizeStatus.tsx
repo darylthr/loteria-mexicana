@@ -9,7 +9,7 @@ interface PrizeStatusProps {
 
 export default function PrizeStatus({ pot, claimedPrizes, myPlayerId }: PrizeStatusProps) {
   return (
-    <div className="bg-th-surface rounded-2xl border border-th p-4 space-y-2">
+    <div className="space-y-2">
       <div className="flex items-center justify-between mb-1">
         <span className="text-xs text-th-sub uppercase tracking-wide">Bote</span>
         <span className="font-bold text-th-accent">{pot} mon.</span>

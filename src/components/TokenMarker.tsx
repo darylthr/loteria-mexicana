@@ -80,8 +80,7 @@ interface TokenSelectorProps {
 
 export function TokenSelector({ value, onChange }: TokenSelectorProps) {
   return (
-    <div className="bg-th-surface border border-th rounded-xl p-2">
-      <p className="text-[10px] text-th-sub uppercase tracking-wide mb-1.5 text-center">Token</p>
+    <div>
       <div className="flex gap-1.5 justify-center">
         {(Object.keys(TOKENS) as TokenType[]).map(t => {
           const T = TOKENS[t].component

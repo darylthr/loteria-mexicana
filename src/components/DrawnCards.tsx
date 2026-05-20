@@ -13,7 +13,7 @@ export default function DrawnCards({ cards }: { cards: LoteriaCard[] }) {
             src={card.imageUrl}
             alt={card.name}
             title={card.name}
-            className="h-12 w-8 object-cover rounded shrink-0 opacity-70 hover:opacity-100 transition-opacity"
+            className="h-16 w-11 object-cover rounded shrink-0 opacity-70 hover:opacity-100 transition-opacity"
           />
         ))}
       </div>
