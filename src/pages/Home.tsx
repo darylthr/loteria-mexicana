@@ -156,7 +156,7 @@ export default function Home() {
                 step={0.05}
                 value={volume}
                 onChange={e => setVolume(Number(e.target.value))}
-                style={{ appearance: 'auto', padding: 0, border: 'none', background: 'transparent', width: '5rem' }}
+                className="w-20"
               />
             </div>
           )}
