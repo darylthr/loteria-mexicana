@@ -17,7 +17,6 @@ export default function Chat() {
   const roomId = useGameStore((s) => s.roomId)
   const socket = useGameStore((s) => s.socket)
 
-
   useEffect(() => {
     if (!socket) return
     const handler = (msg: ChatMessage) => {
@@ -38,47 +37,63 @@ export default function Chat() {
     setInput('')
   }
 
+  const isSystem = (pid: string) => pid === ''
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 300, border: '1px solid #ddd', borderRadius: 8, overflow: 'hidden' }}>
-      <div style={{ padding: '8px 12px', borderBottom: '1px solid #ddd', fontWeight: 600, fontSize: 14 }}>
+    <div className="flex flex-col h-full bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+      <div className="px-4 py-3 border-b border-stone-100 font-bold text-stone-700 text-sm">
         Chat
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 text-sm">
         {messages.length === 0 && (
-          <p style={{ margin: 0, opacity: 0.4, fontSize: 13, textAlign: 'center', marginTop: 12 }}>
-            Sin mensajes aún
-          </p>
+          <p className="text-stone-400 text-xs text-center mt-4">Sin mensajes aún</p>
         )}
         {messages.map((msg, i) => {
           const isMe = msg.playerId === playerId
+          const sys = isSystem(msg.playerId)
           return (
-            <div key={i} style={{ fontSize: 13 }}>
-              <span style={{ fontWeight: 700, color: isMe ? '#0066cc' : '#333' }}>
-                {msg.playerName}
-              </span>
-              <span style={{ opacity: 0.5, fontSize: 11, marginLeft: 6 }}>
-                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
-              <br />
-              <span>{msg.message}</span>
+            <div key={i}>
+              {sys ? (
+                <div className="text-center">
+                  <span className="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 text-xs rounded-full border border-amber-200">
+                    {msg.message}
+                  </span>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex items-baseline gap-1.5 mb-0.5">
+                    <span className={`text-xs font-bold ${isMe ? 'text-amber-600' : 'text-stone-500'}`}>
+                      {msg.playerName}
+                    </span>
+                    <span className="text-stone-300 text-[10px]">
+                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  <p className="text-stone-700 leading-snug">{msg.message}</p>
+                </div>
+              )}
             </div>
           )
         })}
         <div ref={bottomRef} />
       </div>
 
-      <div style={{ padding: 8, borderTop: '1px solid #ddd', display: 'flex', gap: 8 }}>
+      <div className="px-3 py-2 border-t border-stone-100 flex gap-2">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') handleSend() }}
-          placeholder="Mensaje..."
+          placeholder="Mensaje…"
           maxLength={200}
-          style={{ flex: 1, minWidth: 0 }}
+          className="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-400"
         />
-        <button onClick={handleSend} disabled={!input.trim()}>
-          Enviar
+        <button
+          onClick={handleSend}
+          disabled={!input.trim()}
+          className="px-3 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-40 text-white text-sm font-semibold rounded-lg transition-colors"
+        >
+          →
         </button>
       </div>
     </div>

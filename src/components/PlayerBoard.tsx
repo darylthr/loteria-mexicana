@@ -11,14 +11,7 @@ export default function PlayerBoard({ board, drawnCardIds, onMark }: PlayerBoard
   const marked = new Set(board.markedCards)
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: 6,
-        maxWidth: 480,
-      }}
-    >
+    <div className="grid grid-cols-4 gap-1.5 p-3 bg-stone-800 rounded-2xl border border-stone-700 shadow-xl">
       {board.cards.map((card) => (
         <CardTile
           key={card.id}

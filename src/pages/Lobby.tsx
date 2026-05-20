@@ -6,7 +6,6 @@ import BoardPicker from '../components/BoardPicker'
 import BoardCreator from '../components/BoardCreator'
 import { getBoards } from '../api/boards'
 import type { CustomBoard } from '../api/boards'
-import type { AvailableBoard } from '../types/game'
 
 export default function Lobby() {
   const { roomId } = useParams<{ roomId: string }>()
@@ -48,7 +47,6 @@ export default function Lobby() {
       setMyBoards(player.boards)
       setBalance(player.balance)
       setFeeInput(room.entryFee)
-      // Restore own selections if already made
       const raw = room.boardSelections[player.id]
       const sels = Array.isArray(raw) ? raw : []
       setSelectedBoardIds(sels.map(s => s.boardId))
@@ -79,7 +77,7 @@ export default function Lobby() {
     socket.on('game:started', ({ room }) => {
       const store = useGameStore.getState()
       setRoom(room)
-      const me = room.players.find(p => p.id === store.playerId)
+      const me = room.players.find((p: { id: string }) => p.id === store.playerId)
       if (me) {
         setMyBoards(me.boards)
         setBalance(me.balance)
@@ -133,92 +131,148 @@ export default function Lobby() {
   }) ?? []
 
   return (
-    <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
-      <div style={{ flex: 1 }}>
-        <h2>Sala: {roomId}</h2>
-        <p style={{ opacity: 0.7, fontSize: 14 }}>Comparte este código con tus amigos.</p>
+    <div className="min-h-screen bg-stone-100">
+      {/* Header */}
+      <header className="bg-white border-b border-stone-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-black text-amber-600 tracking-tight">Lotería</h1>
+            <p className="text-sm text-stone-500 font-mono">
+              Sala: <span className="font-bold text-stone-700 tracking-widest">{roomId}</span>
+              <span className="text-stone-400 ml-2">· comparte este código</span>
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-stone-400 uppercase tracking-wide">Monedas</p>
+            <p className="text-lg font-bold text-amber-600">{balance}</p>
+          </div>
+        </div>
+      </header>
 
-        {/* Fee config */}
-        <div style={{ padding: 16, border: '1px solid #ddd', borderRadius: 8, marginBottom: 16 }}>
-          <h4 style={{ margin: '0 0 12px' }}>Configuración</h4>
-          {isHost ? (
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <label>Costo por tablero:</label>
-              <input
-                type="number" min={0} max={500} value={feeInput}
-                onChange={e => { setFeeInput(Number(e.target.value)); setFeeSaved(false) }}
-                style={{ width: 70 }}
-              />
-              <button onClick={handleSaveFee} disabled={feeSaved}>{feeSaved ? 'Guardado ✓' : 'Guardar'}</button>
+      <div className="max-w-7xl mx-auto px-4 py-6 flex gap-6 items-start">
+        {/* Main content */}
+        <div className="flex-1 min-w-0 space-y-5">
+
+          {/* Config */}
+          <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-5">
+            <h3 className="font-bold text-stone-800 mb-3">Configuración</h3>
+            {isHost ? (
+              <div className="flex items-center gap-3">
+                <label className="text-sm text-stone-600 whitespace-nowrap">Costo por tablero:</label>
+                <input
+                  type="number" min={0} max={500} value={feeInput}
+                  onChange={e => { setFeeInput(Number(e.target.value)); setFeeSaved(false) }}
+                  className="w-24"
+                />
+                <button
+                  onClick={handleSaveFee}
+                  disabled={feeSaved}
+                  className="px-3 py-2 bg-stone-200 hover:bg-stone-300 disabled:opacity-50 text-stone-700 text-sm font-semibold rounded-lg transition-colors"
+                >
+                  {feeSaved ? 'Guardado ✓' : 'Guardar'}
+                </button>
+              </div>
+            ) : (
+              <p className="text-sm text-stone-600">
+                Costo por tablero: <span className="font-bold text-stone-800">{room?.entryFee ?? 0} monedas</span>
+              </p>
+            )}
+            <p className={`mt-2 text-sm ${canAfford ? 'text-stone-500' : 'text-red-600 font-medium'}`}>
+              Costo estimado al iniciar: <strong>{estimatedCost} monedas</strong>
+              {customCount > 0 && <span className="text-stone-400"> (incl. +10 por tablero personalizado)</span>}
+              {' '}· tienes {balance}
+              {!canAfford && ' — monedas insuficientes'}
+            </p>
+          </div>
+
+          {/* Players */}
+          <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-5">
+            <h3 className="font-bold text-stone-800 mb-3">
+              Jugadores <span className="text-stone-400 font-normal">({room?.players.length ?? 0}/{room?.maxPlayers ?? 6})</span>
+            </h3>
+            <ul className="space-y-2">
+              {room?.players.map(p => {
+                const raw = room.boardSelections[p.id]
+                const sels = Array.isArray(raw) ? raw : []
+                const count = sels.length
+                const hasCustom = sels.some(s => s.isCustom)
+                const isMe = p.id === playerId
+                return (
+                  <li key={p.id} className="flex items-center justify-between py-2 border-b border-stone-100 last:border-0">
+                    <span className="font-medium text-stone-800">
+                      {p.name}
+                      {p.id === room.hostId && <span className="ml-1.5 text-amber-500">👑</span>}
+                      {isMe && <span className="ml-1.5 text-xs text-stone-400">(tú)</span>}
+                    </span>
+                    {count > 0 ? (
+                      <span className="text-xs bg-green-100 text-green-700 font-semibold px-2.5 py-1 rounded-full">
+                        {count} tablero{count > 1 ? 's' : ''}{hasCustom ? ' ★' : ''} ✓
+                      </span>
+                    ) : (
+                      <span className="text-xs bg-stone-100 text-stone-400 font-medium px-2.5 py-1 rounded-full">
+                        sin tablero
+                      </span>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+
+            {error && (
+              <div className="mt-3 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                {error}
+              </div>
+            )}
+
+            <div className="mt-4">
+              {isHost ? (
+                <button
+                  onClick={handleStart}
+                  disabled={!room || room.players.length < 2 || playersWithoutBoard.length > 0}
+                  title={playersWithoutBoard.length > 0 ? `Sin tablero: ${playersWithoutBoard.map(p => p.name).join(', ')}` : undefined}
+                  className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-colors"
+                >
+                  Iniciar juego
+                </button>
+              ) : (
+                <p className="text-sm text-stone-400 italic">Esperando que el anfitrión inicie el juego…</p>
+              )}
+              {playersWithoutBoard.length > 0 && (
+                <p className="mt-2 text-sm text-amber-700">
+                  Esperando tablero de: {playersWithoutBoard.map(p => p.name).join(', ')}
+                </p>
+              )}
             </div>
-          ) : (
-            <p style={{ margin: 0, fontSize: 14 }}>Costo por tablero: <strong>{room?.entryFee ?? 0} monedas</strong></p>
+          </div>
+
+          {/* Board selection */}
+          {room && playerId && (
+            <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-stone-800">Elige tu tablero</h3>
+                <button
+                  onClick={() => setShowCreator(true)}
+                  className="px-3 py-1.5 text-sm bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium rounded-lg transition-colors"
+                >
+                  + Crear tablero
+                </button>
+              </div>
+              <BoardPicker
+                availableBoards={room.availableBoards ?? []}
+                myCustomBoards={myCustomBoards}
+                selectedBoardIds={selectedBoardIds}
+                playerId={playerId}
+                players={room.players}
+                onSelect={handleSelectBoard}
+              />
+            </div>
           )}
-          <p style={{ margin: '8px 0 0', fontSize: 13, color: canAfford ? undefined : 'red' }}>
-            Costo al iniciar: <strong>{estimatedCost} monedas</strong>
-            {customCount > 0 && <span style={{ opacity: 0.6 }}> (incluye +10 por tablero personalizado)</span>}
-            {' '}· tienes {balance}
-            {!canAfford && ' — monedas insuficientes'}
-          </p>
         </div>
 
-        {/* Players */}
-        <h3>Jugadores ({room?.players.length ?? 0}/{room?.maxPlayers ?? 6})</h3>
-        <ul style={{ paddingLeft: 20, marginBottom: 16 }}>
-          {room?.players.map(p => {
-            const raw = room.boardSelections[p.id]
-            const sels = Array.isArray(raw) ? raw : []
-            const count = sels.length
-            const hasCustom = sels.some(s => s.isCustom)
-            return (
-              <li key={p.id}>
-                {p.name}
-                {p.id === room.hostId ? ' 👑' : ''}
-                {p.id === playerId ? ' (tú)' : ''}
-                {' — '}
-                {count > 0
-                  ? `${count} tablero${count > 1 ? 's' : ''}${hasCustom ? ' (personalizado)' : ''} ✓`
-                  : <span style={{ opacity: 0.5 }}>sin tablero</span>}
-              </li>
-            )
-          })}
-        </ul>
-
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-
-        {isHost && (
-          <button
-            onClick={handleStart}
-            disabled={!room || room.players.length < 2 || playersWithoutBoard.length > 0}
-            title={playersWithoutBoard.length > 0 ? `Sin tablero: ${playersWithoutBoard.map(p => p.name).join(', ')}` : undefined}
-            style={{ marginBottom: 24 }}
-          >
-            Iniciar juego
-          </button>
-        )}
-        {!isHost && <p style={{ opacity: 0.6, marginBottom: 24 }}>Esperando que el anfitrión inicie el juego...</p>}
-
-        {/* Board selection */}
-        {room && playerId && (
-          <div style={{ marginBottom: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <h3 style={{ margin: 0 }}>Elige tu tablero</h3>
-              <button onClick={() => setShowCreator(true)} style={{ fontSize: 13 }}>+ Crear tablero</button>
-            </div>
-            <BoardPicker
-              availableBoards={room.availableBoards ?? []}
-              myCustomBoards={myCustomBoards}
-              selectedBoardIds={selectedBoardIds}
-              playerId={playerId}
-              players={room.players}
-              onSelect={handleSelectBoard}
-            />
-          </div>
-        )}
-      </div>
-
-      <div style={{ width: 280, flexShrink: 0, position: 'sticky', top: 16, height: 400 }}>
-        <Chat />
+        {/* Chat sidebar */}
+        <div className="w-72 shrink-0 sticky top-6 h-[520px]">
+          <Chat />
+        </div>
       </div>
 
       {showCreator && (

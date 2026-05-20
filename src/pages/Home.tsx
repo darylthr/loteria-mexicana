@@ -110,99 +110,141 @@ export default function Home() {
   }
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <h1 style={{ margin: 0 }}>Lotería</h1>
-        <button onClick={handleSignOut} style={{ fontSize: 13 }}>Cerrar sesión</button>
-      </div>
-
-      {displayName && (
-        <p style={{ marginTop: 0, opacity: 0.7 }}>
-          Hola, <strong>{displayName}</strong> · Monedas: <strong>{balance}</strong>
-        </p>
-      )}
-
-      {/* ── Create ── */}
-      <section>
-        <h3 style={{ margin: '0 0 8px' }}>Nueva sala</h3>
-        <p style={{ margin: '0 0 8px', opacity: 0.7, fontSize: 14 }}>
-          Configura el costo y tableros en el lobby.
-        </p>
-        {error && !previewRoom && <p style={{ color: 'red' }}>{error}</p>}
-        <button onClick={handleCreate} disabled={loading || !displayName}>
-          {loading ? 'Creando...' : 'Crear sala'}
-        </button>
-      </section>
-
-      <hr style={{ margin: '24px 0' }} />
-
-      {/* ── Join ── */}
-      <section>
-        <h3 style={{ margin: '0 0 8px' }}>Unirse a sala</h3>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <input
-            value={roomCode}
-            onChange={(e) => {
-              setRoomCode(e.target.value.toUpperCase())
-              setPreviewRoom(null)
-            }}
-            placeholder="Código (ej. A3F9K2)"
-            maxLength={6}
-          />
-          <button onClick={handlePreviewRoom} disabled={previewLoading || !roomCode.trim()}>
-            {previewLoading ? '...' : 'Buscar'}
-          </button>
+    <div className="min-h-screen bg-stone-100">
+      {/* Header */}
+      <header className="bg-white border-b border-stone-200 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-black text-amber-600 tracking-tight">Lotería</h1>
+            {displayName && (
+              <p className="text-sm text-stone-500">
+                Hola, <span className="font-semibold text-stone-700">{displayName}</span>
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-4">
+            {balance !== undefined && (
+              <div className="text-right">
+                <p className="text-xs text-stone-400 uppercase tracking-wide">Monedas</p>
+                <p className="text-lg font-bold text-amber-600">{balance}</p>
+              </div>
+            )}
+            <button
+              onClick={handleSignOut}
+              className="px-3 py-1.5 text-sm text-stone-500 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
+            >
+              Cerrar sesión
+            </button>
+          </div>
         </div>
+      </header>
 
-        {previewRoom && (
-          <div style={{ marginTop: 12, padding: 12, border: '1px solid #ccc', borderRadius: 8 }}>
-            <p style={{ margin: 0 }}>
-              Sala <strong>{previewRoom.roomId}</strong> · {previewRoom.players.length}/{previewRoom.maxPlayers} jugadores
-            </p>
-            <p style={{ margin: '4px 0', fontSize: 14 }}>
-              Costo por tablero: <strong>{previewRoom.entryFee} monedas</strong>
-            </p>
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        {error && (
+          <div className="mb-6 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+            {error}
           </div>
         )}
 
-        {error && previewRoom && <p style={{ color: 'red', marginTop: 8 }}>{error}</p>}
-        <button
-          onClick={handleJoin}
-          disabled={loading || !displayName || !previewRoom}
-          style={{ marginTop: 12 }}
-        >
-          {loading ? 'Uniéndose...' : 'Unirse'}
-        </button>
-      </section>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Create room */}
+          <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6">
+            <h2 className="text-lg font-bold text-stone-800 mb-1">Nueva sala</h2>
+            <p className="text-sm text-stone-500 mb-5">
+              Crea una sala y comparte el código con tus amigos.
+            </p>
+            <button
+              onClick={handleCreate}
+              disabled={loading || !displayName}
+              className="w-full py-2.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors"
+            >
+              {loading ? 'Creando...' : 'Crear sala'}
+            </button>
+          </div>
 
-      <hr style={{ margin: '24px 0' }} />
+          {/* Join room */}
+          <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6">
+            <h2 className="text-lg font-bold text-stone-800 mb-1">Unirse a sala</h2>
+            <p className="text-sm text-stone-500 mb-4">Ingresa el código de sala de tu amigo.</p>
+            <div className="flex gap-2 mb-3">
+              <input
+                value={roomCode}
+                onChange={(e) => {
+                  setRoomCode(e.target.value.toUpperCase())
+                  setPreviewRoom(null)
+                }}
+                placeholder="Código (ej. A3F9K2)"
+                maxLength={6}
+                className="font-mono tracking-widest uppercase"
+              />
+              <button
+                onClick={handlePreviewRoom}
+                disabled={previewLoading || !roomCode.trim()}
+                className="px-4 py-2 bg-stone-200 hover:bg-stone-300 disabled:opacity-50 disabled:cursor-not-allowed text-stone-700 font-semibold rounded-lg text-sm transition-colors whitespace-nowrap"
+              >
+                {previewLoading ? '...' : 'Buscar'}
+              </button>
+            </div>
 
-      {/* ── My boards ── */}
-      <section>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <h3 style={{ margin: 0 }}>Mis tableros</h3>
-          <button onClick={() => setShowCreator(true)} style={{ fontSize: 13 }}>+ Crear tablero</button>
+            {previewRoom && (
+              <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm">
+                <p className="font-semibold text-stone-800">
+                  Sala <span className="font-mono text-amber-700">{previewRoom.roomId}</span>
+                </p>
+                <p className="text-stone-600 mt-0.5">
+                  {previewRoom.players.length}/{previewRoom.maxPlayers} jugadores ·{' '}
+                  {previewRoom.entryFee} monedas por tablero
+                </p>
+              </div>
+            )}
+
+            <button
+              onClick={handleJoin}
+              disabled={loading || !displayName || !previewRoom}
+              className="w-full py-2.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors"
+            >
+              {loading ? 'Uniéndose...' : 'Unirse'}
+            </button>
+          </div>
         </div>
 
-        {customBoards.length === 0 ? (
-          <p style={{ opacity: 0.5, fontSize: 14 }}>Aún no tienes tableros personalizados.</p>
-        ) : (
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {customBoards.map(b => (
-              <li key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', border: '1px solid #ddd', borderRadius: 8 }}>
-                <span style={{ fontWeight: 600 }}>{b.name}</span>
-                <button
-                  onClick={() => handleDeleteBoard(b.id)}
-                  disabled={deletingId === b.id}
-                  style={{ fontSize: 12, opacity: 0.6 }}
-                >
-                  {deletingId === b.id ? '...' : 'Eliminar'}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+        {/* My boards */}
+        <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-bold text-stone-800">Mis tableros</h2>
+              <p className="text-sm text-stone-500">Tableros personalizados (+10 monedas al usarlos)</p>
+            </div>
+            <button
+              onClick={() => setShowCreator(true)}
+              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold rounded-lg transition-colors"
+            >
+              + Crear
+            </button>
+          </div>
+
+          {customBoards.length === 0 ? (
+            <p className="text-stone-400 text-sm text-center py-6">
+              Aún no tienes tableros personalizados.
+            </p>
+          ) : (
+            <ul className="divide-y divide-stone-100">
+              {customBoards.map(b => (
+                <li key={b.id} className="flex items-center justify-between py-3">
+                  <span className="font-medium text-stone-800">{b.name}</span>
+                  <button
+                    onClick={() => handleDeleteBoard(b.id)}
+                    disabled={deletingId === b.id}
+                    className="text-sm text-stone-400 hover:text-red-600 disabled:opacity-50 transition-colors"
+                  >
+                    {deletingId === b.id ? '...' : 'Eliminar'}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </main>
 
       {showCreator && (
         <BoardCreator

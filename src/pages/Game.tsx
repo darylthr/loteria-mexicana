@@ -26,7 +26,6 @@ export default function Game() {
 
   const setError = useGameStore((s) => s.setError)
   const resetGame = useGameStore((s) => s.resetGame)
-  const resetForNewGame = useGameStore((s) => s.resetForNewGame)
   const disconnectSocket = useGameStore((s) => s.disconnectSocket)
 
   useEffect(() => {
@@ -126,7 +125,7 @@ export default function Game() {
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-stone-900 text-stone-100">
       {gameEnded && room && (
         <WinnerOverlay
           room={room}
@@ -138,91 +137,105 @@ export default function Game() {
         />
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-        <div>
-          <h3 style={{ margin: 0 }}>Sala {roomId}</h3>
-          {room && (
-            <span style={{ fontSize: 14, opacity: 0.7 }}>
-              {room.players.map((p) => p.name).join(', ')}
+      {/* Top bar */}
+      <header className="bg-stone-800 border-b border-stone-700 px-4 py-3">
+        <div className="max-w-screen-2xl mx-auto flex items-center justify-between">
+          <div>
+            <span className="font-black text-amber-400 text-lg">Lotería</span>
+            <span className="ml-3 text-stone-400 text-sm font-mono tracking-widest">{roomId}</span>
+            {room && (
+              <span className="ml-3 text-stone-500 text-sm">
+                {room.players.map((p) => p.name).join(', ')}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-stone-400">
+              Monedas: <strong className="text-amber-400">{balance}</strong>
             </span>
-          )}
+            <button
+              onClick={handleLeave}
+              className="px-3 py-1.5 text-sm text-stone-400 hover:text-white hover:bg-stone-700 rounded-lg transition-colors"
+            >
+              Salir
+            </button>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <span style={{ fontSize: 14 }}>Monedas: <strong>{balance}</strong></span>
-          <button onClick={handleLeave}>Salir del juego</button>
-        </div>
-      </div>
+      </header>
 
-      <div style={{ display: 'flex', gap: 16, marginTop: 16, alignItems: 'flex-start' }}>
+      <div className="max-w-screen-2xl mx-auto px-4 py-5 flex gap-5 items-start">
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
-            <div style={{ minWidth: 200 }}>
-              <CurrentCard card={currentCard} />
+        {/* Left panel: card + controls + prizes */}
+        <div className="w-52 shrink-0 space-y-4">
+          <CurrentCard card={currentCard} />
 
-              {isHost && (
-                <button
-                  onClick={handleDraw}
-                  disabled={deckExhausted || room?.status !== 'playing'}
-                  style={{ marginTop: 12, display: 'block' }}
-                >
-                  {deckExhausted ? 'Mazo agotado' : 'Siguiente carta'}
-                </button>
-              )}
-
+          <div className="space-y-2">
+            {isHost && (
               <button
-                onClick={handleLoteria}
-                disabled={!claimablePrize}
-                style={{ marginTop: 8, display: 'block' }}
+                onClick={handleDraw}
+                disabled={deckExhausted || room?.status !== 'playing'}
+                className="w-full py-2.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-colors text-sm"
               >
-                ¡Lotería!
+                {deckExhausted ? 'Mazo agotado' : 'Siguiente carta'}
               </button>
-
-              {error && (
-                <p style={{ color: 'red', marginTop: 8 }}>
-                  {error}{' '}
-                  <button onClick={() => setError(null)}>×</button>
-                </p>
-              )}
-
-              <div style={{ marginTop: 20 }}>
-                {room && (
-                  <PrizeStatus
-                    pot={room.pot}
-                    claimedPrizes={claimedPrizes}
-                    myPlayerId={playerId}
-                  />
-                )}
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-              {myBoards.map((board) => (
-                <div key={board.boardIndex}>
-                  {myBoards.length > 1 && (
-                    <p style={{ margin: '0 0 4px', fontWeight: 600, fontSize: 14 }}>
-                      Tablero {board.boardIndex + 1}
-                    </p>
-                  )}
-                  <PlayerBoard
-                    board={board}
-                    drawnCardIds={drawnCardIds}
-                    onMark={(cardId) => handleMark(cardId, board.boardIndex)}
-                  />
-                </div>
-              ))}
-            </div>
+            )}
+            <button
+              onClick={handleLoteria}
+              disabled={!claimablePrize}
+              className={`w-full py-2.5 font-bold rounded-xl transition-all text-sm ${
+                claimablePrize
+                  ? 'bg-green-500 hover:bg-green-600 text-white animate-pulse shadow-lg shadow-green-500/30'
+                  : 'bg-stone-700 text-stone-500 cursor-not-allowed'
+              }`}
+            >
+              ¡Lotería!
+            </button>
           </div>
 
-          <div style={{ marginTop: 24 }}>
+          {error && (
+            <div className="px-3 py-2 bg-red-900/50 border border-red-700 rounded-lg text-red-300 text-xs flex items-start gap-2">
+              <span className="flex-1">{error}</span>
+              <button onClick={() => setError(null)} className="text-red-400 hover:text-red-200 shrink-0">×</button>
+            </div>
+          )}
+
+          {room && (
+            <PrizeStatus
+              pot={room.pot}
+              claimedPrizes={claimedPrizes}
+              myPlayerId={playerId}
+            />
+          )}
+        </div>
+
+        {/* Center: boards */}
+        <div className="flex-1 min-w-0 space-y-5">
+          <div className="flex gap-6 flex-wrap">
+            {myBoards.map((board) => (
+              <div key={board.boardIndex}>
+                {myBoards.length > 1 && (
+                  <p className="mb-2 text-sm font-bold text-stone-400 uppercase tracking-wide">
+                    Tablero {board.boardIndex + 1}
+                  </p>
+                )}
+                <PlayerBoard
+                  board={board}
+                  drawnCardIds={drawnCardIds}
+                  onMark={(cardId) => handleMark(cardId, board.boardIndex)}
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-stone-800 rounded-2xl border border-stone-700 p-4">
             <DrawnCards cards={drawnCards} />
           </div>
         </div>
 
-        <div style={{ width: 280, flexShrink: 0, position: 'sticky', top: 16, height: 500 }}>
+        {/* Right: chat */}
+        <div className="w-64 shrink-0 sticky top-5 h-[600px]">
           <Chat />
         </div>
-
       </div>
     </div>
   )

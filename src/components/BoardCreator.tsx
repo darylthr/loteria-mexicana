@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { createBoard } from '../api/boards'
 
-// All 54 cards — id matches imageUrl /cards/NN.jpg
 const ALL_CARDS = Array.from({ length: 54 }, (_, i) => ({
   id: i + 1,
   name: `Carta ${i + 1}`,
@@ -43,57 +42,76 @@ export default function BoardCreator({ onSaved, onCancel }: Props) {
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: '#fff', borderRadius: 12, padding: 24, maxWidth: 680, width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
-        <h3 style={{ margin: '0 0 4px' }}>Crear tablero personalizado</h3>
-        <p style={{ margin: '0 0 12px', fontSize: 13, opacity: 0.6 }}>
-          Selecciona exactamente 16 cartas · {selected.length}/16
-        </p>
-
-        <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="Nombre del tablero"
-          maxLength={40}
-          style={{ width: '100%', marginBottom: 12, boxSizing: 'border-box' }}
-        />
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: 4, marginBottom: 16 }}>
-          {ALL_CARDS.map(card => {
-            const isSelected = selected.includes(card.id)
-            const pos = isSelected ? selected.indexOf(card.id) + 1 : null
-            return (
-              <div
-                key={card.id}
-                onClick={() => toggle(card.id)}
-                style={{
-                  position: 'relative',
-                  cursor: 'pointer',
-                  borderRadius: 4,
-                  overflow: 'hidden',
-                  border: isSelected ? '2px solid #0066cc' : '2px solid transparent',
-                  opacity: !isSelected && selected.length === 16 ? 0.35 : 1,
-                  aspectRatio: '2/3',
-                }}
-              >
-                <img src={card.imageUrl} alt={card.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                {isSelected && (
-                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,102,204,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>{pos}</span>
-                  </div>
-                )}
-              </div>
-            )
-          })}
+    <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+        <div className="px-6 py-5 border-b border-stone-200 shrink-0">
+          <h3 className="text-lg font-bold text-stone-800">Crear tablero personalizado</h3>
+          <p className="text-sm text-stone-500 mt-0.5">
+            Selecciona exactamente 16 cartas ·{' '}
+            <span className={selected.length === 16 ? 'text-green-600 font-semibold' : 'text-stone-500'}>
+              {selected.length}/16
+            </span>
+          </p>
         </div>
 
-        {error && <p style={{ color: 'red', margin: '0 0 12px', fontSize: 13 }}>{error}</p>}
+        <div className="px-6 py-4 shrink-0">
+          <input
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Nombre del tablero"
+            maxLength={40}
+          />
+        </div>
 
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={handleSave} disabled={saving || selected.length !== 16 || !name.trim()}>
-            {saving ? 'Guardando...' : 'Guardar tablero'}
-          </button>
-          <button onClick={onCancel} style={{ opacity: 0.6 }}>Cancelar</button>
+        <div className="flex-1 overflow-y-auto px-6 pb-4">
+          <div className="grid grid-cols-9 gap-1.5">
+            {ALL_CARDS.map(card => {
+              const isSelected = selected.includes(card.id)
+              const pos = isSelected ? selected.indexOf(card.id) + 1 : null
+              const atMax = selected.length === 16 && !isSelected
+              return (
+                <div
+                  key={card.id}
+                  onClick={() => toggle(card.id)}
+                  className={`relative cursor-pointer rounded-md overflow-hidden aspect-[2/3] transition-all ${
+                    isSelected
+                      ? 'ring-2 ring-amber-500 shadow-md'
+                      : atMax
+                      ? 'opacity-30 cursor-not-allowed'
+                      : 'hover:ring-2 hover:ring-amber-300'
+                  }`}
+                >
+                  <img src={card.imageUrl} alt={card.name} className="w-full h-full object-cover block" />
+                  {isSelected && (
+                    <div className="absolute inset-0 bg-amber-500/50 flex items-center justify-center">
+                      <span className="text-white font-black text-sm drop-shadow">{pos}</span>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="px-6 py-4 border-t border-stone-200 shrink-0">
+          {error && (
+            <p className="text-red-600 text-sm mb-3">{error}</p>
+          )}
+          <div className="flex gap-3">
+            <button
+              onClick={handleSave}
+              disabled={saving || selected.length !== 16 || !name.trim()}
+              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-colors"
+            >
+              {saving ? 'Guardando...' : 'Guardar tablero'}
+            </button>
+            <button
+              onClick={onCancel}
+              className="px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-xl transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
         </div>
       </div>
     </div>

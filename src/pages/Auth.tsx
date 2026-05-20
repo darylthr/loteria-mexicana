@@ -48,54 +48,79 @@ export default function Auth() {
   }
 
   return (
-    <div style={{ maxWidth: 360, margin: '80px auto' }}>
-      <h1>Lotería</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-900 via-amber-900 to-red-950 p-4">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-black text-amber-400 tracking-tight">Lotería</h1>
+          <p className="text-amber-200/70 mt-1 text-sm">El juego tradicional mexicano</p>
+        </div>
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        <button onClick={() => { setMode('login'); setError(null) }} disabled={mode === 'login'}>
-          Iniciar sesión
-        </button>
-        <button onClick={() => { setMode('register'); setError(null) }} disabled={mode === 'register'}>
-          Registrarse
-        </button>
+        <div className="bg-white rounded-2xl shadow-2xl p-6">
+          {/* Mode tabs */}
+          <div className="flex rounded-lg bg-stone-100 p-1 mb-5">
+            <button
+              onClick={() => { setMode('login'); setError(null) }}
+              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
+                mode === 'login'
+                  ? 'bg-white text-stone-900 shadow-sm'
+                  : 'text-stone-500 hover:text-stone-700'
+              }`}
+            >
+              Iniciar sesión
+            </button>
+            <button
+              onClick={() => { setMode('register'); setError(null) }}
+              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
+                mode === 'register'
+                  ? 'bg-white text-stone-900 shadow-sm'
+                  : 'text-stone-500 hover:text-stone-700'
+              }`}
+            >
+              Registrarse
+            </button>
+          </div>
+
+          {error && (
+            <div className="mb-4 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-3">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={handleKey}
+              placeholder="Correo electrónico"
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKey}
+              placeholder="Contraseña"
+            />
+            {mode === 'register' && (
+              <input
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                onKeyDown={handleKey}
+                placeholder="Tu nombre en el juego"
+                maxLength={24}
+              />
+            )}
+          </div>
+
+          <button
+            onClick={mode === 'login' ? handleLogin : handleRegister}
+            disabled={loading || !email || !password}
+            className="mt-5 w-full py-2.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+          >
+            {loading ? 'Un momento...' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
+          </button>
+        </div>
       </div>
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        onKeyDown={handleKey}
-        placeholder="Correo electrónico"
-        style={{ display: 'block', marginBottom: 8, width: '100%' }}
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        onKeyDown={handleKey}
-        placeholder="Contraseña"
-        style={{ display: 'block', marginBottom: 8, width: '100%' }}
-      />
-      {mode === 'register' && (
-        <input
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-          onKeyDown={handleKey}
-          placeholder="Tu nombre en el juego"
-          maxLength={24}
-          style={{ display: 'block', marginBottom: 8, width: '100%' }}
-        />
-      )}
-
-      <button
-        onClick={mode === 'login' ? handleLogin : handleRegister}
-        disabled={loading || !email || !password}
-        style={{ marginTop: 4, width: '100%' }}
-      >
-        {loading ? '...' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
-      </button>
     </div>
   )
 }

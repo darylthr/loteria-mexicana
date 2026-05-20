@@ -10,77 +10,69 @@ interface WinnerOverlayProps {
   onClose: () => void
 }
 
-export default function WinnerOverlay({
-  room,
-  myPlayerId,
-  reason,
-  isHost,
-  onNewGame,
-  onClose,
-}: WinnerOverlayProps) {
+export default function WinnerOverlay({ room, myPlayerId, reason, isHost, onNewGame, onClose }: WinnerOverlayProps) {
   const myEarnings = PRIZE_SLOT_ORDER.reduce((sum, slot) => {
     const claim = room.claimedPrizes[slot]
     return claim?.playerId === myPlayerId ? sum + claim.amount : sum
   }, 0)
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0,0,0,0.75)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 100,
-        padding: 16,
-      }}
-    >
-      <div style={{ textAlign: 'center', padding: 32, borderRadius: 12, background: '#fff', maxWidth: 480, width: '100%' }}>
-        <h2 style={{ margin: '0 0 4px' }}>
-          {reason === 'all_prizes_claimed' ? '🎊 ¡Juego terminado!' : '🃏 ¡Mazo agotado!'}
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-stone-900 border border-stone-700 rounded-3xl shadow-2xl max-w-md w-full p-8 text-center">
+        <div className="text-5xl mb-3">
+          {reason === 'all_prizes_claimed' ? '🎊' : '🃏'}
+        </div>
+        <h2 className="text-2xl font-black text-white mb-1">
+          {reason === 'all_prizes_claimed' ? '¡Juego terminado!' : '¡Mazo agotado!'}
         </h2>
-        <p style={{ opacity: 0.7, fontSize: 14, marginTop: 0 }}>
-          {reason === 'deck_exhausted' ? 'Los premios restantes se repartieron entre todos los jugadores.' : ''}
-        </p>
-
-        {myEarnings > 0 && (
-          <p style={{ fontSize: 20, fontWeight: 700, color: '#28a745' }}>
-            ¡Ganaste {myEarnings} monedas!
+        {reason === 'deck_exhausted' && (
+          <p className="text-stone-400 text-sm mb-4">
+            Los premios restantes se repartieron entre todos los jugadores.
           </p>
         )}
 
-        <div style={{ textAlign: 'left', margin: '16px 0' }}>
+        {myEarnings > 0 && (
+          <div className="my-4 px-5 py-3 bg-green-900/50 border border-green-700 rounded-2xl">
+            <p className="text-green-400 text-xl font-black">+{myEarnings} monedas</p>
+            <p className="text-green-300/70 text-sm">¡Felicidades!</p>
+          </div>
+        )}
+
+        <div className="text-left space-y-2 my-5">
           {PRIZE_SLOT_ORDER.map((slot) => {
             const { label, pct } = PRIZE_INFO[slot]
             const claim = room.claimedPrizes[slot]
             if (!claim) return null
             const isMe = claim.playerId === myPlayerId
             return (
-              <div key={slot} style={{ marginBottom: 6, fontSize: 14 }}>
-                <strong>{label}</strong> ({pct}%){' '}
-                <span style={{ color: isMe ? '#28a745' : '#333' }}>
-                  → {isMe ? '¡Tú!' : claim.playerName} +{claim.amount} mon.
+              <div key={slot} className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-sm ${isMe ? 'bg-green-900/40 border border-green-700' : 'bg-stone-800 border border-stone-700'}`}>
+                <span className="font-semibold text-stone-200">{label} <span className="text-stone-500 font-normal">({pct}%)</span></span>
+                <span className={`font-bold ${isMe ? 'text-green-400' : 'text-stone-400'}`}>
+                  {isMe ? '¡Tú!' : claim.playerName} +{claim.amount}
                 </span>
               </div>
             )
           })}
         </div>
 
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 8 }}>
+        <div className="flex gap-3 justify-center mt-2">
           {isHost && (
-            <button onClick={onNewGame} style={{ padding: '10px 24px' }}>
+            <button
+              onClick={onNewGame}
+              className="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition-colors"
+            >
               Nueva partida
             </button>
           )}
-          <button onClick={onClose} style={{ padding: '10px 24px' }}>
+          <button
+            onClick={onClose}
+            className="px-6 py-2.5 bg-stone-700 hover:bg-stone-600 text-white font-bold rounded-xl transition-colors"
+          >
             Volver al inicio
           </button>
         </div>
         {!isHost && (
-          <p style={{ fontSize: 13, opacity: 0.6, marginTop: 10 }}>
-            El anfitrión puede iniciar una nueva partida
-          </p>
+          <p className="text-stone-500 text-xs mt-3">El anfitrión puede iniciar una nueva partida</p>
         )}
       </div>
     </div>

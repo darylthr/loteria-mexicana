@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import type { Session } from '@supabase/supabase-js'
 import { supabase } from './lib/supabase'
 import { useGameStore } from './store/gameStore'
 import Auth from './pages/Auth'

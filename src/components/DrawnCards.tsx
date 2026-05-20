@@ -1,31 +1,19 @@
 import type { LoteriaCard } from '../types/game'
 
-interface DrawnCardsProps {
-  cards: LoteriaCard[]
-}
-
-export default function DrawnCards({ cards }: DrawnCardsProps) {
+export default function DrawnCards({ cards }: { cards: LoteriaCard[] }) {
   return (
     <div>
-      <p style={{ margin: '0 0 4px', fontSize: 13, opacity: 0.7 }}>
-        Cartas llamadas: {cards.length}
+      <p className="text-xs text-stone-400 uppercase tracking-wide mb-2">
+        Cartas llamadas — {cards.length}
       </p>
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 4,
-          maxHeight: 160,
-          overflowY: 'auto',
-        }}
-      >
+      <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto">
         {cards.map((card) => (
           <img
             key={card.id}
             src={card.imageUrl}
             alt={card.name}
             title={card.name}
-            style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 4 }}
+            className="w-10 h-14 object-cover rounded-md opacity-80 hover:opacity-100 transition-opacity"
           />
         ))}
       </div>

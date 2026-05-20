@@ -13,34 +13,26 @@ export default function CardTile({ card, isMarked, isDrawn, onClick }: CardTileP
   return (
     <div
       onClick={clickable ? onClick : undefined}
-      style={{
-        cursor: clickable ? 'pointer' : 'default',
-        opacity: isMarked ? 0.45 : 1,
-        outline: isMarked ? '3px solid #22c55e' : '1px solid #d1d5db',
-        borderRadius: 6,
-        overflow: 'hidden',
-        position: 'relative',
-      }}
+      className={`relative rounded-lg overflow-hidden select-none transition-all ${
+        clickable
+          ? 'cursor-pointer ring-2 ring-amber-400 ring-offset-1 ring-offset-stone-900 hover:scale-105 shadow-md shadow-amber-400/20'
+          : isMarked
+          ? 'opacity-60'
+          : 'opacity-50'
+      }`}
     >
       <img
         src={card.imageUrl}
         alt={card.name}
-        style={{ width: '100%', display: 'block' }}
+        className="w-full block"
         draggable={false}
       />
-      <div style={{ textAlign: 'center', fontSize: 11, padding: '2px 0' }}>{card.name}</div>
+      <div className="text-center text-[10px] py-0.5 bg-stone-800/80 text-stone-300 truncate px-1">
+        {card.name}
+      </div>
       {isMarked && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            pointerEvents: 'none',
-          }}
-        >
-          <span style={{ fontSize: 32 }}>⬤</span>
+        <div className="absolute inset-0 flex items-center justify-center bg-green-900/60">
+          <span className="text-green-400 text-3xl drop-shadow">⬤</span>
         </div>
       )}
     </div>
