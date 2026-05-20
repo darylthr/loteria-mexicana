@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
+import { useBackgroundMusic } from '../hooks/useBackgroundMusic'
 import { useNavigate } from 'react-router-dom'
-import { LogOut, ChevronsRight, Users, Layers, Plus, LayoutGrid, Volume2, CheckSquare, Trophy, Minus, Square, Maximize2, Sparkles, Coins } from 'lucide-react'
+import { LogOut, ChevronsRight, Users, Layers, Plus, LayoutGrid, Volume2, VolumeX, CheckSquare, Trophy, Minus, Square, Maximize2, Sparkles, Coins } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useGameStore } from '../store/gameStore'
 import { createRoom, joinRoom, fetchRoom } from '../api/rooms'
@@ -46,6 +47,8 @@ export default function Home() {
   const handleToken = (t: TokenType) => { setTokenState(t); localStorage.setItem('loteria-token', t) }
 
   const [nickname, setNickname] = useState('')
+  const { muted, volume, toggleMute, setVolume } = useBackgroundMusic('/sounds/bg-music.mp3')
+  const [showVolume, setShowVolume] = useState(false)
 
   const navigate = useNavigate()
   const playerId = useGameStore((s) => s.playerId)
@@ -131,23 +134,48 @@ export default function Home() {
     <div className="bg-th min-h-screen">
 
       {/* Minimal top-right nav */}
-      <div className="absolute top-0 w-full p-5 flex justify-between gap-5 z-30">
-        <div>
-          <ChevronsRight className="w-5 h-5 opacity-60" />
+      <div className="absolute top-0 w-full p-8 flex justify-between z-30">
+        <div className="relative flex items-center gap-2">
+          <button
+            onClick={toggleMute}
+            onMouseEnter={() => setShowVolume(true)}
+            onMouseLeave={() => setShowVolume(false)}
+            className="text-th-sub hover:text-th transition-colors"
+            aria-label={muted ? 'Activar sonido' : 'Silenciar'}
+          >
+            {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+          </button>
+          {showVolume && (
+            <div
+              className="absolute left-7 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-th-surface border border-th rounded-full px-3 py-1.5 shadow-lg"
+              onMouseEnter={() => setShowVolume(true)}
+              onMouseLeave={() => setShowVolume(false)}
+            >
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={volume}
+                onChange={e => setVolume(Number(e.target.value))}
+                className="w-20 h-1 accent-th-accent"
+                style={{ appearance: 'auto', padding: 0, border: 'none', background: 'transparent', width: '5rem' }}
+              />
+            </div>
+          )}
         </div>
-        <div className='flex flex-wrap items-center gap-5'>
+        <div className='flex flex-wrap items-center gap-6'>
           {balance !== undefined && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10">
-              <Coins className="w-4 h-4 text-th-accent" />
-              <span className="font-black text-th-accent text-sm font-ui">{balance}</span>
+              <Coins className="w-5 h-5 text-th-accent" />
+              <span className="font-black text-th-accent text-lg font-ui">{balance}</span>
             </div>
           )}
           <button
             onClick={handleSignOut}
-            className="text-sm text-th-sub hover:text-th transition-colors flex flex-wrap"
+            className="text-lg text-th-sub hover:text-th transition-colors flex items-center px-3 py-1.5"
           >
-            Cerrar sesion
-            <LogOut className="w-5 h-5 opacity-60 ml-2.5" />
+            <LogOut className="w-5 h-5 opacity-60" />
           </button>
         </div>
       </div>
@@ -197,13 +225,12 @@ export default function Home() {
 
           {/* Nickname */}
           <div className="w-full">
-            <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-1.5">Apodo</p>
             <input
               value={nickname}
               onChange={e => setNickname(e.target.value)}
-              placeholder="Ingresa un apodo"
+              placeholder="Apodo..."
               maxLength={20}
-              className="text-center font-black text-xl py-4 rounded-xl"
+              className="text-left text-lg font-bold py-4 rounded-xl"
             />
           </div>
 
@@ -391,14 +418,14 @@ export default function Home() {
 
       {/* ── Footer ─────────────────────────────────────────── */}
       <footer className="border-t border-th px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-th-sub">
-        <p>Hecho por <span className="font-semibold text-th">Daryl</span> &amp; <span className="font-semibold text-th">Shemita</span></p>
+        <p>desarrollado por <span className="font-semibold text-th">daryl</span> &amp; <span className="font-semibold text-th">shemita</span></p>
 
         <div className="flex items-center gap-5">
           <a href="/terms" className="hover:text-th transition-colors">Términos</a>
           <a href="/privacy" className="hover:text-th transition-colors">Privacidad</a>
           <a href="/cookies" className="hover:text-th transition-colors">Cookies</a>
           <a
-            href="https://discord.gg/"
+            href="https://discord.gg/EYbxB2wjy9"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-th transition-colors flex items-center gap-1.5"
