@@ -4,7 +4,7 @@ import { LogOut, ChevronsRight, Users, Layers, Plus, LayoutGrid, Volume2, CheckS
 import { supabase } from '../lib/supabase'
 import { useGameStore } from '../store/gameStore'
 import { createRoom, joinRoom, fetchRoom } from '../api/rooms'
-import { getProfile, updateProfile } from '../api/profile'
+import { getProfile } from '../api/profile'
 import { getBoards, deleteBoard } from '../api/boards'
 import type { CustomBoard } from '../api/boards'
 import BoardCreator from '../components/BoardCreator'
@@ -76,11 +76,9 @@ export default function Home() {
   const handleCreate = async () => {
     setLoading(true); setError(null)
     try {
-      const name = nickname.trim() || displayName
-      if (name && name !== displayName) await updateProfile(name).catch(() => {})
-      const { roomId, hostId, room } = await createRoom()
+      const { roomId, hostId, room } = await createRoom(nickname.trim() || undefined)
       const hostPlayer = room.players.find(p => p.id === hostId)
-      setIdentity({ playerId: playerId!, playerName: nickname || displayName, isHost: true, roomId })
+      setIdentity({ playerId: playerId!, playerName: nickname.trim() || displayName, isHost: true, roomId })
       if (hostPlayer) { setBalance(hostPlayer.balance); setMyBoards(hostPlayer.boards) }
       navigate(`/lobby/${roomId}`)
     } catch (e) {
@@ -105,10 +103,8 @@ export default function Home() {
     if (!previewRoom) return
     setLoading(true); setError(null)
     try {
-      const name = nickname.trim() || displayName
-      if (name && name !== displayName) await updateProfile(name).catch(() => {})
-      const { player, room } = await joinRoom(previewRoom.roomId)
-      setIdentity({ playerId: playerId!, playerName: nickname || displayName, isHost: false, roomId: room.roomId })
+      const { player, room } = await joinRoom(previewRoom.roomId, nickname.trim() || undefined)
+      setIdentity({ playerId: playerId!, playerName: nickname.trim() || displayName, isHost: false, roomId: room.roomId })
       setBalance(player.balance)
       setMyBoards(player.boards)
       navigate(`/lobby/${room.roomId}`)

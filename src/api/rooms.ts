@@ -22,13 +22,13 @@ export function fetchRoom(roomId: string): Promise<{ room: GameRoom }> {
   return request(`/rooms/${roomId}`)
 }
 
-export function createRoom(maxPlayers?: number): Promise<{ roomId: string; hostId: string; room: GameRoom }> {
+export function createRoom(nickname?: string, maxPlayers?: number): Promise<{ roomId: string; hostId: string; room: GameRoom }> {
   return request('/rooms', {
     method: 'POST',
-    body: JSON.stringify({ maxPlayers }),
+    body: JSON.stringify({ maxPlayers, nickname }),
   })
 }
 
-export function joinRoom(roomId: string): Promise<{ room: GameRoom; player: Player }> {
-  return request(`/rooms/${roomId}/join`, { method: 'POST' })
+export function joinRoom(roomId: string, nickname?: string): Promise<{ room: GameRoom; player: Player }> {
+  return request(`/rooms/${roomId}/join`, { method: 'POST', body: JSON.stringify({ nickname }) })
 }
