@@ -292,7 +292,7 @@ export default function Lobby() {
             ) : (
               <p className="text-sm text-th">
                 <span className="font-black text-th-accent">{room?.entryFee ?? 0}</span>
-                <span className="text-th-sub"> monedas/tablero</span>
+                <span className="text-th-sub"> monedas</span>
               </p>
             )}
             <p className={`mt-2 text-xs ${canAfford ? 'text-th-sub' : 'text-red-400 font-semibold'}`}>

@@ -13,9 +13,9 @@ interface CardTileProps {
 export default function CardTile({ card, isMarked, isDrawn: _isDrawn, token, onClick }: CardTileProps) {
   return (
     <div
-      onClick={!isMarked ? onClick : undefined}
+      onClick={onClick}
       title={card.name}
-      className={`relative overflow-hidden select-none ${!isMarked ? 'cursor-pointer' : ''}`}
+      className="relative overflow-hidden select-none cursor-pointer"
     >
       <img
         src={card.imageUrl}

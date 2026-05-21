@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronsRight, Crown, Check, Star, X, Copy, Share2, Coins, Volume2, VolumeX, LogOut } from 'lucide-react'
 import { useBackgroundMusic } from '../hooks/useBackgroundMusic'
@@ -36,6 +36,8 @@ export default function Game() {
   )
   const [copied, setCopied] = useState(false)
   const [showVolume, setShowVolume] = useState(false)
+  const [flashedSlots, setFlashedSlots] = useState<Set<PrizeSlot>>(new Set())
+  const prevClaimedRef = useRef<Partial<Record<PrizeSlot, unknown>>>({})
   const { muted, volume, toggleMute, setVolume } = useBackgroundMusic('/sounds/bg-music.mp3')
 
   const lastEmit = useRef<Record<string, number>>({})
@@ -84,6 +86,17 @@ export default function Game() {
   const claimableSlots = useMemo(() => detectClaimableSlots(myBoards, claimedPrizes), [myBoards, claimedPrizes])
   const deckExhausted = room ? drawnCards.length >= room.deck.length : false
 
+  // Flash prize buttons when newly claimed
+  useEffect(() => {
+    const prev = prevClaimedRef.current
+    const newSlots = PRIZE_SLOT_ORDER.filter(s => claimedPrizes[s] && !prev[s])
+    if (newSlots.length > 0) {
+      setFlashedSlots(new Set(newSlots))
+      setTimeout(() => setFlashedSlots(new Set()), 700)
+    }
+    prevClaimedRef.current = claimedPrizes
+  }, [claimedPrizes])
+
   const handleDraw = () => {
     const s = useGameStore.getState().socket
     if (s && roomId) s.emit('game:draw', { roomId })
@@ -118,7 +131,7 @@ export default function Game() {
       )}
 
       {/* ── Header ─────────────────────────────────────────── */}
-      <header className="shrink-0 bg-th-surface border-b border-th px-5 py-3 flex items-center justify-between">
+      <header className="shrink-0 bg-th-surface border-b border-th px-5 py-3 flex items-center justify-between" style={{ animation: 'fadeSlideUp 0.4s ease both' }}>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-black text-th-accent font-display">LOTERÍA</h1>
@@ -171,7 +184,7 @@ export default function Game() {
       <div className="flex-1 flex gap-4 px-4 py-4 min-h-0 overflow-hidden">
 
         {/* LEFT — room code + current card + actions + prizes */}
-        <div className="w-52 shrink-0 flex flex-col gap-3">
+        <div className="w-52 shrink-0 flex flex-col gap-3" style={{ animation: 'fadeSlideUp 0.45s ease 0.07s both' }}>
 
           {/* Room code */}
           <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0 overflow-hidden relative">
@@ -203,7 +216,7 @@ export default function Game() {
           {/* Current card */}
           <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0">
             <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">Carta actual</p>
-            <CurrentCard card={currentCard} />
+            <CurrentCard key={currentCard?.id ?? 'empty'} card={currentCard} />
           </div>
 
           {/* Actions & Prizes */}
@@ -237,6 +250,7 @@ export default function Game() {
                     key={slot}
                     onClick={() => !claim && debounced(`loteria-${slot}`, () => handleLoteria(slot))}
                     disabled={!!claim}
+                    style={flashedSlots.has(slot) ? { animation: 'claimFlash 0.65s ease both' } : undefined}
                     className={`w-full py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-between transition-all active:scale-[0.97] ${
                       claim
                         ? isMyWin
@@ -261,7 +275,7 @@ export default function Game() {
 
           {/* Error */}
           {error && (
-            <div className="shrink-0 px-3 py-2 bg-red-900/30 border border-red-700/40 rounded-lg text-red-400 text-xs flex gap-2">
+            <div className="shrink-0 px-3 py-2 bg-red-900/30 border border-red-700/40 rounded-lg text-red-400 text-xs flex gap-2" style={{ animation: 'fadeSlideUp 0.3s ease both' }}>
               <span className="flex-1">{error}</span>
               <button onClick={() => setError(null)} className="shrink-0 hover:text-red-200 flex items-center">
                 <X className="w-3.5 h-3.5" />
@@ -271,7 +285,7 @@ export default function Game() {
         </div>
 
         {/* CENTER — my boards */}
-        <div className="flex-1 bg-th-surface rounded-xl border border-th flex flex-col min-w-0 overflow-hidden">
+        <div className="flex-1 bg-th-surface rounded-xl border border-th flex flex-col min-w-0 overflow-hidden" style={{ animation: 'fadeSlideUp 0.45s ease 0.14s both' }}>
           <div className="shrink-0 px-5 py-4 border-b border-th">
             <p className="font-bold text-th text-sm">Mi tablero</p>
             <p className="text-xs text-th-sub mt-0.5">
@@ -298,7 +312,7 @@ export default function Game() {
         </div>
 
         {/* RIGHT — players + chat */}
-        <div className="w-56 shrink-0 flex flex-col gap-3 overflow-hidden">
+        <div className="w-56 shrink-0 flex flex-col gap-3 overflow-hidden" style={{ animation: 'fadeSlideUp 0.45s ease 0.21s both' }}>
           {/* Players */}
           <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0">
             <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">
@@ -334,7 +348,7 @@ export default function Game() {
       </div>
 
       {/* ── Bottom — drawn cards history ───────────────────── */}
-      <div className="shrink-0 bg-th-surface border-t border-th px-4 py-4">
+      <div className="shrink-0 bg-th-surface border-t border-th px-4 py-4" style={{ animation: 'fadeSlideUp 0.45s ease 0.28s both' }}>
         <DrawnCards cards={drawnCards} />
       </div>
     </div>

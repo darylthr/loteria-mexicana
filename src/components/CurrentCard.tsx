@@ -10,7 +10,7 @@ export default function CurrentCard({ card }: { card: LoteriaCard | null }) {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full" style={{ animation: 'cardFlipIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both' }}>
       <div className="rounded-2xl overflow-hidden shadow-xl shadow-black/30 ring-2 ring-th-accent">
         <img src={card.imageUrl} alt={card.name} className="w-full block" />
       </div>

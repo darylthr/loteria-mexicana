@@ -15,7 +15,10 @@ interface TokenMarkerProps {
 export function TokenMarker({ token }: TokenMarkerProps) {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      <div className="w-3/4 h-3/4">
+      <div
+        className="w-3/4 h-3/4"
+        style={{ animation: 'tokenPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both' }}
+      >
         <img
           src={TOKENS[token].src}
           alt={TOKENS[token].label}
