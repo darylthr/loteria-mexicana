@@ -14,7 +14,7 @@ export default function PlayerBoard({ board, drawnCardIds, token, onMark }: Play
 
   return (
     <div
-      className="shrink-0 w-[368px] rounded-2xl p-3 shadow-2xl shadow-black/60"
+      className="w-full max-w-[368px] rounded-2xl p-3 shadow-2xl shadow-black/60"
       style={{
         background: 'linear-gradient(145deg, #7c4a22 0%, #5c3214 50%, #3e1f0a 100%)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,220,160,0.15), inset 0 -1px 0 rgba(0,0,0,0.4)',

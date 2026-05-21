@@ -220,8 +220,186 @@ export default function Lobby() {
         </div>
       </header>
 
-      {/* ── Main 3-column area ─────────────────────────────── */}
-      <div className="flex-1 flex gap-4 px-4 py-4 min-h-0 overflow-hidden">
+      {/* ══════════════════════════════════════════════════════
+          MOBILE LAYOUT  (hidden on lg+)
+      ══════════════════════════════════════════════════════ */}
+      <div className="lg:hidden flex-1 overflow-y-auto">
+        <div className="p-3 flex flex-col gap-3 pb-6">
+
+          {/* Room code */}
+          <div className="bg-th-surface rounded-xl border border-th p-4 overflow-hidden relative">
+            <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-th-accent/8 blur-2xl pointer-events-none" />
+            <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-2">Código de sala</p>
+            <div className="bg-th rounded-lg border border-th-accent/20 px-3 py-2.5 mb-3 flex items-center justify-center">
+              <span className="font-mono font-ui text-3xl font-black text-th tracking-[0.3em] leading-none">{roomId}</span>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleCopyCode}
+                className="flex-1 py-2 text-xs bg-th-accent/12 hover:bg-th-accent/20 text-th-accent font-semibold rounded-md transition-colors flex items-center justify-center gap-1.5 border border-th-accent/25"
+              >
+                {copied ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar</>}
+              </button>
+              <button
+                onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/?room=${roomId}`); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+                className="flex-1 py-2 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-md transition-colors flex items-center justify-center gap-1.5"
+              >
+                <Share2 className="w-3 h-3" /> Compartir
+              </button>
+            </div>
+          </div>
+
+          {/* Fee */}
+          <div className="bg-th-surface rounded-xl border border-th p-4">
+            <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">Costo de entrada</p>
+            {isHost ? (
+              <div className="space-y-2">
+                <div className="flex items-center rounded-lg border border-th overflow-hidden bg-th">
+                  <button onClick={() => { setFeeInput(v => Math.max(0, v - 10)); setFeeSaved(false) }}
+                    className="h-[36px] px-3 text-th-sub hover:text-th hover:bg-th-ui-hover transition-colors text-base font-bold shrink-0">−</button>
+                  <input type="number" min={0} max={500} value={feeInput}
+                    onChange={e => { setFeeInput(Math.max(0, Math.min(500, Number(e.target.value)))); setFeeSaved(false) }}
+                    className="flex-1 text-center text-sm font-black text-th bg-transparent border-none ring-0 focus:ring-0 px-0 py-2 min-w-0" />
+                  <button onClick={() => { setFeeInput(v => Math.min(500, v + 10)); setFeeSaved(false) }}
+                    className="h-[36px] px-3 text-th-sub hover:text-th hover:bg-th-ui-hover transition-colors text-base font-bold shrink-0">+</button>
+                </div>
+                {!feeSaved && (
+                  <button onClick={handleSaveFee}
+                    className="w-full py-1.5 bg-th-accent/15 hover:bg-th-accent/25 border border-th-accent/30 text-th-accent text-xs font-semibold rounded-lg transition-colors">
+                    Guardar
+                  </button>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-th">
+                <span className="font-black text-th-accent">{room?.entryFee ?? 0}</span>
+                <span className="text-th-sub"> monedas</span>
+              </p>
+            )}
+            <p className={`mt-2 text-xs ${canAfford ? 'text-th-sub' : 'text-red-400 font-semibold'}`}>
+              Estimado: <strong>{estimatedCost}</strong> monedas{!canAfford && ' · insuficiente'}
+            </p>
+          </div>
+
+          {/* Board picker */}
+          <div className="bg-th-surface rounded-xl border border-th overflow-hidden">
+            <div className="px-4 py-3 border-b border-th flex items-center justify-between">
+              <div>
+                <p className="font-bold text-th text-sm">Elige tu tablero</p>
+                <p className="text-xs text-th-sub mt-0.5">Hasta 2 tableros por jugador</p>
+              </div>
+              <button
+                onClick={() => setShowCreator(true)}
+                className="px-3 py-1.5 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-md transition-colors shrink-0 flex items-center gap-1.5"
+              >
+                <ChevronsRight className="w-3 h-3" /> Crear
+              </button>
+            </div>
+            <div className="p-3">
+              {room && playerId && (
+                <BoardPicker
+                  availableBoards={room.availableBoards ?? []}
+                  myCustomBoards={myCustomBoards}
+                  selectedBoardIds={selectedBoardIds}
+                  playerId={playerId}
+                  players={room.players}
+                  onSelect={handleSelectBoard}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Players */}
+          <div className="bg-th-surface rounded-xl border border-th p-4">
+            <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">
+              Jugadores · {room?.players.length ?? 0}/{room?.maxPlayers ?? 6}
+            </p>
+            <ul className="space-y-1">
+              {room?.players.map((p, idx) => {
+                const raw = room.boardSelections[p.id]
+                const sels = Array.isArray(raw) ? raw : []
+                const count = sels.length
+                const isMe = p.id === playerId
+                return (
+                  <li key={p.id}
+                    className="flex items-center justify-between py-2 border-b border-th last:border-0 gap-2"
+                    style={{ animation: `playerJoinIn 0.35s cubic-bezier(0.34,1.56,0.64,1) ${idx * 0.06}s both` }}
+                  >
+                    <span className="font-medium text-th text-sm truncate flex items-center gap-1">
+                      {p.id === room.hostId && <Crown className="w-3 h-3 text-th-accent shrink-0" />}
+                      {p.name}{isMe && <span className="text-th-sub text-xs ml-0.5">(tú)</span>}
+                    </span>
+                    {count > 0 ? (
+                      <span className="shrink-0 text-[10px] bg-green-900/30 text-green-400 font-bold px-2 py-0.5 rounded-full border border-green-700/30 flex items-center gap-1">
+                        {count} <Check className="w-2.5 h-2.5" />
+                      </span>
+                    ) : (
+                      <span className="shrink-0 text-[10px] bg-th text-th-sub px-2 py-0.5 rounded-full border border-th">pendiente</span>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className="px-3 py-2 bg-red-900/30 border border-red-700/40 rounded-lg text-red-400 text-xs">{error}</div>
+          )}
+
+          {/* Start / waiting */}
+          {isHost ? (
+            <div className="space-y-2">
+              <button
+                onClick={handleStart}
+                disabled={!canStart}
+                onMouseEnter={() => setStartBtnHover(true)}
+                onMouseLeave={() => setStartBtnHover(false)}
+                title={playersWithoutBoard.length > 0 ? `Sin tablero: ${playersWithoutBoard.map(p => p.name).join(', ')}` : undefined}
+                className="relative flex items-center justify-center gap-2 w-full py-3.5 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-base rounded-xl transition-all duration-200 active:scale-[0.98] overflow-hidden"
+                style={{
+                  background: canStart ? 'linear-gradient(135deg, rgba(255,255,255,0.15), rgba(0,0,0,0.08)), var(--th-accent)' : 'var(--th-accent)',
+                  animation: canStart ? 'readyGlow 2s ease-in-out infinite' : undefined,
+                }}
+              >
+                {shimmerStart && (
+                  <span className="absolute inset-y-0 w-1/2 pointer-events-none"
+                    style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)', animation: 'shimmerSweep 0.65s ease forwards' }} />
+                )}
+                <ChevronsRight className="w-5 h-5 shrink-0 relative opacity-80"
+                  style={{ animation: canStart ? 'chevronMarch 1.2s ease-in-out infinite' : undefined }} />
+                <span className="relative">Iniciar juego</span>
+              </button>
+              {playersWithoutBoard.length > 0 && (
+                <p className="text-xs text-th-sub text-center">Esperando tablero de {playersWithoutBoard.map(p => p.name).join(', ')}</p>
+              )}
+              {room && room.players.length < 2 && (
+                <p className="text-xs text-th-sub text-center">Necesitas al menos 2 jugadores</p>
+              )}
+            </div>
+          ) : (
+            <div className="py-3 rounded-xl border border-th bg-th-surface text-center flex items-center justify-center gap-2">
+              <span className="text-sm text-th-sub">Esperando al anfitrión</span>
+              <div className="flex items-center gap-1">
+                {[0, 1, 2].map(i => (
+                  <div key={i} className="w-1 h-1 rounded-full bg-th-sub"
+                    style={{ animation: `waitingDot 1.4s ease-in-out ${i * 0.2}s infinite` }} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Chat */}
+          <div className="h-72">
+            <Chat />
+          </div>
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════
+          DESKTOP LAYOUT  (hidden below lg)
+      ══════════════════════════════════════════════════════ */}
+      <div className="hidden lg:flex flex-1 gap-4 px-4 py-4 min-h-0 overflow-hidden">
 
         {/* LEFT — room code + config + players + start */}
         <div
