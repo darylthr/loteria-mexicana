@@ -249,7 +249,7 @@ export default function Lobby() {
               </button>
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(`${window.location.origin}/join/${roomId}`)
+                  navigator.clipboard.writeText(`${window.location.origin}/?room=${roomId}`)
                   setCopied(true)
                   setTimeout(() => setCopied(false), 2000)
                 }}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 import { useGameStore } from './store/gameStore'
 import { initTheme } from './lib/theme'
@@ -7,6 +7,11 @@ import Auth from './pages/Auth'
 import Home from './pages/Home'
 import Lobby from './pages/Lobby'
 import Game from './pages/Game'
+
+function JoinRedirect() {
+  const { roomId } = useParams<{ roomId: string }>()
+  return <Navigate to={`/?room=${roomId}`} replace />
+}
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<'loading' | 'authed' | 'unauthed'>('loading')
@@ -47,6 +52,7 @@ export default function App() {
       <Routes>
         <Route path="/auth" element={<Auth />} />
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/join/:roomId" element={<JoinRedirect />} />
         <Route path="/lobby/:roomId" element={<ProtectedRoute><Lobby /></ProtectedRoute>} />
         <Route path="/game/:roomId" element={<ProtectedRoute><Game /></ProtectedRoute>} />
       </Routes>
