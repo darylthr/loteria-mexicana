@@ -34,20 +34,23 @@ export const PRIZE_INFO: Record<PrizeSlot, { label: string; pct: number }> = {
 
 export const PRIZE_SLOT_ORDER: PrizeSlot[] = ['full_board', 'corners', 'line', 'square']
 
-/** Returns the first unclaimed prize slot this player's boards qualify for, or null. */
-export function detectClaimablePrize(
+/**
+ * Returns all unclaimed prize slots where the player has filled every
+ * cell in the pattern (regardless of drawn state). The server validates
+ * drawn cards at claim time.
+ */
+export function detectClaimableSlots(
   boards: PlayerBoard[],
   claimedPrizes: Partial<Record<PrizeSlot, PrizeClaim>>,
-): PrizeSlot | null {
+): Set<PrizeSlot> {
+  const claimable = new Set<PrizeSlot>()
   for (const board of boards) {
     const marked = new Set(board.markedCards)
     for (const { pattern, positions } of WIN_PATTERNS) {
-      if (!positions.every(pos => board.cards[pos] !== undefined && marked.has(board.cards[pos].id))) {
-        continue
-      }
+      if (!positions.every(pos => board.cards[pos] !== undefined && marked.has(board.cards[pos].id))) continue
       const slot = PRIZE_SLOT_MAP[pattern]
-      if (!claimedPrizes[slot]) return slot
+      if (!claimedPrizes[slot]) claimable.add(slot)
     }
   }
-  return null
+  return claimable
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronsRight, Crown, Check, Copy, Share2, Coins, Volume2, VolumeX, LogOut } from 'lucide-react'
 import { useBackgroundMusic } from '../hooks/useBackgroundMusic'
@@ -36,7 +36,11 @@ export default function Lobby() {
   const [showCreator, setShowCreator] = useState(false)
   const [copied, setCopied] = useState(false)
   const [showVolume, setShowVolume] = useState(false)
+  const [startBtnHover, setStartBtnHover] = useState(false)
+  const [shimmerStart, setShimmerStart] = useState(false)
   const { muted, volume, toggleMute, setVolume } = useBackgroundMusic('/sounds/bg-music.mp3')
+
+  const wasReady = useRef(false)
 
   useEffect(() => {
     getBoards().then(({ boards }) => setMyCustomBoards(boards)).catch(() => {})
@@ -124,9 +128,8 @@ export default function Lobby() {
 
   const mySelectionsRaw = room?.boardSelections[playerId!]
   const mySelections = Array.isArray(mySelectionsRaw) ? mySelectionsRaw : []
-  const customCount = mySelections.filter(s => s.isCustom).length
   const boardCount = Math.max(selectedBoardIds.length, 1)
-  const estimatedCost = (room?.entryFee ?? 0) * boardCount + 10 * customCount
+  const estimatedCost = (room?.entryFee ?? 0) * boardCount
   const canAfford = balance >= estimatedCost
 
   const playersWithoutBoard = room?.players.filter(p => {
@@ -135,6 +138,15 @@ export default function Lobby() {
   }) ?? []
 
   const canStart = !!room && room.players.length >= 2 && playersWithoutBoard.length === 0
+
+  // Trigger one-shot shimmer when button becomes ready
+  useEffect(() => {
+    if (canStart && !wasReady.current) {
+      setShimmerStart(true)
+      setTimeout(() => setShimmerStart(false), 700)
+    }
+    wasReady.current = canStart
+  }, [canStart])
 
   if (!room) {
     return (
@@ -146,9 +158,26 @@ export default function Lobby() {
 
   return (
     <div className="h-screen flex flex-col bg-th overflow-hidden">
+      <style>{`
+        @keyframes playerJoinIn {
+          from { opacity: 0; transform: translateX(16px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes readyGlow {
+          0%, 100% { box-shadow: 0 8px 24px -4px rgba(0,0,0,0.4), 0 0 0 0 color-mix(in srgb, var(--th-accent) 45%, transparent); }
+          50%       { box-shadow: 0 8px 24px -4px rgba(0,0,0,0.4), 0 0 0 6px color-mix(in srgb, var(--th-accent) 0%, transparent); }
+        }
+        @keyframes waitingDot {
+          0%, 80%, 100% { opacity: 0.2; transform: scale(0.75); }
+          40%            { opacity: 0.7; transform: scale(1.1); }
+        }
+      `}</style>
 
       {/* ── Header ─────────────────────────────────────────── */}
-      <header className="shrink-0 bg-th-surface border-b border-th px-5 py-3 flex items-center justify-between">
+      <header
+        className="shrink-0 bg-th-surface border-b border-th px-5 py-3 flex items-center justify-between"
+        style={{ animation: 'fadeSlideUp 0.4s ease both' }}
+      >
         <div className="flex items-center gap-4">
           <div
             className="relative flex items-center gap-2"
@@ -176,7 +205,7 @@ export default function Lobby() {
 
         <div className="flex items-center gap-5">
           {balance !== undefined && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10 ">
               <Coins className="w-4 h-4 text-th-accent" />
               <span className="font-black text-th-accent text-sm font-ui">{balance}</span>
             </div>
@@ -195,7 +224,10 @@ export default function Lobby() {
       <div className="flex-1 flex gap-4 px-4 py-4 min-h-0 overflow-hidden">
 
         {/* LEFT — room code + config + players + start */}
-        <div className="w-60 shrink-0 flex flex-col gap-3">
+        <div
+          className="w-60 shrink-0 flex flex-col gap-3"
+          style={{ animation: 'fadeSlideUp 0.45s ease 0.07s both' }}
+        >
 
           {/* Room code */}
           <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0 overflow-hidden relative">
@@ -275,14 +307,17 @@ export default function Lobby() {
               Jugadores · {room?.players.length ?? 0}/{room?.maxPlayers ?? 6}
             </p>
             <ul className="space-y-1">
-              {room?.players.map(p => {
+              {room?.players.map((p, idx) => {
                 const raw = room.boardSelections[p.id]
                 const sels = Array.isArray(raw) ? raw : []
                 const count = sels.length
-                const hasCustom = sels.some(s => s.isCustom)
                 const isMe = p.id === playerId
                 return (
-                  <li key={p.id} className="flex items-center justify-between py-2 border-b border-th last:border-0 gap-2">
+                  <li
+                    key={p.id}
+                    className="flex items-center justify-between py-2 border-b border-th last:border-0 gap-2"
+                    style={{ animation: `playerJoinIn 0.35s cubic-bezier(0.34,1.56,0.64,1) ${idx * 0.06}s both` }}
+                  >
                     <span className="font-medium text-th text-sm truncate flex items-center gap-1">
                       {p.id === room.hostId && <Crown className="w-3 h-3 text-th-accent shrink-0" />}
                       {p.name}
@@ -290,7 +325,7 @@ export default function Lobby() {
                     </span>
                     {count > 0 ? (
                       <span className="shrink-0 text-[10px] bg-green-900/30 text-green-400 font-bold px-2 py-0.5 rounded-full border border-green-700/30 flex items-center gap-1">
-                        {count}{hasCustom ? '+' : ''} <Check className="w-2.5 h-2.5" />
+                        {count} <Check className="w-2.5 h-2.5" />
                       </span>
                     ) : (
                       <span className="shrink-0 text-[10px] bg-th text-th-sub px-2 py-0.5 rounded-full border border-th">
@@ -317,11 +352,35 @@ export default function Lobby() {
                 <button
                   onClick={handleStart}
                   disabled={!canStart}
+                  onMouseEnter={() => setStartBtnHover(true)}
+                  onMouseLeave={() => setStartBtnHover(false)}
                   title={playersWithoutBoard.length > 0 ? `Sin tablero: ${playersWithoutBoard.map(p => p.name).join(', ')}` : undefined}
-                  className="flex items-center justify-center gap-2 w-full py-3.5 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-base rounded-xl transition-all shadow-lg shadow-black/20 active:scale-[0.98]"
+                  className="relative flex items-center justify-center gap-2 w-full py-3.5 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-base rounded-xl transition-all duration-200 active:scale-[0.98] overflow-hidden"
+                  style={{
+                    background: canStart
+                      ? 'linear-gradient(135deg, rgba(255,255,255,0.15), rgba(0,0,0,0.08)), var(--th-accent)'
+                      : 'var(--th-accent)',
+                    transform: startBtnHover && canStart ? 'scale(1.03) translateY(-2px)' : undefined,
+                    animation: canStart ? 'readyGlow 2s ease-in-out infinite' : undefined,
+                    boxShadow: startBtnHover && canStart
+                      ? '0 8px 32px -4px color-mix(in srgb, var(--th-accent) 60%, transparent)'
+                      : undefined,
+                  }}
                 >
-                  <ChevronsRight className="w-5 h-5 opacity-60" />
-                  Iniciar juego
+                  {shimmerStart && (
+                    <span
+                      className="absolute inset-y-0 w-1/2 pointer-events-none"
+                      style={{
+                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)',
+                        animation: 'shimmerSweep 0.65s ease forwards',
+                      }}
+                    />
+                  )}
+                  <ChevronsRight
+                    className="w-5 h-5 shrink-0 relative opacity-80"
+                    style={{ animation: canStart ? 'chevronMarch 1.2s ease-in-out infinite' : undefined }}
+                  />
+                  <span className="relative">Iniciar juego</span>
                 </button>
                 {playersWithoutBoard.length > 0 && (
                   <p className="text-xs text-th-sub text-center">
@@ -335,19 +394,31 @@ export default function Lobby() {
                 )}
               </div>
             ) : (
-              <div className="py-3.5 rounded-xl border border-th bg-th-surface text-center">
-                <p className="text-sm text-th-sub">Esperando al anfitrión…</p>
+              <div className="py-3 rounded-xl border border-th bg-th-surface text-center flex items-center justify-center gap-2">
+                <span className="text-sm text-th-sub">Esperando al anfitrión</span>
+                <div className="flex items-center gap-1">
+                  {[0, 1, 2].map(i => (
+                    <div
+                      key={i}
+                      className="w-1 h-1 rounded-full bg-th-sub"
+                      style={{ animation: `waitingDot 1.4s ease-in-out ${i * 0.2}s infinite` }}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </div>
 
         {/* CENTER — board picker */}
-        <div className="flex-1 bg-th-surface rounded-xl border border-th flex flex-col min-w-0 overflow-hidden">
+        <div
+          className="flex-1 bg-th-surface rounded-xl border border-th flex flex-col min-w-0 overflow-hidden"
+          style={{ animation: 'fadeSlideUp 0.45s ease 0.14s both' }}
+        >
           <div className="shrink-0 px-5 py-4 border-b border-th flex items-center justify-between">
             <div>
               <p className="font-bold text-th text-sm">Elige tu tablero</p>
-              <p className="text-xs text-th-sub mt-0.5">Hasta 2 tableros · los personalizados dan +10 monedas</p>
+              <p className="text-xs text-th-sub mt-0.5">Hasta 2 tableros por jugador</p>
             </div>
             <button
               onClick={() => setShowCreator(true)}
@@ -371,7 +442,10 @@ export default function Lobby() {
         </div>
 
         {/* RIGHT — chat */}
-        <div className="w-56 shrink-0">
+        <div
+          className="w-56 shrink-0"
+          style={{ animation: 'fadeSlideUp 0.45s ease 0.21s both' }}
+        >
           <Chat />
         </div>
       </div>

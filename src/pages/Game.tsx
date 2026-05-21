@@ -1,16 +1,16 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronsRight, Crown, Check, Star, X, Copy, Share2, Coins, Volume2, VolumeX, LogOut } from 'lucide-react'
 import { useBackgroundMusic } from '../hooks/useBackgroundMusic'
 import { useGameStore } from '../store/gameStore'
-import { detectClaimablePrize } from '../utils/winDetection'
+import { detectClaimableSlots, PRIZE_INFO, PRIZE_SLOT_ORDER } from '../utils/winDetection'
 import PlayerBoard from '../components/PlayerBoard'
 import CurrentCard from '../components/CurrentCard'
 import DrawnCards from '../components/DrawnCards'
 import WinnerOverlay from '../components/WinnerOverlay'
-import PrizeStatus from '../components/PrizeStatus'
 import Chat from '../components/Chat'
 import type { TokenType } from '../components/TokenMarker'
+import type { PrizeSlot } from '../types/game'
 
 export default function Game() {
   const { roomId } = useParams<{ roomId: string }>()
@@ -37,6 +37,14 @@ export default function Game() {
   const [copied, setCopied] = useState(false)
   const [showVolume, setShowVolume] = useState(false)
   const { muted, volume, toggleMute, setVolume } = useBackgroundMusic('/sounds/bg-music.mp3')
+
+  const lastEmit = useRef<Record<string, number>>({})
+  const debounced = (key: string, fn: () => void, ms = 600) => {
+    const now = Date.now()
+    if (now - (lastEmit.current[key] ?? 0) < ms) return
+    lastEmit.current[key] = now
+    fn()
+  }
 
   useEffect(() => {
     if (!playerId || !roomId) { navigate('/'); return }
@@ -73,7 +81,7 @@ export default function Game() {
   }, [])
 
   const drawnCardIds = useMemo(() => new Set(drawnCards.map((c) => c.id)), [drawnCards])
-  const claimablePrize = detectClaimablePrize(myBoards, claimedPrizes)
+  const claimableSlots = useMemo(() => detectClaimableSlots(myBoards, claimedPrizes), [myBoards, claimedPrizes])
   const deckExhausted = room ? drawnCards.length >= room.deck.length : false
 
   const handleDraw = () => {
@@ -81,12 +89,14 @@ export default function Game() {
     if (s && roomId) s.emit('game:draw', { roomId })
   }
   const handleMark = (cardId: number, boardIndex: number) => {
-    const s = useGameStore.getState().socket
-    if (s && roomId) s.emit('game:mark', { roomId, cardId, boardIndex })
+    debounced(`mark-${boardIndex}-${cardId}`, () => {
+      const s = useGameStore.getState().socket
+      if (s && roomId) s.emit('game:mark', { roomId, cardId, boardIndex })
+    }, 400)
   }
-  const handleLoteria = () => {
+  const handleLoteria = (slot: PrizeSlot) => {
     const s = useGameStore.getState().socket
-    if (s && roomId) s.emit('game:loteria', { roomId })
+    if (s && roomId) s.emit('game:loteria', { roomId, slot })
   }
   const handleNewGame = () => {
     const s = useGameStore.getState().socket
@@ -196,40 +206,58 @@ export default function Game() {
             <CurrentCard card={currentCard} />
           </div>
 
-          {/* Actions */}
-          <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0 space-y-2">
-            <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">Acciones</p>
+          {/* Actions & Prizes */}
+          <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest">Premios</p>
+              {room && <span className="text-xs font-bold text-th-accent">{room.pot} mon.</span>}
+            </div>
+
             {isHost && (
               <button
-                onClick={handleDraw}
+                onClick={() => debounced('draw', handleDraw)}
                 disabled={deckExhausted || room?.status !== 'playing'}
-                className="flex items-center justify-center gap-2 w-full py-3 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-sm rounded-xl transition-all shadow-lg shadow-black/20 active:scale-[0.98]"
+                className="flex items-center justify-center gap-2 w-full py-2.5 mb-3 bg-th-accent hover:bg-th-accent2 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-sm rounded-xl transition-all shadow-lg shadow-black/20 active:scale-[0.98]"
               >
-                <ChevronsRight className="w-4 h-4 opacity-60" />
+                <ChevronsRight className="w-4 h-4 opacity-60" style={{ animation: 'chevronMarch 1.2s ease-in-out infinite' }} />
                 {deckExhausted ? 'Mazo agotado' : 'Sacar carta'}
               </button>
             )}
-            <button
-              onClick={handleLoteria}
-              disabled={!claimablePrize}
-              className={`flex items-center justify-center gap-2 w-full py-3 font-black text-sm rounded-xl transition-all active:scale-[0.98] ${
-                claimablePrize
-                  ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/30'
-                  : 'bg-th-ui text-th-sub cursor-not-allowed opacity-50'
-              }`}
-            >
-              {claimablePrize && <ChevronsRight className="w-4 h-4 opacity-70" />}
-              ¡Lotería!
-            </button>
-          </div>
 
-          {/* Prizes */}
-          {room && (
-            <div className="bg-th-surface rounded-xl border border-th p-4 shrink-0">
-              <p className="text-[10px] font-bold text-th-sub uppercase tracking-widest mb-3">Premios</p>
-              <PrizeStatus pot={room.pot} claimedPrizes={claimedPrizes} myPlayerId={playerId} />
+            <div className="space-y-1.5">
+              {PRIZE_SLOT_ORDER.map(slot => {
+                const { label, pct } = PRIZE_INFO[slot]
+                const claim = claimedPrizes[slot]
+                const canClaim = claimableSlots.has(slot)
+                const amount = Math.floor((room?.pot ?? 0) * pct / 100)
+                const isMyWin = claim?.playerId === playerId
+
+                return (
+                  <button
+                    key={slot}
+                    onClick={() => !claim && debounced(`loteria-${slot}`, () => handleLoteria(slot))}
+                    disabled={!!claim}
+                    className={`w-full py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-between transition-all active:scale-[0.97] ${
+                      claim
+                        ? isMyWin
+                          ? 'bg-green-900/30 border border-green-700/40 text-green-400'
+                          : 'bg-th border border-th text-th-sub opacity-50'
+                        : canClaim
+                          ? 'bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-900/30 cursor-pointer'
+                          : 'bg-th-ui hover:bg-th-ui-hover border border-th text-th cursor-pointer'
+                    }`}
+                  >
+                    <span>{label}</span>
+                    <span className="font-normal opacity-80">
+                      {claim
+                        ? isMyWin ? '¡Tú!' : claim.playerName
+                        : `${amount} mon.`}
+                    </span>
+                  </button>
+                )
+              })}
             </div>
-          )}
+          </div>
 
           {/* Error */}
           {error && (

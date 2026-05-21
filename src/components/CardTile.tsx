@@ -10,19 +10,17 @@ interface CardTileProps {
   onClick: () => void
 }
 
-export default function CardTile({ card, isMarked, isDrawn, token, onClick }: CardTileProps) {
-  const drawable = isDrawn && !isMarked
-
+export default function CardTile({ card, isMarked, isDrawn: _isDrawn, token, onClick }: CardTileProps) {
   return (
     <div
-      onClick={drawable ? onClick : undefined}
+      onClick={!isMarked ? onClick : undefined}
       title={card.name}
-      className={`relative overflow-hidden select-none ${drawable ? 'cursor-pointer' : ''}`}
+      className={`relative overflow-hidden select-none ${!isMarked ? 'cursor-pointer' : ''}`}
     >
       <img
         src={card.imageUrl}
         alt={card.name}
-        className="w-full block"
+        className={`w-full block transition-all duration-300 ${isMarked ? 'brightness-[0.35]' : ''}`}
         draggable={false}
       />
 
