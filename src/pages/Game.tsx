@@ -163,47 +163,47 @@ export default function Game() {
       )}
 
       {/* ── Header ─────────────────────────────────────────── */}
-      <header className="shrink-0 bg-th-surface border-b border-th px-4 py-3 flex items-center justify-between" style={{ animation: 'fadeSlideUp 0.4s ease both' }}>
-        <div className="flex items-center gap-3">
-          <h1 className="text-xl font-black text-th-accent font-display">LOTERÍA</h1>
-          <span className="font-mono font-ui text-xs text-th-sub tracking-widest hidden sm:inline">{roomId}</span>
+      <header
+        className="shrink-0 bg-th-surface border-b border-th px-5 py-3 flex items-center justify-between"
+        style={{ animation: 'fadeSlideUp 0.4s ease both' }}
+      >
+        <div className="flex items-center gap-4">
           <div
             className="relative flex items-center gap-2"
             onMouseEnter={() => setShowVolume(true)}
             onMouseLeave={() => setShowVolume(false)}
           >
             <button
-              onClick={() => setShowVolume(v => !v)}
+              onClick={toggleMute}
               className="text-th-sub hover:text-th transition-colors"
               aria-label={muted ? 'Activar sonido' : 'Silenciar'}
             >
               {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </button>
             {showVolume && (
-              <div className="absolute left-0 top-full mt-2 z-20 flex items-center gap-2 bg-th-surface border border-th rounded-xl px-3 py-2 shadow-lg">
-                <button onClick={toggleMute} className="text-th-sub hover:text-th transition-colors shrink-0">
-                  {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                </button>
+              <div className="flex items-center bg-th-surface border border-th rounded-full px-3 py-1.5 shadow-lg">
                 <input
                   type="range" min={0} max={1} step={0.05} value={volume}
                   onChange={e => setVolume(Number(e.target.value))}
-                  className="w-24"
+                  className="w-20"
                 />
               </div>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-4">
+
+        <div className="flex items-center gap-5">
           {balance !== undefined && (
-            <div
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10 rounded-full border border-th-accent/20"
-              style={{ animation: 'balancePulse 3s ease-in-out infinite' }}
-            >
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-th-accent/10 ">
               <Coins className="w-4 h-4 text-th-accent" />
               <span className="font-black text-th-accent text-sm font-ui">{balance}</span>
             </div>
           )}
-          <button onClick={handleClose} className="text-th-sub hover:text-th transition-colors" aria-label="Salir">
+          <button
+            onClick={() => navigate('/')}
+            className="text-th-sub hover:text-th transition-colors"
+            aria-label="Salir"
+          >
             <LogOut className="w-5 h-5 opacity-60" />
           </button>
         </div>
