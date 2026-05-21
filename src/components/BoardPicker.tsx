@@ -20,13 +20,10 @@ function MiniBoard({ cards }: { cards: { id: number; imageUrl: string }[] }) {
         boxShadow: '0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,220,160,0.15), inset 0 -1px 0 rgba(0,0,0,0.4)',
       }}
     >
-      <div
-        className="rounded-lg overflow-hidden"
-        style={{ boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.5)' }}
-      >
-        <div className="grid grid-cols-4 gap-[1px] bg-black/40">
+      <div className="rounded-lg overflow-hidden" style={{ boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.5)' }}>
+        <div className="grid grid-cols-4 gap-px bg-white rounded-lg">
           {cards.map(c => (
-            <img key={c.id} src={c.imageUrl} alt="" className="w-full aspect-[2/3] object-cover" />
+            <img key={c.id} src={c.imageUrl} alt="" className="h-full aspect-2/3 object-fill" />
           ))}
         </div>
       </div>
@@ -92,7 +89,7 @@ export default function BoardPicker({ availableBoards, myCustomBoards, selectedB
       {myCustomBoards.length > 0 && (
         <div className="mb-6">
           <h4 className="text-sm font-bold text-th-sub mb-2 uppercase tracking-wide">
-            Mis tableros <span className="text-th-accent font-normal normal-case">+10 monedas</span>
+            Tus tableros
           </h4>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
             {myCustomBoards.map(cb => {
