@@ -301,6 +301,11 @@ export default function Game() {
               </div>
             </div>
 
+            {/* Chat */}
+            <div className="h-72">
+              <Chat />
+            </div>
+
             {/* Error */}
             {error && (
               <div className="px-3 py-2 bg-red-900/30 border border-red-700/40 rounded-lg text-red-400 text-xs flex gap-2" style={{ animation: 'fadeSlideUp 0.3s ease both' }}>

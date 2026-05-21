@@ -388,6 +388,11 @@ export default function Lobby() {
               </div>
             </div>
           )}
+
+          {/* Chat */}
+          <div className="h-72">
+            <Chat />
+          </div>
         </div>
       </div>
 
