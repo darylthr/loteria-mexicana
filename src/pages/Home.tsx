@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useBackgroundMusic } from '../hooks/useBackgroundMusic'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { LogOut, ChevronsRight, Users, Layers, Plus, LayoutGrid, Volume2, VolumeX, CheckSquare, Trophy, Minus, Square, Maximize2, Sparkles, Coins } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useGameStore } from '../store/gameStore'
@@ -53,6 +53,7 @@ export default function Home() {
   const [ctaHover, setCtaHover] = useState(false)
   const { muted, volume, toggleMute, setVolume } = useBackgroundMusic('/sounds/bg-music.mp3')
   const [showVolume, setShowVolume] = useState(false)
+  const [searchParams] = useSearchParams()
 
   const navigate = useNavigate()
   const playerId = useGameStore((s) => s.playerId)
@@ -70,6 +71,19 @@ export default function Home() {
       })
       .catch(() => setError('Error al cargar el perfil'))
     getBoards().then(({ boards }) => setCustomBoards(boards)).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    const code = searchParams.get('room')
+    if (!code) return
+    const upper = code.toUpperCase()
+    setRoomCode(upper)
+    setShowJoin(true)
+    setPreviewLoading(true)
+    fetchRoom(upper)
+      .then(({ room }) => setPreviewRoom(room))
+      .catch(() => setError('Sala no encontrada'))
+      .finally(() => setPreviewLoading(false))
   }, [])
 
   const handleDeleteBoard = async (boardId: string) => {
@@ -350,7 +364,7 @@ export default function Home() {
         <FadeIn><SectionDivider label="Mis tableros" /></FadeIn>
         <FadeIn delay={0.08} className="bg-th-surface rounded-xl border border-th p-6 mt-5">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-xs text-th-sub">Tableros personalizados · +10 monedas al usarlos</p>
+            <p className="text-xs text-th-sub">Tableros personalizados.</p>
             <button
               onClick={() => setShowCreator(true)}
               className="px-4 py-2 bg-th-accent hover:bg-th-accent2 text-white text-sm font-bold rounded-lg transition-colors flex items-center gap-1.5"

@@ -126,11 +126,10 @@ export const useGameStore = create<GameState>()(
         }),
 
       addPlayer: (player) =>
-        set((s) => ({
-          room: s.room
-            ? { ...s.room, players: [...s.room.players, player] }
-            : null,
-        })),
+        set((s) => {
+          if (!s.room || s.room.players.some(p => p.id === player.id)) return {}
+          return { room: { ...s.room, players: [...s.room.players, player] } }
+        }),
 
       cardDrawn: (card) =>
         set((s) => ({

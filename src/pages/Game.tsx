@@ -205,7 +205,7 @@ export default function Game() {
                   : <><Copy className="w-3 h-3" /> Copiar</>}
               </button>
               <button
-                onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/join/${roomId}`); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+                onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/?room=${roomId}`); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
                 className="flex-1 py-2 text-xs bg-th-ui hover:bg-th-ui-hover text-th font-semibold rounded-md transition-colors flex items-center justify-center gap-1.5"
               >
                 <Share2 className="w-3 h-3" /> Compartir
