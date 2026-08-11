@@ -12,7 +12,7 @@ in memory (ephemeral, per the original design).
 2. **Env**: `cp .env.example .env` and fill in:
    - `SUPABASE_URL` — Project Settings → API → Project URL
    - `SUPABASE_SERVICE_ROLE_KEY` — API → `service_role` secret (server-only)
-   - `SUPABASE_JWT_SECRET` — API → JWT Settings → JWT Secret (verifies tokens)
+   - `SUPABASE_JWT_SECRET` — optional/unused (see JWT note below); leave blank
 3. **Run**:
    ```bash
    npm install
@@ -22,9 +22,10 @@ in memory (ephemeral, per the original design).
 The frontend (Vite, port 5173) proxies `/api` and `/socket.io` to port 3000, so
 no CORS config is needed for local dev.
 
-> **JWT note:** tokens are verified locally with `SUPABASE_JWT_SECRET` (HS256).
-> If your project uses the newer asymmetric signing keys, verify against the
-> JWKS endpoint in `src/utils/jwt.ts` instead.
+> **JWT note:** access tokens are verified against the Supabase Auth server via
+> `supabase.auth.getUser()` in `src/utils/jwt.ts`. This works for both legacy
+> HS256 and the newer asymmetric (ES256) signing keys, so no JWT secret needs to
+> be configured. (Trade-off: one lightweight Auth call per verification.)
 
 ## REST API
 

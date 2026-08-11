@@ -11,10 +11,10 @@ declare global {
 }
 
 /** Verifies the Supabase JWT and sets req.userId. Rejects with 401 otherwise. */
-export function requireAuth(req: Request, res: Response, next: NextFunction): void {
+export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const token = bearerToken(req.headers.authorization)
-    req.userId = verifyToken(token)
+    req.userId = await verifyToken(token)
     next()
   } catch {
     res.status(401).json({ error: 'No autorizado' })

@@ -1,20 +1,17 @@
-import jwt from 'jsonwebtoken'
-import { config } from '../config.js'
+import { supabaseAdmin } from '../lib/supabase.js'
 
 /**
- * Verify a Supabase access token locally (HS256, no network call) and return
- * the user id (`sub` claim). Throws if the token is missing or invalid.
- *
- * Note: this assumes the project signs tokens with the shared JWT secret
- * (SUPABASE_JWT_SECRET). Projects using asymmetric signing keys would verify
- * against the JWKS endpoint instead.
+ * Verify a Supabase access token by resolving it against the Supabase Auth
+ * server. This works regardless of the project's JWT signing scheme — the
+ * legacy shared HS256 secret OR the newer asymmetric signing keys (ES256) —
+ * so there's no secret to configure and no algorithm mismatch to debug.
+ * Returns the authenticated user's id. Throws if the token is missing/invalid.
  */
-export function verifyToken(token: string | undefined | null): string {
+export async function verifyToken(token: string | undefined | null): Promise<string> {
   if (!token) throw new Error('Missing token')
-  const payload = jwt.verify(token, config.supabaseJwtSecret) as jwt.JwtPayload
-  const userId = payload.sub
-  if (!userId || typeof userId !== 'string') throw new Error('Invalid token: no subject')
-  return userId
+  const { data, error } = await supabaseAdmin.auth.getUser(token)
+  if (error || !data.user) throw new Error(error?.message ?? 'Invalid token')
+  return data.user.id
 }
 
 /** Extract a bearer token from an Authorization header value. */

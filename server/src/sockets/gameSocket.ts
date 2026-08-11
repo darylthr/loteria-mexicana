@@ -31,9 +31,9 @@ function systemMessage(io: Server, roomId: string, message: string): void {
 
 export function registerGameSocket(io: Server): void {
   // Authenticate every socket connection with the Supabase JWT.
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     try {
-      socket.data.userId = verifyToken(socket.handshake.auth?.token)
+      socket.data.userId = await verifyToken(socket.handshake.auth?.token)
       next()
     } catch {
       next(new Error('No autorizado'))
